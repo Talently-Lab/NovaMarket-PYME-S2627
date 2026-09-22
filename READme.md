@@ -26,6 +26,7 @@ NovaMarket-PYME/
 │   │   └── index.js         # Entrada del servidor
 │   ├── .env.example
 │   └── package.json
+│
 ├── frontend/
 │   ├── src/
 │   │   ├── components/      # Componentes reutilizables
@@ -34,34 +35,55 @@ NovaMarket-PYME/
 │   │   ├── App.jsx
 │   │   └── main.jsx
 │   └── package.json
+│
 └── README.md
 ```
 
-🚀 Puesta en marcha
-1. Clonar el repositorio
-```Bash
+---
+
+## 🚀 Puesta en marcha
+
+### 1. Clonar el repositorio
+
+```bash
 git clone https://github.com/Talently-Lab/NovaMarket-PYME-S2627.git
+cd NovaMarket-PYME-S2627
 ```
 
-2. Configurar y levantar el Backend
-```Bash
+### 2. Configurar y levantar el Backend
+
+Ingresar a la carpeta del backend:
+
+```bash
 cd backend
 npm install
-Crear el archivo .env en la carpeta backend/ basándote en .env.example:
 ```
-```Bash
+
+Crear el archivo `.env` dentro de la carpeta `backend/`, basándose en `.env.example`.
+
+Luego iniciar el servidor:
+
+```bash
 npm run dev
 ```
-3. Configurar y levantar el Frontend
-En otra terminal:
-```Bash
+
+### 3. Configurar y levantar el Frontend
+
+Abrir otra terminal y ubicarse en la carpeta principal del proyecto:
+
+```bash
 cd frontend
 npm install
-Crear el archivo .env en la carpeta frontend/:
+```
 
-Fragmento de código
+Crear el archivo `.env` dentro de la carpeta `frontend/` con:
+
+```env
 VITE_API_URL=http://localhost:3000/api
 ```
-```Bash
+
+Luego iniciar el frontend:
+
+```bash
 npm run dev
 ```
