@@ -16,6 +16,9 @@ yarn-debug.log*
 .DS_Store
 Thumbs.db
 
+# Archivos personales de QA — solo locales
+docs/CONTEXT.md
+
 # Tests — reportes y artefactos temporales
 tests/reports/
 test-results/
