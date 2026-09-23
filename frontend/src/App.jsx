@@ -1,39 +1,60 @@
-import { useEffect, useState } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import { CartProvider } from './context/CartContext';
 
-function App() {
-  const [backendStatus, setBackendStatus] = useState('Conectando con el backend...');
-  const [error, setError] = useState(null);
+import Layout from './components/layout/Layout';
+import AdminLayout from './pages/admin/AdminLayout';
+import { ProtectedRoute, AdminRoute } from './components/ui/ProtectedRoute';
 
-  useEffect(() => {
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+import HomePage from './pages/HomePage';
+import CatalogPage from './pages/catalog/CatalogPage';
+import ProductDetailPage from './pages/catalog/ProductDetailPage';
+import CartPage from './pages/cart/CartPage';
+import CheckoutPage from './pages/checkout/CheckoutPage';
+import OrderConfirmedPage from './pages/checkout/OrderConfirmedPage';
+import LoginPage from './pages/auth/LoginPage';
+import RegisterPage from './pages/auth/RegisterPage';
+import DashboardPage from './pages/admin/DashboardPage';
+import ProductsAdminPage from './pages/admin/ProductsAdminPage';
+import OrdersAdminPage from './pages/admin/OrdersAdminPage';
+import NotFoundPage from './pages/NotFoundPage';
 
-    fetch(`${apiUrl}/health`)
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-        return res.json();
-      })
-      .then((data) => {
-        setBackendStatus(data.message);
-      })
-      .catch((err) => {
-        console.error('Error al consultar backend:', err);
-        setError('No se pudo conectar con el backend');
-      });
-  }, []);
-
+export default function App() {
   return (
-    <div style={{ fontFamily: 'sans-serif', padding: '2rem', textAlign: 'center' }}>
-      <h1>NovaMarket - PYME</h1>
-      <div style={{ marginTop: '20px', padding: '15px', border: '1px solid #ccc', borderRadius: '8px' }}>
-        <h3>Estado de la conexión:</h3>
-        {error ? (
-          <p style={{ color: 'red', fontWeight: 'bold' }}>❌ {error}</p>
-        ) : (
-          <p style={{ color: 'green', fontWeight: 'bold' }}>✅ {backendStatus}</p>
-        )}
-      </div>
-    </div>
+    <BrowserRouter>
+      <AuthProvider>
+        <CartProvider>
+          <Routes>
+            {/* Rutas públicas */}
+            <Route element={<Layout />}>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/catalogo" element={<CatalogPage />} />
+              <Route path="/catalogo/:id" element={<ProductDetailPage />} />
+              <Route path="/carrito" element={<CartPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/registro" element={<RegisterPage />} />
+
+              {/* Checkout — requiere estar autenticado */}
+              <Route element={<ProtectedRoute />}>
+                <Route path="/checkout" element={<CheckoutPage />} />
+                <Route path="/pedido-confirmado" element={<OrderConfirmedPage />} />
+              </Route>
+            </Route>
+
+            {/* Rutas de administración */}
+            <Route element={<AdminRoute />}>
+              <Route element={<AdminLayout />}>
+                <Route path="/admin" element={<DashboardPage />} />
+                <Route path="/admin/productos" element={<ProductsAdminPage />} />
+                <Route path="/admin/pedidos" element={<OrdersAdminPage />} />
+              </Route>
+            </Route>
+
+            {/* 404 */}
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </CartProvider>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
-
-export default App;
