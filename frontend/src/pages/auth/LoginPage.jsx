@@ -2,25 +2,47 @@ import { Link } from 'react-router-dom';
 
 export default function LoginPage() {
   return (
-    <div className="auth">
-      <div className="auth__card">
-        <h1>Iniciar sesión</h1>
-        <form className="auth__form">
+    <div className="auth-page">
+      <div className="auth-card">
+        <div className="auth-card__header">
+          <h1 className="auth-card__title">Bienvenido</h1>
+          <p className="auth-card__subtitle">Ingresá a tu cuenta para continuar</p>
+        </div>
+
+        <form>
           <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input type="email" id="email" name="email" placeholder="tucorreo@ejemplo.com" required />
+            <label className="form-label" htmlFor="email">Email</label>
+            <input
+              className="form-input"
+              type="email"
+              id="email"
+              name="email"
+              placeholder="tucorreo@ejemplo.com"
+              autoComplete="email"
+              required
+            />
           </div>
           <div className="form-group">
-            <label htmlFor="password">Contraseña</label>
-            <input type="password" id="password" name="password" placeholder="••••••••" required />
+            <label className="form-label" htmlFor="password">Contraseña</label>
+            <input
+              className="form-input"
+              type="password"
+              id="password"
+              name="password"
+              placeholder="••••••••"
+              autoComplete="current-password"
+              required
+            />
           </div>
           <button type="submit" className="btn btn--primary btn--full">
             Ingresar
           </button>
         </form>
-        <p className="auth__switch">
-          ¿No tenés cuenta? <Link to="/registro">Registrate</Link>
-        </p>
+
+        <div className="auth-card__footer">
+          ¿No tenés cuenta?{' '}
+          <Link to="/registro">Registrate gratis</Link>
+        </div>
       </div>
     </div>
   );

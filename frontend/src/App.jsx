@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
+import { ThemeProvider } from './context/ThemeContext';
 
 import Layout from './components/layout/Layout';
 import AdminLayout from './pages/admin/AdminLayout';
@@ -22,8 +23,9 @@ import NotFoundPage from './pages/NotFoundPage';
 export default function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <CartProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <CartProvider>
           <Routes>
             {/* Rutas públicas */}
             <Route element={<Layout />}>
@@ -54,7 +56,8 @@ export default function App() {
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </CartProvider>
-      </AuthProvider>
+        </AuthProvider>
+      </ThemeProvider>
     </BrowserRouter>
   );
 }

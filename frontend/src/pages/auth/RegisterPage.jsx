@@ -2,29 +2,60 @@ import { Link } from 'react-router-dom';
 
 export default function RegisterPage() {
   return (
-    <div className="auth">
-      <div className="auth__card">
-        <h1>Crear cuenta</h1>
-        <form className="auth__form">
+    <div className="auth-page">
+      <div className="auth-card">
+        <div className="auth-card__header">
+          <h1 className="auth-card__title">Crear cuenta</h1>
+          <p className="auth-card__subtitle">Únite a NovaMarket y empezá a comprar</p>
+        </div>
+
+        <form>
           <div className="form-group">
-            <label htmlFor="name">Nombre completo</label>
-            <input type="text" id="name" name="name" placeholder="Juan Pérez" required />
+            <label className="form-label" htmlFor="name">Nombre completo</label>
+            <input
+              className="form-input"
+              type="text"
+              id="name"
+              name="name"
+              placeholder="Juan Pérez"
+              autoComplete="name"
+              required
+            />
           </div>
           <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input type="email" id="email" name="email" placeholder="tucorreo@ejemplo.com" required />
+            <label className="form-label" htmlFor="email">Email</label>
+            <input
+              className="form-input"
+              type="email"
+              id="email"
+              name="email"
+              placeholder="tucorreo@ejemplo.com"
+              autoComplete="email"
+              required
+            />
           </div>
           <div className="form-group">
-            <label htmlFor="password">Contraseña</label>
-            <input type="password" id="password" name="password" placeholder="••••••••" required />
+            <label className="form-label" htmlFor="password">Contraseña</label>
+            <input
+              className="form-input"
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Mínimo 8 caracteres"
+              autoComplete="new-password"
+              required
+            />
+            <span className="form-hint">Usá letras, números y símbolos para mayor seguridad.</span>
           </div>
-          <button type="submit" className="btn btn--primary btn--full">
+          <button type="submit" className="btn btn--gradient btn--full">
             Crear cuenta
           </button>
         </form>
-        <p className="auth__switch">
-          ¿Ya tenés cuenta? <Link to="/login">Iniciá sesión</Link>
-        </p>
+
+        <div className="auth-card__footer">
+          ¿Ya tenés cuenta?{' '}
+          <Link to="/login">Iniciá sesión</Link>
+        </div>
       </div>
     </div>
   );
