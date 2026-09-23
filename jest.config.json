@@ -1,0 +1,27 @@
+{
+  "testEnvironment": "node",
+  "roots": [
+    "<rootDir>/tests/api",
+    "<rootDir>/tests/unit",
+    "<rootDir>/tests/security"
+  ],
+  "transform": {
+    "^.+\\.tsx?$": "ts-jest"
+  },
+  "testMatch": [
+    "**/*.test.ts",
+    "**/*.spec.ts"
+  ],
+  "moduleDirectories": ["node_modules", "backend/node_modules"],
+  "collectCoverageFrom": [
+    "backend/src/**/*.js",
+    "!backend/src/index.js"
+  ],
+  "coverageThreshold": {
+    "global": {
+      "lines": 80
+    }
+  },
+  "coverageReporters": ["html", "lcov", "text-summary"],
+  "coverageDirectory": "tests/reports/coverage"
+}

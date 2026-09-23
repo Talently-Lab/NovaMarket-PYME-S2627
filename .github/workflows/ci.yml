@@ -1,0 +1,233 @@
+# =============================================================================
+# NovaMarket QA — CI Pipeline
+# Basado en: docs/TEST_PLAN.md sección 5.1
+# Ejecuta en: push y PRs hacia develop
+#
+# SECRETOS REQUERIDOS — configurar manualmente en:
+# GitHub → Settings → Secrets and variables → Actions → New repository secret
+#   - DATABASE_URL_TEST  : connection string de la DB de test (Supabase o pg-mem según decisión pendiente)
+#   - JWT_SECRET_TEST    : clave JWT exclusiva para el entorno de test
+# =============================================================================
+
+name: NovaMarket QA — CI Pipeline
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - develop
+    types: [opened, synchronize, reopened]
+
+env:
+  NODE_VERSION: '20.x'
+  CI: true
+
+jobs:
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # JOB 1: Lint & Type Check
+  #
+  # ⚠️  SCRIPTS FALTANTES — este job fallará hasta que se agreguen al package.json:
+  #     "lint"       : ej. "eslint src/ tests/ --ext .js,.ts"
+  #     "type-check" : ej. "tsc --noEmit"
+  #
+  # Para agregar ESLint:
+  #   npm install --save-dev eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin
+  # Para agregar type-check en un proyecto CommonJS con tsconfig solo en /tests:
+  #   el script puede limitarse a: "tsc --noEmit --project tsconfig.json"
+  # ─────────────────────────────────────────────────────────────────────────
+  lint:
+    name: Lint & Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      # TODO: descomenta estas líneas cuando existan los scripts en package.json
+      # - name: Ejecutar ESLint
+      #   run: npm run lint
+
+      # - name: Verificar tipos TypeScript
+      #   run: npm run type-check
+
+      # Paso provisorio mientras no existen los scripts de lint/type-check:
+      # valida al menos que las dependencias instalan sin errores.
+      - name: Verificar instalación de dependencias
+        run: node --version && npm list --depth=0
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # JOB 2: Unit & API Tests (Jest + Supertest)
+  #
+  # Estado actual: el test smoke GET /api/health pasa en verde localmente.
+  # coverageThreshold lines: 80% configurado en jest.config.json ✅
+  #
+  # NOTA SOBRE BASE DE DATOS:
+  # El test smoke actual (health.api.test.ts) NO requiere DB — pasa sin secretos.
+  # Los futuros tests de integración SÍ requerirán DATABASE_URL_TEST.
+  # La estrategia de aislamiento (pg-mem vs Supabase schema vs Docker)
+  # está PENDIENTE de decisión con el equipo Backend (Laura / Florencia).
+  # Ver: docs/criterios-aceptacion-datos-prueba.md sección 4.
+  # ─────────────────────────────────────────────────────────────────────────
+  unit-and-api-tests:
+    name: Unit & API Tests (Jest)
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Ejecutar tests con cobertura
+        run: npm run test:coverage
+        env:
+          # DATABASE_URL_TEST se usará cuando existan tests de integración con DB.
+          # Por ahora el smoke test no la necesita, pero se pasa por consistencia.
+          DATABASE_URL: ${{ secrets.DATABASE_URL_TEST }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET_TEST }}
+          NODE_ENV: test
+          PORT: 3001
+
+      - name: Subir reporte de cobertura como artefacto
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: tests/reports/coverage/
+          retention-days: 7
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # JOB 3: E2E Tests (Playwright)
+  #
+  # ⚠️  DESHABILITADO — este job está comentado por las siguientes razones:
+  #
+  #   1. El frontend (/client) aún no está disponible en este repo
+  #      (los tests E2E necesitan que el servidor React levante en :5173).
+  #
+  #   2. El script "db:seed:test" NO existe en package.json todavía.
+  #      Debe crearse cuando se defina la estrategia de datos de test.
+  #
+  #   3. La estrategia de aislamiento de base de datos para CI está
+  #      PENDIENTE DE DECISIÓN con el equipo Backend.
+  #
+  # Activar este job cuando:
+  #   - El frontend esté disponible y buildeable en /client
+  #   - Se cree el script npm run db:seed:test
+  #   - Se decida y configure la estrategia de DB para CI
+  #   - Se configuren los secrets DATABASE_URL_TEST y JWT_SECRET_TEST en GitHub
+  # ─────────────────────────────────────────────────────────────────────────
+
+  # e2e-tests:
+  #   name: E2E Tests (Playwright)
+  #   runs-on: ubuntu-latest
+  #   needs: unit-and-api-tests
+  #   steps:
+  #     - name: Checkout del repositorio
+  #       uses: actions/checkout@v4
+  #
+  #     - name: Configurar Node.js ${{ env.NODE_VERSION }}
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: ${{ env.NODE_VERSION }}
+  #         cache: 'npm'
+  #
+  #     - name: Instalar dependencias del backend
+  #       run: npm ci
+  #
+  #     - name: Instalar dependencias del frontend
+  #       run: npm ci
+  #       working-directory: client
+  #
+  #     - name: Instalar browsers de Playwright
+  #       run: npx playwright install --with-deps chromium firefox
+  #
+  #     - name: Sembrar base de datos de test con fixtures
+  #       run: npm run db:seed:test
+  #       env:
+  #         DATABASE_URL: ${{ secrets.DATABASE_URL_TEST }}
+  #         JWT_SECRET: ${{ secrets.JWT_SECRET_TEST }}
+  #         NODE_ENV: test
+  #
+  #     - name: Ejecutar tests E2E de Playwright
+  #       run: npm run test:e2e
+  #       env:
+  #         BASE_URL: http://localhost:5173
+  #         DATABASE_URL: ${{ secrets.DATABASE_URL_TEST }}
+  #         JWT_SECRET: ${{ secrets.JWT_SECRET_TEST }}
+  #         NODE_ENV: test
+  #
+  #     - name: Subir Playwright Report como artefacto
+  #       uses: actions/upload-artifact@v4
+  #       if: always()
+  #       with:
+  #         name: playwright-report
+  #         path: tests/reports/playwright-report/
+  #         retention-days: 7
+  #
+  #     - name: Subir trazas de tests fallidos
+  #       uses: actions/upload-artifact@v4
+  #       if: failure()
+  #       with:
+  #         name: playwright-traces
+  #         path: test-results/
+  #         retention-days: 3
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # JOB 4: Notificación de resultado del pipeline
+  #
+  # Comenta el resultado del pipeline directamente en el PR de GitHub.
+  # needs: [lint, unit-and-api-tests] — e2e-tests excluido hasta activarlo.
+  # ─────────────────────────────────────────────────────────────────────────
+  notify:
+    name: Notificar resultado del pipeline
+    runs-on: ubuntu-latest
+    needs: [lint, unit-and-api-tests]
+    if: always()
+    steps:
+      - name: Comentar resultado en el PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const lintResult = '${{ needs.lint.result }}';
+            const testResult = '${{ needs.unit-and-api-tests.result }}';
+            const overall = (lintResult === 'success' && testResult === 'success') ? 'success' : 'failure';
+            const emoji = overall === 'success' ? '✅' : '❌';
+
+            const body = [
+              `## ${emoji} NovaMarket QA Pipeline — ${overall.toUpperCase()}`,
+              '',
+              '| Job | Estado |',
+              '|-----|--------|',
+              `| Lint & Type Check | ${lintResult} |`,
+              `| Unit & API Tests | ${testResult} |`,
+              `| E2E Tests | ⏸️ deshabilitado (frontend + db:seed:test pendientes) |`,
+              '',
+              '_Los reportes de cobertura están disponibles como artefactos en este workflow run._'
+            ].join('\n');
+
+            if (context.payload.pull_request) {
+              github.rest.issues.createComment({
+                issue_number: context.payload.pull_request.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: body
+              });
+            }

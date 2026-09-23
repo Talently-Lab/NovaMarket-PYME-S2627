@@ -1,0 +1,20 @@
+{
+  "name": "novamarket-pyme-s2627",
+  "version": "1.0.0",
+  "description": "NovaMarket PYME — E-commerce platform",
+  "scripts": {
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "test:e2e": "playwright test --config=tests/playwright.config.ts",
+    "test:e2e:report": "playwright show-report tests/reports/playwright-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@types/jest": "^30.0.0",
+    "@types/supertest": "^7.2.1",
+    "jest": "^30.5.2",
+    "pg-mem": "^3.0.14",
+    "supertest": "^7.3.0",
+    "ts-jest": "^29.4.12"
+  }
+}
