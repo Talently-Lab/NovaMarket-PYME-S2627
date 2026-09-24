@@ -1,7 +1,7 @@
 [build]
   base    = "frontend"
   command = "npm run build"
-  publish = "frontend/dist"
+  publish = "dist"
 
 # Redirige todas las rutas al index.html para que React Router las maneje
 [[redirects]]
