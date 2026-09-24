@@ -21,6 +21,10 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Rutas de autenticación
+const authRoutes = require('./routes/auth.routes');
+app.use('/api/auth', authRoutes);
+
 // Manejador de errores global — evita exponer stack traces al cliente
 app.use((err, req, res, next) => {
   if (process.env.NODE_ENV !== 'test') {
