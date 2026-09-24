@@ -678,6 +678,10 @@ h1, h2, h3, h4, h5, h6 {
   flex-wrap: wrap;
 }
 
+.card__footer .btn {
+  min-width: 110px;
+}
+
 /* ── 13. FORMULARIOS ── */
 .form-group {
   display: flex;
@@ -1302,6 +1306,8 @@ h1, h2, h3, h4, h5, h6 {
 
   .card__footer .btn {
     flex: 0 0 auto;
+    padding: 0.5rem 1.25rem;
+    font-size: var(--text-sm);
   }
 
   .stats-grid {
