@@ -264,6 +264,7 @@ h1, h2, h3, h4, h5, h6 {
   -webkit-backdrop-filter: blur(12px);
   transition: background-color var(--duration-slow) var(--ease),
               border-color var(--duration-slow) var(--ease);
+  overflow: visible;
 }
 
 .header__inner {
@@ -275,6 +276,7 @@ h1, h2, h3, h4, h5, h6 {
   max-width: var(--container-max);
   margin-inline: auto;
   padding-inline: var(--container-pad);
+  overflow: visible;
 }
 
 .header__logo {
@@ -673,6 +675,7 @@ h1, h2, h3, h4, h5, h6 {
   gap: var(--sp-2);
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
 }
 
 /* ── 13. FORMULARIOS ── */
@@ -1222,6 +1225,11 @@ h1, h2, h3, h4, h5, h6 {
   .header__nav { display: none; }
   .header__hamburger { display: flex; }
 
+  /* Ocultar botón Ingresar del header en mobile — está en el menú */
+  .header__actions .btn--primary {
+    display: none;
+  }
+
   .catalog-layout {
     grid-template-columns: 1fr;
   }
@@ -1258,17 +1266,42 @@ h1, h2, h3, h4, h5, h6 {
   .auth-card { padding: var(--sp-6); }
 
   .section__header { flex-direction: column; align-items: flex-start; }
+
+  /* 1 columna en mobile para productos */
+  .products-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Mobile pequeño */
 @media (max-width: 480px) {
   .categories-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: var(--sp-3);
   }
 
+  .category-card {
+    padding: var(--sp-4) var(--sp-3);
+    gap: var(--sp-2);
+  }
+
+  .category-card__icon { font-size: 1.5rem; }
+
+  /* Productos en 1 columna en mobile pequeño */
   .products-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--sp-3);
+    grid-template-columns: 1fr;
+    gap: var(--sp-4);
+  }
+
+  /* Card footer en mobile: stack vertical */
+  .card__footer {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--sp-2);
+  }
+
+  .card__footer .btn {
+    flex: 1;
   }
 
   .stats-grid {
