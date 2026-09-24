@@ -31,10 +31,7 @@ describe('OWASP A01 — Broken Access Control', () => {
       '/admin',
       '/api/admin',
       '/api/users',
-      '/api/products',
-      '/api/orders',
-      '/api/auth/login',
-      '/api/auth/register',
+      '/api/orders',  // pendiente de implementar
       '/.env',
       '/config',
       '/src/index.js',
@@ -67,10 +64,38 @@ describe('OWASP A01 — Broken Access Control', () => {
     });
   });
 
-  // ── Pendientes (comentados hasta que Backend implemente las rutas) ─────────
+  // ── Rutas admin protegidas ────────────────────────────────────────────────
+
+  describe('Rutas admin — acceso sin token devuelve 401', () => {
+    it('GET /api/products/admin/all sin token devuelve 401', async () => {
+      const res = await request(app).get('/api/products/admin/all');
+      expect(res.status).toBe(401);
+    });
+
+    it('POST /api/products/admin sin token devuelve 401', async () => {
+      const res = await request(app).post('/api/products/admin').send({});
+      expect(res.status).toBe(401);
+    });
+
+    it('PUT /api/products/admin/1 sin token devuelve 401', async () => {
+      const res = await request(app).put('/api/products/admin/1').send({});
+      expect(res.status).toBe(401);
+    });
+
+    it('DELETE /api/products/admin/1 sin token devuelve 401', async () => {
+      const res = await request(app).delete('/api/products/admin/1');
+      expect(res.status).toBe(401);
+    });
+
+    it('GET /api/auth/me sin token devuelve 401', async () => {
+      const res = await request(app).get('/api/auth/me');
+      expect(res.status).toBe(401);
+    });
+  });
+
+  // ── Pendientes (requieren DB conectada) ───────────────────────────────────
   //
-  // it('GET /api/admin/products sin token devuelve 401', ...)
-  // it('GET /api/admin/products con token de usuario normal devuelve 403', ...)
-  // it('DELETE /api/products/:id con token de usuario normal devuelve 403', ...)
+  // it('GET /api/products/admin/all con token de usuario normal devuelve 403', ...)
+  // it('DELETE /api/products/admin/:id con token de usuario normal devuelve 403', ...)
   // → Ver PENDIENTES.md sección A01
 });
