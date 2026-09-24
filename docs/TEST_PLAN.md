@@ -5,7 +5,7 @@
 **Rama Base:** `feature/qa-automation`
 **Versión del Documento:** 1.0.0
 **Fecha de Creación:** 16 de septiembre de 2026
-**Estado:** v1.0.7 — Borrador de trabajo | Sujeto a revisión del equipo
+**Estado:** v1.0.8 — Borrador de trabajo | Sujeto a revisión del equipo
 **Autores:** Christian Santibáñez Martínez (QA) · Agustina Fernandez Maidana (QA)
 **Revisión pendiente:** Marcia Torre (PM) · Gisele Lorena Ortiz (PM)
 
@@ -25,6 +25,7 @@
 | 1.0.5 | 21/sep/2026 | Christian S. | Sincronización con estado real del tablero Jira (verificado via MCP Atlassian): 7 estados actualizados en sección 1.2, 2 en criterios-aceptacion-datos-prueba.md, notas de CI/CD en checklist-pr-review.md. |
 | 1.0.6 | 21/sep/2026 | Christian S. | Comparación del User Flow de Figma (MCP Figma) contra los TCs del plan: se agregan 7 nuevos escenarios BDD (TC011, TC012b, TC016b, TC032b, TC032c, TC039, TC040) y sus entradas en la Regression Checklist. |
 | 1.0.7 | 22/sep/2026 | Christian S. | TC011, TC012b y TC016b marcados como excluidos del MVP v1.0 — funcionalidades no confirmadas por el equipo (señalado por Agustina) y no implementadas en proyecto de referencia analizado. Candidatas para Sprint 2. |
+| 1.0.8 | 24/sep/2026 | Christian S. | 68 tests E2E Playwright implementados y pasando contra Netlify (chromium). POMs creados: BasePage, HomePage, AuthPage, CatalogPage. Suites: navigation, header, home, auth/login, auth/register, security/frontend-security. playwright.config.ts actualizado con BASE_URL de Netlify y proyectos mobile (Pixel 5, iPhone 13). 2 hallazgos de seguridad documentados: X-Frame-Options y X-Content-Type-Options no configurados en Netlify — pendiente resolución en Vercel. |
 
 ---
 
