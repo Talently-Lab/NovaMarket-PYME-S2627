@@ -29,6 +29,10 @@ app.use('/api/auth', authRoutes);
 const productRoutes = require('./routes/product.routes');
 app.use('/api/products', productRoutes);
 
+// Rutas de pedidos
+const orderRoutes = require('./routes/order.routes');
+app.use('/api/orders', orderRoutes);
+
 // Manejador de errores global — evita exponer stack traces al cliente
 app.use((err, req, res, next) => {
   if (process.env.NODE_ENV !== 'test') {

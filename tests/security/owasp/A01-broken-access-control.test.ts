@@ -31,7 +31,6 @@ describe('OWASP A01 — Broken Access Control', () => {
       '/admin',
       '/api/admin',
       '/api/users',
-      '/api/orders',  // pendiente de implementar
       '/.env',
       '/config',
       '/src/index.js',
@@ -91,7 +90,21 @@ describe('OWASP A01 — Broken Access Control', () => {
       const res = await request(app).get('/api/auth/me');
       expect(res.status).toBe(401);
     });
-  });
+
+    it('GET /api/orders sin token devuelve 401', async () => {
+      const res = await request(app).get('/api/orders');
+      expect(res.status).toBe(401);
+    });
+
+    it('POST /api/orders sin token devuelve 401', async () => {
+      const res = await request(app).post('/api/orders').send({});
+      expect(res.status).toBe(401);
+    });
+
+    it('GET /api/orders/admin/all sin token devuelve 401', async () => {
+      const res = await request(app).get('/api/orders/admin/all');
+      expect(res.status).toBe(401);
+    });  });
 
   // ── Pendientes (requieren DB conectada) ───────────────────────────────────
   //
