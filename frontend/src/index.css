@@ -1316,14 +1316,25 @@ h1, h2, h3, h4, h5, h6 {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 60vh;
+  min-height: 70vh;
   gap: var(--sp-4);
   text-align: center;
-  padding: var(--sp-8);
+  padding: var(--sp-8) var(--container-pad);
+}
+
+.not-found__icon {
+  font-size: 5rem;
+  line-height: 1;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-12px); }
 }
 
 .not-found__code {
-  font-size: clamp(6rem, 15vw, 10rem);
+  font-size: clamp(5rem, 18vw, 9rem);
   font-weight: var(--weight-black);
   letter-spacing: -0.06em;
   line-height: 1;
@@ -1331,17 +1342,80 @@ h1, h2, h3, h4, h5, h6 {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  margin-bottom: calc(var(--sp-2) * -1);
 }
 
 .not-found__title {
   font-size: var(--text-2xl);
   font-weight: var(--weight-bold);
-  margin-bottom: var(--sp-2);
+  font-family: var(--font-mono);
+  letter-spacing: -0.01em;
+  min-height: 1.4em;
 }
 
 .not-found__desc {
   color: var(--color-text-secondary);
-  max-width: 400px;
+  max-width: 420px;
+  line-height: var(--leading-loose);
+  font-size: var(--text-sm);
+}
+
+/* Terminal fake */
+.not-found__terminal {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-4) var(--sp-6);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  text-align: left;
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  margin-block: var(--sp-2);
+}
+
+.not-found__terminal-line {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.not-found__prompt {
+  color: var(--color-primary);
+  font-weight: var(--weight-semibold);
+}
+
+.not-found__cmd {
+  color: var(--color-text-secondary);
+}
+
+.not-found__terminal-error {
+  color: var(--color-error);
+}
+
+.not-found__cursor {
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+.not-found__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  justify-content: center;
+  margin-top: var(--sp-2);
+}
+
+.not-found__easter {
+  margin-top: var(--sp-4);
 }
 
 /* ── 20. RESPONSIVE ── */
