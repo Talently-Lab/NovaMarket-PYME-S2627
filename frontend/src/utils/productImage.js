@@ -1,51 +1,30 @@
 /**
- * Mapeo de categorías y nombres de productos a URLs de imágenes confiables
- * Usando Unsplash con IDs específicos de fotos verificadas
+ * Imágenes de productos usando picsum.photos
+ * IDs verificados y estables — no requieren API key ni dependen de Unsplash
  */
 const PRODUCT_IMAGES = {
-  // Por nombre exacto (prioridad alta)
-  'Mouse Gamer Logitech G203':        'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=600&q=80',
-  'Teclado Mecánico Redragon K552':   'https://images.unsplash.com/photo-1541140532154-b024d705b90a?w=600&q=80',
-  'Auriculares HyperX Cloud II':      'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&q=80',
-  'Mousepad XL Speed Negra':          'https://images.unsplash.com/photo-1612487439139-c2f7232ee2de?w=600&q=80',
-  'Webcam Logitech C920 HD Pro':      'https://images.unsplash.com/photo-1622396481328-9b1b78cdd9fd?w=600&q=80',
-  'Hub USB-C 7 en 1':                 'https://images.unsplash.com/photo-1619953942547-233ac450897e?w=600&q=80',
-  'Monitor Gaming 24" 144Hz':         'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=600&q=80',
-  'Silla Gamer Pro RGB':              'https://images.unsplash.com/photo-1598550476439-6847785fcea6?w=600&q=80',
-  'Headset Gamer Logitech G435':      'https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=600&q=80',
-  'Mouse Pad RGB XL Redragon':        'https://images.unsplash.com/photo-1612487439139-c2f7232ee2de?w=600&q=80',
-  'Teclado Inalámbrico Logitech MX Keys': 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=600&q=80',
-  'Soporte para Monitor Doble':       'https://images.unsplash.com/photo-1547082299-de196ea013d6?w=600&q=80',
-  'Micrófono USB Blue Yeti':          'https://images.unsplash.com/photo-1589903308904-1010c2294adc?w=600&q=80',
-  'Luz LED de Escritorio RGB':        'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=600&q=80',
-  'Control Gamepad Xbox Series':      'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=600&q=80',
-  'Tira LED RGB 5 metros':            'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80',
-  'SSD Externo Samsung T7 1TB':       'https://images.unsplash.com/photo-1597852074816-d933c7d2b988?w=600&q=80',
-  'Soporte para Auriculares RGB':     'https://images.unsplash.com/photo-1558756520-22cfe5d382ca?w=600&q=80',
-  'Cámara Web 4K Logitech Brio':      'https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=600&q=80',
-  'Switch KVM HDMI 4K 2 Puertos':     'https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&q=80',
+  'Mouse Gamer Logitech G203':            'https://picsum.photos/seed/mouse-gamer/600/400',
+  'Teclado Mecánico Redragon K552':       'https://picsum.photos/seed/teclado-mec/600/400',
+  'Auriculares HyperX Cloud II':          'https://picsum.photos/seed/auriculares/600/400',
+  'Mousepad XL Speed Negra':              'https://picsum.photos/seed/mousepad-xl/600/400',
+  'Webcam Logitech C920 HD Pro':          'https://picsum.photos/seed/webcam-c920/600/400',
+  'Hub USB-C 7 en 1':                     'https://picsum.photos/seed/hub-usbc/600/400',
+  'Monitor Gaming 24" 144Hz':             'https://picsum.photos/seed/monitor-24/600/400',
+  'Silla Gamer Pro RGB':                  'https://picsum.photos/seed/silla-gamer/600/400',
+  'Headset Gamer Logitech G435':          'https://picsum.photos/seed/headset-g435/600/400',
+  'Mouse Pad RGB XL Redragon':            'https://picsum.photos/seed/mousepad-rgb/600/400',
+  'Teclado Inalámbrico Logitech MX Keys': 'https://picsum.photos/seed/teclado-mx/600/400',
+  'Soporte para Monitor Doble':           'https://picsum.photos/seed/soporte-monitor/600/400',
+  'Micrófono USB Blue Yeti':              'https://picsum.photos/seed/microfono-yeti/600/400',
+  'Luz LED de Escritorio RGB':            'https://picsum.photos/seed/luz-led/600/400',
+  'Control Gamepad Xbox Series':          'https://picsum.photos/seed/gamepad-xbox/600/400',
+  'Tira LED RGB 5 metros':                'https://picsum.photos/seed/tira-led/600/400',
+  'SSD Externo Samsung T7 1TB':           'https://picsum.photos/seed/ssd-samsung/600/400',
+  'Soporte para Auriculares RGB':         'https://picsum.photos/seed/soporte-auricular/600/400',
+  'Cámara Web 4K Logitech Brio':          'https://picsum.photos/seed/camara-brio/600/400',
+  'Switch KVM HDMI 4K 2 Puertos':         'https://picsum.photos/seed/switch-kvm/600/400',
 };
 
-// Fallback por categoría
-const CATEGORY_IMAGES = {
-  'Periféricos':  'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=600&q=80',
-  'Teclados':     'https://images.unsplash.com/photo-1541140532154-b024d705b90a?w=600&q=80',
-  'Audio':        'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&q=80',
-  'Accesorios':   'https://images.unsplash.com/photo-1625895197185-efcec01cffe0?w=600&q=80',
-  'Gadgets':      'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=600&q=80',
-  'Monitores':    'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=600&q=80',
-  'Gaming':       'https://images.unsplash.com/photo-1598550476439-6847785fcea6?w=600&q=80',
-  'Iluminación':  'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=600&q=80',
-};
-
-/**
- * Devuelve la imagen correcta para un producto
- * Prioridad: nombre exacto → image_url de DB → categoría → genérico
- */
 export function getProductImage(product) {
-  return (
-    PRODUCT_IMAGES[product.name] ||
-    CATEGORY_IMAGES[product.category] ||
-    'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=600&q=80'
-  );
+  return PRODUCT_IMAGES[product.name] || 'https://picsum.photos/seed/tech-product/600/400';
 }
