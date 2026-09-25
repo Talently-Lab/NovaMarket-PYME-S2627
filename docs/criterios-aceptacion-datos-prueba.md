@@ -4,7 +4,7 @@
 **Ticket:** SCRUM-14 — En revisión
 **Sprint:** SCRUM Sprint 0 → Sprint 1
 **Basado en:** TEST_PLAN.md v1.0.9 + estado real del repo y backlog Jira al 25/sep/2026
-**Última actualización:** 25/sep/2026
+**Última actualización:** 25/sep/2026 (sesión 7 — sincronizado con Jira via MCP)
 
 ---
 
@@ -72,20 +72,20 @@ Formalizar los criterios de aceptación técnicos de cada tarea del Sprint 0 (SC
 3. ✅ Si el Backend está caído (Render spin-up), el frontend muestra mensaje de error amigable, no stack trace.
 
 ### SCRUM-8 — Sistema de diseño en Figma
-*Estado en Jira: Por hacer*
+*Estado en Jira: En revisión 🟡 (verificado via MCP el 25/sep/2026)*
 
 1. Los Design Tokens (colores, tipografía, botones) están definidos en Figma y el equipo completo tiene acceso al archivo.
 2. Existen wireframes de baja fidelidad para Home, Catálogo, Detalle de Producto, Carrito y Login.
 
 ### SCRUM-9 — Mapa mental de pruebas (QA)
-*Estado en Jira: En revisión*
+*Estado en Jira: Finalizado ✅ (verificado via MCP el 25/sep/2026)*
 
 1. El mapa mental tiene un nodo central "NovaMarket MVP" con exactamente 5 ramas: AUTH, CATÁLOGO, CARRITO, CHECKOUT, ADMIN CRUD.
 2. Existen al menos 15 edge cases documentados, cada uno con su pregunta preventiva "¿Qué pasa si...?".
 3. El link público a XMind/Miro, la captura PNG y el archivo `.xmind` están adjuntos al ticket, y Gisele/Marcia Torre validaron la versión final.
 
 ### SCRUM-10 — Prototipo navegable
-*Estado en Jira: Por hacer*
+*Estado en Jira: En revisión 🟡 (verificado via MCP el 25/sep/2026 — asignado a Laura Cuenca, posible error)*
 
 1. El prototipo cubre el flujo completo: Home → Catálogo → Detalle → Carrito → Checkout → Confirmación.
 2. Existen frames específicos para los estados de error: carrito vacío, producto no encontrado (404) y login con credenciales incorrectas.
@@ -97,13 +97,13 @@ Formalizar los criterios de aceptación técnicos de cada tarea del Sprint 0 (SC
 2. El tono de comunicación de NovaMarket queda definido explícitamente (ej. juvenil/tech/gamer/profesional) y documentado.
 
 ### SCRUM-12 — Buyer Persona y propuesta de valor
-*Estado en Jira: Por hacer*
+*Estado en Jira: Finalizado ✅ (verificado via MCP el 25/sep/2026)*
 
 1. Existe un buyer persona documentado que responde "¿a quién le vendemos accesorios/periféricos/gadgets?".
 2. La propuesta de valor de NovaMarket está redactada en una frase clara, entregada al equipo de diseño (Ismael Jensen / Nicolás Toloza) para los textos del Figma.
 
 ### SCRUM-13 — Contenido base para el catálogo
-*Estado en Jira: Por hacer*
+*Estado en Jira: Finalizado ✅ (verificado via MCP el 25/sep/2026)*
 
 1. El Excel/Sheet entregado tiene exactamente 10 productos con los campos Nombre, Categoría, Precio, Descripción e Imagen (link), distribuidos entre las 3 categorías del brief (accesorios, periféricos, gadgets).
 2. Ningún campo obligatorio está vacío o es `null`, y los 10 productos se cargan correctamente en la base de datos vía script de seed.
@@ -165,7 +165,35 @@ Para tests automatizados usar IDs del 1 al 20. Para stock insuficiente usar Moni
 - [x] ~~Frontend conectado a API real~~ ✅
 - [x] ~~Deploy en producción~~ → Render + Netlify ✅
 - [ ] Definir estrategia de aislamiento de tests con Laura (pg-mem vs schema separado Supabase)
-- [ ] Completar descripción de SCRUM-3, SCRUM-4 y SCRUM-7 en Jira
+- [ ] Completar descripción de SCRUM-3 y SCRUM-4 en Jira (o cerrarlos como duplicados vacíos)
 - [ ] Revisión de Agustina antes de cerrar SCRUM-14
 - [ ] Implementar tests de integración reales (Auth con DB, Productos, Pedidos)
 - [ ] Subir imágenes propias a Supabase Storage para los 20 productos
+
+---
+
+## 6. Contexto del Sprint 2 — Impacto en este documento
+
+> Verificado via MCP Jira el 25/sep/2026. El Sprint 2 activa tickets nuevos que tienen implicancias para QA.
+
+### SCRUM-30 — Casos de Prueba Iniciales (Agustina) ⚠️ Solapamiento potencial
+
+**Estado:** En curso · **Asignado:** Agustina Fernandez Maidana
+
+Agustina está construyendo una planilla de Test Cases (ID, Módulo, Caso, Precondiciones, Pasos, Resultado Esperado, Prioridad) para los módulos Auth, Productos y Carrito/Checkout.
+
+**Riesgo de solapamiento:** Las suites Playwright existentes (`login.spec`, `register.spec`, `home.spec`, `header.spec`, `navigation.spec`, `frontend-security.spec`) ya cubren estructuralmente los mismos módulos con 68 tests automatizados pasando en Netlify.
+
+**Acción necesaria:** Coordinar con Agustina para que SCRUM-30 complemente en lugar de duplicar:
+- Agustina puede documentar los casos en formato planilla (manual + edge cases no cubiertos aún)
+- Este documento (SCRUM-14) sirve como referencia de criterios de aceptación y fixtures
+- Los casos nuevos de Agustina pueden traducirse a specs Playwright en sprints futuros
+
+### Tickets de Sprint 2 asignados a Christian que impactan QA
+
+| Ticket | Resumen | Estado | Relevancia para QA |
+|--------|---------|--------|--------------------|
+| SCRUM-20 | Análisis de Requerimientos Backend | 🟡 En revisión | Documentación de endpoints — base para nuevos TCs de API |
+| SCRUM-24 | Modelo de Datos | 🔵 Por hacer* | Ya implementado en Supabase — cerrar en Jira y documentar aquí |
+
+> *SCRUM-24: tablas `users`, `products`, `orders`, `order_items` + 20 productos seed ejecutados. Migraciones en `docs/sql/001-007`.

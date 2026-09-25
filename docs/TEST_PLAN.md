@@ -5,7 +5,7 @@
 **Rama Base:** `main` (mergeada desde `feature/qa-automation` el 23/sep/2026)
 **Versión del Documento:** 1.0.0
 **Fecha de Creación:** 16 de septiembre de 2026
-**Estado:** v1.0.9 — Activo | Sujeto a revisión del equipo
+**Estado:** v1.1.0 — Activo | Sujeto a revisión del equipo
 **Autores:** Christian Santibáñez Martínez (QA) · Agustina Fernandez Maidana (QA)
 **Revisión pendiente:** Marcia Torre (PM) · Gisele Lorena Ortiz (PM)
 
@@ -27,6 +27,7 @@
 | 1.0.7 | 22/sep/2026 | Christian S. | TC011, TC012b y TC016b marcados como excluidos del MVP v1.0 — funcionalidades no confirmadas por el equipo (señalado por Agustina) y no implementadas en proyecto de referencia analizado. Candidatas para Sprint 2. |
 | 1.0.8 | 24/sep/2026 | Christian S. | 68 tests E2E Playwright implementados y pasando contra Netlify (chromium). POMs creados: BasePage, HomePage, AuthPage, CatalogPage. Suites: navigation, header, home, auth/login, auth/register, security/frontend-security. playwright.config.ts actualizado con BASE_URL de Netlify y proyectos mobile (Pixel 5, iPhone 13). 2 hallazgos de seguridad documentados: X-Frame-Options y X-Content-Type-Options no configurados en Netlify — pendiente resolución en Vercel. |
 | 1.0.9 | 25/sep/2026 | Christian S. | MVP completo implementado y desplegado. Backend: Auth JWT, Productos CRUD, Pedidos con transacción atómica — 72 tests Jest pasando. Supabase: 3 tablas creadas (users, products, order_items), 20 productos seed. Deploy: Render (`https://novamarket-api-ikcm.onrender.com`) + Netlify (`https://novamarket-pyme-s2627.netlify.app`). Frontend conectado end-to-end: login/registro reales, catálogo con filtros, carrito persistente, checkout funcional con OrderConfirmedPage. Paleta Vice City (GTA 6) integrada. Flujo completo probado en producción. Pendiente: imágenes propias en Supabase Storage, panel admin, PR a main. |
+| 1.1.0 | 25/sep/2026 | Christian S. | Sincronización con estado real del tablero Jira (verificado via MCP Jira): backlog ampliado a SCRUM-31 (Sprint 2 activo). Nuevo integrante: Gastón Paniagua (Frontend — SCRUM-22, 26, 28, 29). Florencia Sombra confirmada fuera del proyecto desde 22/sep/2026. Estados corregidos: SCRUM-9 → Finalizado ✅, SCRUM-11/12/13 → Finalizado ✅. SCRUM-30 (Test Cases de Agustina) identificado como potencial solapamiento con suites Playwright existentes — pendiente coordinación. Contactos de Florencia en sección 5.5 actualizados para reflejar su salida. |
 
 ---
 
@@ -456,7 +457,7 @@ Feature: Consistencia del sistema de diseño con la implementación
 |-------|---------|
 | **Clave** | SCRUM-9 |
 | **Tipo** | Tarea |
-| **Estado** | En Revisión |
+| **Estado** | Finalizado ✅ |
 | **Prioridad** | Highest |
 | **Asignado** | Agustina Fernandez Maidana (QA Tester) · Christian Rodrigo Santibáñez Martínez (QA Tester) |
 | **Sprint** | SCRUM Sprint 0 |
@@ -595,7 +596,7 @@ Feature: Consistencia de identidad de marca en la plataforma
 |-------|---------|
 | **Clave** | SCRUM-12 |
 | **Tipo** | Tarea |
-| **Estado** | Por Hacer |
+| **Estado** | Finalizado ✅ |
 | **Prioridad** | Medium |
 | **Asignado** | Lucía Chiarandini (Marketing) |
 | **Sprint** | SCRUM Sprint 0 |
@@ -631,7 +632,7 @@ Feature: La UX refleja las necesidades del Buyer Persona definido
 |-------|---------|
 | **Clave** | SCRUM-13 |
 | **Tipo** | Tarea |
-| **Estado** | Por Hacer |
+| **Estado** | Finalizado ✅ |
 | **Prioridad** | Medium |
 | **Asignado** | Lucía Chiarandini (Marketing) |
 | **Sprint** | SCRUM Sprint 0 |
@@ -874,8 +875,9 @@ Feature: Registro de nuevo usuario cliente
 | **Marcia Torre** | marciatorre.pacc@gmail.com | Project Manager | Coordinación general del proyecto, validación de entregables, aprobación de go/no-go |
 | **Gisele Lorena Ortiz** | giseleortizuriel@gmail.com | Project Manager | Gestión del backlog en Jira, coordinación de dailys, feedback y validación de entregables QA |
 | **Laura Cuenca** | laura.cuenca1@gmail.com | Backend Developer (Node.js) | Setup del servidor, arquitectura, conexión DB, endpoints REST |
-| **Florencia Alicia Sombra** | sombraflorencia097@gmail.com | Backend Developer (Node.js) | Desarrollo backend, autenticación, CRUD de productos |
-| **María Emilia Orioni** | emyorioni@gmail.com | Frontend Developer (React) | Implementación SPA, consumo de API, componentes |
+| **Florencia Alicia Sombra** | sombraflorencia097@gmail.com | Backend Developer (Node.js) | ⚠️ Salió del proyecto el 22/sep/2026. Sus responsabilidades fueron absorbidas por Christian. |
+| **María Emilia Orioni** | emyorioni@gmail.com | Frontend Developer (React) | Sin actividad confirmada desde el 23/sep/2026. Christian tomó el desarrollo frontend. |
+| **Gastón Paniagua** | — | Frontend Developer (React) | Incorporado en Sprint 2. Asignado a SCRUM-22, 26, 28, 29. |
 | **Ismael Jensen** | ismaeljensen08@gmail.com | Diseñador UX/UI | Sistema de diseño, wireframes, prototipo navegable |
 | **Nicolás Toloza** | nicolastoloza1989@gmail.com | Diseñador UX/UI | Sistema de diseño, wireframes, prototipo navegable |
 | **Lucía Chiarandini** | luciaavrchiarandini@gmail.com | Especialista de Marketing | Identidad de marca, buyer persona, contenido del catálogo |
@@ -2467,8 +2469,9 @@ Una historia de usuario o tarea se considera **Done** desde la perspectiva de QA
 | **PM** | Marcia Torre | Aprobación de go/no-go, priorización de bugs con el equipo de desarrollo |
 | **PM** | Gisele Lorena Ortiz | Gestión del backlog en Jira, coordinación de handoffs entre roles |
 | **Backend** | Laura Cuenca | Resolución de bugs de API y backend, revisión de tests de Supertest |
-| **Backend** | Florencia Alicia Sombra | Resolución de bugs de backend, soporte en autenticación y CRUD |
-| **Frontend** | María Emilia Orioni | Resolución de bugs de UI, implementación de `data-testid` en componentes |
+| **Backend** | ~~Florencia Alicia Sombra~~ | ⚠️ Salió del proyecto el 22/sep/2026. Escalamiento backend ahora va a Laura Cuenca y Christian. |
+| **Frontend** | Christian Santibáñez | Desarrollo y bugs de UI desde el 23/sep/2026 (tomó el rol de Emilia Orioni). |
+| **Frontend** | Gastón Paniagua | Frontend Sprint 2 — SCRUM-22, 26, 28, 29. |
 
 **Cómo escalar un bug según su severidad:**
 
@@ -2478,4 +2481,4 @@ Una historia de usuario o tarea se considera **Done** desde la perspectiva de QA
 
 ---
 
-*TEST_PLAN.md v1.0.7 — NovaMarket PYME · Sprint 0 · Septiembre 2026*
+*TEST_PLAN.md v1.1.0 — NovaMarket PYME · Sprint 0 + Sprint 2 · Septiembre 2026*
