@@ -10,6 +10,7 @@ export default function CheckoutPage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [confirmed, setConfirmed] = useState(false); // evita redirección prematura
   const [shipping, setShipping] = useState({
     name: user?.name || '',
     address: '',
@@ -43,6 +44,7 @@ export default function CheckoutPage() {
         shipping,
       });
 
+      setConfirmed(true); // bloquea la redirección a /carrito
       clearCart();
       navigate('/pedido-confirmado', { state: { order: data.order } });
     } catch (err) {
@@ -52,7 +54,7 @@ export default function CheckoutPage() {
     }
   };
 
-  if (items.length === 0) {
+  if (!confirmed && items.length === 0) {
     navigate('/carrito');
     return null;
   }
