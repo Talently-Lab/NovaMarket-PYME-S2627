@@ -9,7 +9,14 @@ const PORT = process.env.PORT || 3000;
 // Seguridad: no exponer la versión de Express en los headers
 app.disable('x-powered-by');
 
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'http://localhost:4173',
+    'https://novamarket-pyme-s2627.netlify.app',
+  ],
+  credentials: true,
+}));
 app.use(express.json());
 
 // Health check — QA smoke test
