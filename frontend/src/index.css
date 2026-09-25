@@ -1,6 +1,6 @@
 /* ============================================================
    NOVAMARKET — DESIGN SYSTEM
-   Paleta: tech moderna, juvenil, cercana
+   Paleta: tech moderna + acento Vice City (GTA 6 inspired)
    Modos: dark (default) / light via [data-theme="light"]
    ============================================================ */
 
@@ -19,17 +19,24 @@
   --brand-800: #2e0e7a;
   --brand-900: #1a0550;
 
-  /* Acento */
-  --accent-400: #38d9f5;
-  --accent-500: #00c8f0;
-  --accent-600: #009fc0;
+  /* Acento — Vice City turquesa (GTA 6) */
+  --accent-300: #5ffff0;
+  --accent-400: #00f5d4;   /* turquesa Vice City */
+  --accent-500: #00c8aa;
+  --accent-600: #009980;
+
+  /* Vice City fucsia (GTA 6) */
+  --vice-400: #ff4d9e;
+  --vice-500: #ff2d78;
+  --vice-600: #d91f5e;
 
   /* Semánticos oscuro */
   --color-primary:        var(--brand-500);
   --color-primary-hover:  var(--brand-600);
   --color-primary-subtle: rgba(108, 43, 217, 0.15);
-  --color-accent:         var(--accent-500);
-  --color-accent-hover:   var(--accent-600);
+  --color-accent:         var(--accent-400);
+  --color-accent-hover:   var(--accent-500);
+  --color-vice:           var(--vice-500);
 
   --color-bg:             #0c0c16;
   --color-bg-elevated:    #13131f;
@@ -47,16 +54,19 @@
   --color-success:        #22c55e;
   --color-warning:        #f59e0b;
   --color-error:          #ef4444;
-  --color-info:           var(--accent-500);
+  --color-info:           var(--accent-400);
 
   /* Sombras */
-  --shadow-sm:  0 1px 3px rgba(0,0,0,0.4);
-  --shadow-md:  0 4px 16px rgba(0,0,0,0.5);
-  --shadow-lg:  0 8px 40px rgba(0,0,0,0.6);
+  --shadow-sm:   0 1px 3px rgba(0,0,0,0.4);
+  --shadow-md:   0 4px 16px rgba(0,0,0,0.5);
+  --shadow-lg:   0 8px 40px rgba(0,0,0,0.6);
   --shadow-glow: 0 0 24px rgba(108,43,217,0.35);
+  --shadow-vice: 0 0 24px rgba(255,45,120,0.3);
+  --shadow-cyan: 0 0 24px rgba(0,245,212,0.3);
 
-  /* Gradientes */
-  --gradient-brand:   linear-gradient(135deg, var(--brand-500) 0%, var(--accent-500) 100%);
+  /* Gradientes — incluye Vice City */
+  --gradient-brand:   linear-gradient(135deg, var(--brand-500) 0%, var(--accent-400) 100%);
+  --gradient-vice:    linear-gradient(135deg, var(--vice-500) 0%, var(--brand-500) 50%, var(--accent-400) 100%);
   --gradient-surface: linear-gradient(180deg, var(--color-surface) 0%, var(--color-bg-elevated) 100%);
 
   /* Meta theme-color para browser */
@@ -68,8 +78,9 @@
   --color-primary:        var(--brand-500);
   --color-primary-hover:  var(--brand-600);
   --color-primary-subtle: rgba(108, 43, 217, 0.08);
-  --color-accent:         var(--accent-600);
-  --color-accent-hover:   #007a9a;
+  --color-accent:         var(--accent-500);
+  --color-accent-hover:   var(--accent-600);
+  --color-vice:           var(--vice-600);
 
   --color-bg:             #f6f6fb;
   --color-bg-elevated:    #ffffff;
@@ -669,12 +680,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn--gradient {
-  background: var(--gradient-brand);
+  background: var(--gradient-vice);
   color: #fff;
   border-color: transparent;
 }
 .btn--gradient:hover {
-  box-shadow: var(--shadow-glow);
+  box-shadow: var(--shadow-vice);
   filter: brightness(1.08);
 }
 
@@ -955,7 +966,8 @@ h1, h2, h3, h4, h5, h6 {
   inset: 0;
   background:
     radial-gradient(ellipse 80% 60% at 50% -10%, rgba(108,43,217,0.25) 0%, transparent 70%),
-    radial-gradient(ellipse 50% 40% at 80% 60%, rgba(0,200,240,0.12) 0%, transparent 60%);
+    radial-gradient(ellipse 50% 40% at 80% 60%, rgba(0,245,212,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 30% at 10% 80%, rgba(255,45,120,0.08) 0%, transparent 60%);
   pointer-events: none;
 }
 
