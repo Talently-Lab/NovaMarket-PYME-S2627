@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { productsAPI } from '../../services/api';
 import { useCart } from '../../context/CartContext';
+import { getProductImage } from '../../utils/productImage';
 
 const CATEGORIES = ['Todos', 'Periféricos', 'Teclados', 'Audio', 'Accesorios', 'Gadgets', 'Monitores', 'Gaming'];
 const ORDER_OPTIONS = [
@@ -122,19 +123,12 @@ export default function CatalogPage() {
               {products.map((product) => (
                 <div className="card" key={product.id}>
                   <div className="card__image">
-                    {product.image_url ? (
-                      <img src={product.image_url} alt={product.name} loading="lazy" />
-                    ) : (
-                      <div style={{
-                        width: '100%', height: '100%', minHeight: 200,
-                        background: 'var(--color-surface-2)',
-                        display: 'grid', placeItems: 'center',
-                        color: 'var(--color-text-disabled)',
-                        fontSize: 'var(--text-sm)',
-                      }}>
-                        Sin imagen
-                      </div>
-                    )}
+                    <img
+                      src={getProductImage(product)}
+                      alt={product.name}
+                      loading="lazy"
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
                   </div>
                   <div className="card__body">
                     <p className="card__title">{product.name}</p>
