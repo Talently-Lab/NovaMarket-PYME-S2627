@@ -2,10 +2,10 @@
 
 **Proyecto:** NovaMarket-PYME
 **Repositorio:** github.com/Talently-Lab/NovaMarket-PYME-S2627
-**Rama Base:** `feature/qa-automation`
+**Rama Base:** `main` (mergeada desde `feature/qa-automation` el 23/sep/2026)
 **Versión del Documento:** 1.0.0
 **Fecha de Creación:** 16 de septiembre de 2026
-**Estado:** v1.0.8 — Borrador de trabajo | Sujeto a revisión del equipo
+**Estado:** v1.0.9 — Activo | Sujeto a revisión del equipo
 **Autores:** Christian Santibáñez Martínez (QA) · Agustina Fernandez Maidana (QA)
 **Revisión pendiente:** Marcia Torre (PM) · Gisele Lorena Ortiz (PM)
 
@@ -26,6 +26,7 @@
 | 1.0.6 | 21/sep/2026 | Christian S. | Comparación del User Flow de Figma (MCP Figma) contra los TCs del plan: se agregan 7 nuevos escenarios BDD (TC011, TC012b, TC016b, TC032b, TC032c, TC039, TC040) y sus entradas en la Regression Checklist. |
 | 1.0.7 | 22/sep/2026 | Christian S. | TC011, TC012b y TC016b marcados como excluidos del MVP v1.0 — funcionalidades no confirmadas por el equipo (señalado por Agustina) y no implementadas en proyecto de referencia analizado. Candidatas para Sprint 2. |
 | 1.0.8 | 24/sep/2026 | Christian S. | 68 tests E2E Playwright implementados y pasando contra Netlify (chromium). POMs creados: BasePage, HomePage, AuthPage, CatalogPage. Suites: navigation, header, home, auth/login, auth/register, security/frontend-security. playwright.config.ts actualizado con BASE_URL de Netlify y proyectos mobile (Pixel 5, iPhone 13). 2 hallazgos de seguridad documentados: X-Frame-Options y X-Content-Type-Options no configurados en Netlify — pendiente resolución en Vercel. |
+| 1.0.9 | 25/sep/2026 | Christian S. | MVP completo implementado y desplegado. Backend: Auth JWT, Productos CRUD, Pedidos con transacción atómica — 72 tests Jest pasando. Supabase: 3 tablas creadas (users, products, order_items), 20 productos seed. Deploy: Render (`https://novamarket-api-ikcm.onrender.com`) + Netlify (`https://novamarket-pyme-s2627.netlify.app`). Frontend conectado end-to-end: login/registro reales, catálogo con filtros, carrito persistente, checkout funcional con OrderConfirmedPage. Paleta Vice City (GTA 6) integrada. Flujo completo probado en producción. Pendiente: imágenes propias en Supabase Storage, panel admin, PR a main. |
 
 ---
 

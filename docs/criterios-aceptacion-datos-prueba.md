@@ -1,9 +1,10 @@
 # Criterios de Aceptación y Datos de Prueba — NovaMarket-PYME (SCRUM-14)
 
-**Autor:** Christian Rodrigo Santibáñez Martínez (QA)
+**Autor:** Christian Rodrigo Santibáñez Martínez (QA / Frontend / Backend)
 **Ticket:** SCRUM-14 — En revisión
-**Sprint:** SCRUM Sprint 0
-**Basado en:** TEST_PLAN.md v1.0.4 (secciones 1.2, 1.4, 3.2.4) + estado real del backlog en Jira
+**Sprint:** SCRUM Sprint 0 → Sprint 1
+**Basado en:** TEST_PLAN.md v1.0.9 + estado real del repo y backlog Jira al 25/sep/2026
+**Última actualización:** 25/sep/2026
 
 ---
 
@@ -16,53 +17,59 @@ Formalizar los criterios de aceptación técnicos de cada tarea del Sprint 0 (SC
 ## 2. Criterios de Aceptación por Ticket
 
 ### SCRUM-1 — Inicializar proyecto Node.js + Express (Backend)
-*Estado en Jira: Finalizado*
+*Estado en Jira: Finalizado ✅*
 
-1. ✅ El servidor levanta sin errores al ejecutar `node src/index.js`, y `GET /api/health` responde HTTP 200 con body `{"status": "OK", "timestamp": "..."}` — verificado con test smoke (`tests/api/health.api.test.ts` pasa en verde).
-2. Existen los directorios `/src/routes`, `/src/controllers`, `/src/models`, `/src/middlewares`, `/src/config`, y el repositorio está subido a GitHub sin el archivo `.env` commiteado.
+1. ✅ El servidor levanta sin errores al ejecutar `node src/index.js`, y `GET /api/health` responde HTTP 200 con body `{"status": "ok", "message": "...", "timestamp": "..."}` — verificado con test smoke (`tests/api/health.api.test.ts` pasa en verde).
+2. ✅ Existen los directorios `/src/routes`, `/src/controllers`, `/src/models`, `/src/middlewares`, `/src/config` — implementados el 25/sep/2026 con Auth, Productos y Pedidos completos.
+3. ✅ El repositorio está subido a GitHub sin el archivo `.env` commiteado (cubierto por `.gitignore`).
 
 ### SCRUM-2 — Agregar equipo al repo + organizar Git
-*Estado en Jira: Finalizado*
+*Estado en Jira: Finalizado ✅*
 
-1. Florencia Sombra, María Emilia Orioni y Gisele Ortiz tienen acceso de colaborador efectivo al repositorio (pueden clonar y hacer push a una rama `feature/*`).
-2. Las ramas `main` y `develop` existen; un push directo a `main` es rechazado por la protección de rama y requiere Pull Request aprobado.
-3. El `README.md` contiene las secciones "Instalación", "Variables de Entorno" y "Cómo ejecutar las pruebas".
+1. ✅ El equipo tiene acceso al repositorio `Talently-Lab/NovaMarket-PYME-S2627`.
+2. ✅ Ramas activas: `main`, `feature/qa-automation` (mergeada), `feature/frontend-development` (en desarrollo). Push directo a `main` requiere PR.
+3. ✅ `README.md` contiene secciones de instalación, variables de entorno y cómo ejecutar pruebas.
+
+> **Nota:** Florencia Sombra salió del proyecto el 22/sep/2026. Christian asumió Backend y Frontend.
 
 ### SCRUM-3 — Configuración de entorno compartido
-*Estado en Jira: En curso · Sin descripción cargada*
+*Estado en Jira: En curso*
 
-1. Cualquier integrante del equipo puede clonar el repo, ejecutar `npm install` sin errores (exit code 0) y sin vulnerabilidades high/critical reportadas.
-2. El proyecto arranca en modo desarrollo (`npm run dev` o `node src/index.js`) y `GET /api/health` responde 200.
+1. ✅ Cualquier integrante puede clonar el repo, ejecutar `npm install` sin errores y levantar el servidor.
+2. ✅ El proyecto arranca con `node src/index.js` y `GET /api/health` responde 200 con conexión a Supabase confirmada.
+3. ✅ `backend/.env.example` actualizado con formato correcto del Session Pooler de Supabase y JWT_SECRET.
 
-> ⚠️ Pendiente: pedir a Florencia que complete la descripción de este ticket en Jira para confirmar el alcance exacto.
+> **Nota:** Florencia Sombra ya no está. Laura Cuenca es la responsable de completar este ticket.
 
 ### SCRUM-4 — Colaboradores GitHub (Subtask de SCRUM-2)
-*Estado en Jira: Por hacer · Sin descripción cargada*
+*Estado en Jira: Por hacer*
 
-1. Cada colaborador invitado puede hacer `git clone` sin errores de autenticación y ver el historial con `git log`.
-2. Un push directo a `main` es rechazado por la protección de rama configurada en SCRUM-2.
+1. Cada colaborador invitado puede hacer `git clone` sin errores de autenticación.
+2. Push directo a `main` requiere PR aprobado.
 
 ### SCRUM-5 — Arquitectura + conexión DB
-*Estado en Jira: Finalizado*
-*Confirmado: PostgreSQL vía Supabase (`pg` + connection pooling), no MongoDB Atlas.*
+*Estado en Jira: Finalizado ✅*
+*Confirmado: PostgreSQL vía Supabase Session Pooler (`pg`), no MongoDB Atlas.*
 
-1. Al inicializar el servidor, `connectDB()` establece la conexión al pool de Supabase sin errores; una consulta de prueba (`SELECT NOW()`) devuelve resultado sin lanzar excepción.
-2. ✅ Existe un endpoint `GET /api/health` que responde HTTP 200 con `Content-Type: application/json` y body con `status` y `timestamp` — implementado en `src/index.js` y verificado por test smoke.
-3. ✅ Ninguna cadena de conexión ni credencial aparece hardcodeada en el código fuente; `DATABASE_URL` se lee desde `.env`, que está listado en `.gitignore`.
+1. ✅ `connectDB()` establece conexión al pool de Supabase usando `aws-0-us-east-1.pooler.supabase.com` (IPv4 compatible). `SELECT NOW()` devuelve resultado sin lanzar excepción.
+2. ✅ `GET /api/health` responde HTTP 200 con `Content-Type: application/json`.
+3. ✅ `DATABASE_URL` se lee desde `.env` (en `.gitignore`). Connection string usa Session Pooler — el host directo `db.lrlncesqddzmhfsinkvl.supabase.co` es solo IPv6.
+4. ✅ Tablas creadas en Supabase: `users`, `products`, `orders`, `order_items` — migraciones en `docs/sql/001-003`.
 
 ### SCRUM-6 — Inicializar Frontend (React + Vite)
-*Estado en Jira: Finalizado*
+*Estado en Jira: Finalizado ✅*
 
-1. `npm run build` dentro de `/client` completa con exit code 0 y genera `/client/dist`.
-2. El servidor de desarrollo de Vite levanta (`npm run dev`) y la página de inicio renderiza sin errores en consola.
-3. React Router está configurado: la ruta raíz `/` renderiza el componente Home, y una ruta inexistente muestra un 404 o redirige al home.
+1. ✅ `npm run build` en `/frontend` completa con exit code 0 y genera `/frontend/dist`.
+2. ✅ Vite dev server levanta y la página renderiza sin errores en consola.
+3. ✅ React Router 7 configurado: rutas públicas, protegidas (JWT) y admin (JWT + rol admin).
+4. ✅ Desplegado en Netlify: `https://novamarket-pyme-s2627.netlify.app`.
 
 ### SCRUM-7 — Estructura base + consumo de API (Frontend)
-*Estado en Jira: En curso · Sin descripción cargada*
+*Estado en Jira: En curso*
 
-1. El cliente HTTP consume `GET /api/products` sin errores de CORS, y los productos se renderizan en pantalla.
-2. Las rutas privadas (`/admin`, `/checkout`) redirigen a `/login` cuando no existe un JWT válido en `localStorage`.
-3. Si el Backend está caído, el Frontend muestra un mensaje de error amigable (no un stack trace ni "Network Error 500" crudo).
+1. ✅ El cliente Axios consume `GET /api/products` sin errores de CORS (CORS configurado en backend para Netlify).
+2. ✅ Las rutas `/checkout` y `/admin` redirigen a `/login` cuando no hay JWT válido en `localStorage`.
+3. ✅ Si el Backend está caído (Render spin-up), el frontend muestra mensaje de error amigable, no stack trace.
 
 ### SCRUM-8 — Sistema de diseño en Figma
 *Estado en Jira: Por hacer*
@@ -111,35 +118,54 @@ Basado en la sección 3.2.4 del TEST_PLAN.md. Estos fixtures son datos falsos cr
 
 | Tipo | Email | Password | Rol |
 |---|---|---|---|
-| Usuario válido | `test.user@novamarket.com` | `Test1234!` | user |
+| Usuario válido | `test.user@novamarket.com` | `Test1234!` | customer |
 | Admin válido | `admin@novamarket.com` | `Admin1234!` | admin |
-| Email duplicado (para TC002) | `test.user@novamarket.com` | `OtroPass!` | user |
-| E2E (sesión persistida) | `e2e@novamarket.com` | `E2ETest1234!` | user |
+| Email duplicado (para TC002) | `test.user@novamarket.com` | `OtroPass!` | customer |
+| E2E (sesión persistida) | `e2e@novamarket.com` | `E2ETest1234!` | customer |
 
-### 3.2 Productos (semilla, según SCRUM-13)
+> **Nota:** En producción ya existe el usuario `christian@novamarket.com` (id=1) y `test@novamarket.com` (id=2) creados durante pruebas. No usar en tests automatizados.
 
-10 productos falsos distribuidos en 3 categorías: Accesorios, Periféricos, Gadgets. Cada uno con: `name`, `category`, `price`, `description`, `imageUrl`. Al menos un producto debe tener `imageUrl` vacío para validar el placeholder (TC018).
+### 3.2 Productos
+
+✅ 20 productos cargados en Supabase (seeds 004 y 005 ejecutados). Distribuidos en 8 categorías: Periféricos, Teclados, Audio, Accesorios, Gadgets, Monitores, Gaming, Iluminación.
+
+Para tests automatizados usar IDs del 1 al 20. Para stock insuficiente usar Monitor Gaming (id=7, stock=4) o Silla Gamer (id=8, stock=3).
 
 ### 3.3 Órdenes
 
-- Payload válido: producto existente + cantidad ≥ 1 → debe generar número de orden único.
-- Payload inválido: producto inexistente → 404.
-- Carrito vacío `[]` → 400.
+- **Payload válido:** `{ items: [{ product_id: 1, quantity: 1 }], shipping: { name, address, city } }` → 201 con `order.id`
+- **Producto inexistente:** `product_id: 9999` → 404
+- **Carrito vacío:** `items: []` → 400
+- **Stock insuficiente:** `quantity > stock_disponible` → 409
 
 ### 3.4 Reglas de manejo
 
 - **Unit tests:** se mockea el `pool` de `pg` (`jest.mock('../../src/config/db')`), nunca se conecta a una DB real.
-- **Integration tests:** se usa una base de test aislada en Supabase (ej. un schema o proyecto separado `novamarket_test`) o `pg-mem` para simular Postgres en memoria sin red; se limpia con `TRUNCATE` o transacciones revertidas en `beforeEach`/`afterEach`.
-- **E2E:** el estado de sesión autenticada se guarda en `tests/e2e/fixtures/.auth/user.json`, listado en `.gitignore`.
-
-> ⚠️ Pendiente de decisión con Laura: si el equipo prefiere un schema separado en el mismo proyecto de Supabase o una instancia de Postgres local (Docker) para CI, dado que `mongodb-memory-server` ya no aplica.
+- **Integration tests (pendiente):** usar `pg-mem` o schema separado en Supabase `novamarket_test`. Limpiar con `TRUNCATE` en `beforeEach`.
+- **E2E:** estado de sesión autenticada guardado en `tests/e2e/fixtures/.auth/` (en `.gitignore`). Corre contra `https://novamarket-pyme-s2627.netlify.app`.
+- **JWT en tests:** `process.env.JWT_SECRET` = `test_secret_para_jest_minimo_32_chars_ok` (definido en el test antes de importar `app`).
 
 ---
 
-## 4. Pendientes antes de cerrar el documento
+## 4. Estado de implementación al 25/sep/2026
 
-- [x] Confirmar con Laura si la DB definitiva es PostgreSQL o MongoDB Atlas — **Resuelto: PostgreSQL vía Supabase.**
-- [x] Estructura `/tests` creada y fixtures de usuarios disponibles en `tests/api/fixtures/users.fixture.ts`.
-- [ ] Definir con Laura/Florencia la estrategia de aislamiento de tests para Postgres (schema separado en Supabase vs. Docker local vs. `pg-mem`).
-- [ ] Completar la descripción de SCRUM-3, SCRUM-4 y SCRUM-7 en Jira para afinar sus criterios.
-- [ ] Revisión de Agustina antes de marcar SCRUM-14 como Finalizado (requisito del propio ticket).
+| Módulo | Backend | Frontend | Tests |
+|--------|---------|----------|-------|
+| Auth (register/login/JWT) | ✅ Completo | ✅ Conectado | ✅ 7 tests activos en A07 |
+| Productos (CRUD) | ✅ Completo | ✅ Catálogo con filtros | ⚠️ Pendiente tests integración |
+| Pedidos (checkout) | ✅ Completo | ✅ Checkout funcional | ⚠️ Pendiente tests integración |
+| Panel Admin | ✅ Rutas backend | 🔲 Frontend pendiente | 🔲 Pendiente |
+| Auth Admin | ✅ requireAdmin middleware | 🔲 Sin UI | 🔲 Pendiente |
+
+## 5. Pendientes antes de cerrar el documento
+
+- [x] ~~Confirmar DB~~ → PostgreSQL vía Supabase ✅
+- [x] ~~Estructura `/tests` creada~~ ✅
+- [x] ~~Backend Auth implementado~~ ✅
+- [x] ~~Frontend conectado a API real~~ ✅
+- [x] ~~Deploy en producción~~ → Render + Netlify ✅
+- [ ] Definir estrategia de aislamiento de tests con Laura (pg-mem vs schema separado Supabase)
+- [ ] Completar descripción de SCRUM-3, SCRUM-4 y SCRUM-7 en Jira
+- [ ] Revisión de Agustina antes de cerrar SCRUM-14
+- [ ] Implementar tests de integración reales (Auth con DB, Productos, Pedidos)
+- [ ] Subir imágenes propias a Supabase Storage para los 20 productos
