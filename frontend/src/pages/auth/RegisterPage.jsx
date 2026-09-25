@@ -1,6 +1,36 @@
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import { authAPI } from '../../services/api';
 
 export default function RegisterPage() {
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const [form, setForm] = useState({ name: '', email: '', password: '' });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+    setError('');
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    try {
+      const { data } = await authAPI.register(form);
+      localStorage.setItem('nm-token', data.token);
+      login(data.user, data.token);
+      navigate('/');
+    } catch (err) {
+      setError(err.response?.data?.error || 'Error al crear la cuenta. Intentá de nuevo.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="auth-page">
       <div className="auth-card">
@@ -9,7 +39,7 @@ export default function RegisterPage() {
           <p className="auth-card__subtitle">Únite a NovaMarket y empezá a comprar</p>
         </div>
 
-        <form>
+        <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label className="form-label" htmlFor="name">Nombre completo</label>
             <input
@@ -17,6 +47,8 @@ export default function RegisterPage() {
               type="text"
               id="name"
               name="name"
+              value={form.name}
+              onChange={handleChange}
               placeholder="Juan Pérez"
               autoComplete="name"
               required
@@ -29,6 +61,8 @@ export default function RegisterPage() {
               type="email"
               id="email"
               name="email"
+              value={form.email}
+              onChange={handleChange}
               placeholder="tucorreo@ejemplo.com"
               autoComplete="email"
               required
@@ -37,18 +71,31 @@ export default function RegisterPage() {
           <div className="form-group">
             <label className="form-label" htmlFor="password">Contraseña</label>
             <input
-              className="form-input"
+              className={`form-input${error ? ' error' : ''}`}
               type="password"
               id="password"
               name="password"
+              value={form.password}
+              onChange={handleChange}
               placeholder="Mínimo 8 caracteres"
               autoComplete="new-password"
               required
             />
             <span className="form-hint">Usá letras, números y símbolos para mayor seguridad.</span>
           </div>
-          <button type="submit" className="btn btn--gradient btn--full">
-            Crear cuenta
+
+          {error && (
+            <p className="form-error" style={{ marginBottom: 'var(--sp-4)' }}>
+              ⚠ {error}
+            </p>
+          )}
+
+          <button
+            type="submit"
+            className="btn btn--gradient btn--full"
+            disabled={loading}
+          >
+            {loading ? 'Creando cuenta...' : 'Crear cuenta'}
           </button>
         </form>
 

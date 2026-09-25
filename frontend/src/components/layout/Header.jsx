@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
 import ThemeToggle from '../ui/ThemeToggle';
 
 // Icono carrito SVG inline
@@ -23,9 +24,17 @@ const NAV_LINKS = [
 
 export default function Header() {
   const { itemCount } = useCart();
+  const { isAuthenticated, user, logout } = useAuth();
+  const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const closeMenu = () => setMenuOpen(false);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+    closeMenu();
+  };
 
   return (
     <header className="header">
@@ -67,10 +76,21 @@ export default function Header() {
             )}
           </Link>
 
-          {/* Login (desktop) */}
-          <Link to="/login" className="btn btn--primary btn--sm">
-            Ingresar
-          </Link>
+          {/* Login / Usuario (desktop) */}
+          {isAuthenticated ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-2)' }}>
+              <span style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)' }}>
+                {user?.name?.split(' ')[0]}
+              </span>
+              <button onClick={handleLogout} className="btn btn--secondary btn--sm">
+                Salir
+              </button>
+            </div>
+          ) : (
+            <Link to="/login" className="btn btn--primary btn--sm">
+              Ingresar
+            </Link>
+          )}
 
           {/* Hamburger (mobile) */}
           <button
@@ -108,6 +128,11 @@ export default function Header() {
         <Link to="/login" className="btn btn--primary" onClick={closeMenu}>
           Ingresar
         </Link>
+        {isAuthenticated && (
+          <button onClick={handleLogout} className="btn btn--secondary">
+            Cerrar sesión
+          </button>
+        )}
       </nav>
     </header>
   );

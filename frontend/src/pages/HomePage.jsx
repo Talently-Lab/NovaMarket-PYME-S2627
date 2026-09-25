@@ -1,4 +1,7 @@
 import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { productsAPI } from '../services/api';
+import { useCart } from '../context/CartContext';
 
 const CATEGORIES = [
   { icon: '🖱️', name: 'Periféricos' },
@@ -12,6 +15,23 @@ const CATEGORIES = [
 ];
 
 export default function HomePage() {
+  const { addItem } = useCart();
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [added, setAdded] = useState(null);
+
+  useEffect(() => {
+    productsAPI.getAll({ order: 'newest' })
+      .then(({ data }) => setProducts(data.products.slice(0, 4)))
+      .catch(() => setProducts([]))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const handleAdd = (product) => {
+    addItem(product);
+    setAdded(product.id);
+    setTimeout(() => setAdded(null), 1500);
+  };
   return (
     <div>
       {/* Hero */}
@@ -58,47 +78,62 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Productos destacados — placeholder hasta conectar con API */}
       <section className="section" style={{ paddingTop: 0 }}>
         <div className="container">
           <div className="section__header">
             <h2 className="section__title">Destacados</h2>
-            <Link to="/catalogo" className="section__link">
-              Ver todo →
-            </Link>
+            <Link to="/catalogo" className="section__link">Ver todo →</Link>
           </div>
-          <div className="products-grid">
-            {[1, 2, 3, 4].map(i => (
-              <div className="card" key={i}>
-                <div className="card__image">
-                  <div style={{
-                    width: '100%',
-                    height: '100%',
-                    minHeight: 200,
-                    background: 'var(--color-surface-2)',
-                    display: 'grid',
-                    placeItems: 'center',
-                    color: 'var(--color-text-disabled)',
-                    fontSize: 'var(--text-sm)',
-                  }}>
-                    Sin imagen
+
+          {loading && (
+            <p style={{ color: 'var(--color-text-secondary)' }}>Cargando productos...</p>
+          )}
+
+          {!loading && products.length === 0 && (
+            <p style={{ color: 'var(--color-text-secondary)' }}>No hay productos disponibles aún.</p>
+          )}
+
+          {!loading && products.length > 0 && (
+            <div className="products-grid">
+              {products.map((product) => (
+                <div className="card" key={product.id}>
+                  <div className="card__image">
+                    {product.image_url ? (
+                      <img src={product.image_url} alt={product.name} loading="lazy" />
+                    ) : (
+                      <div style={{
+                        width: '100%', height: '100%', minHeight: 200,
+                        background: 'var(--color-surface-2)',
+                        display: 'grid', placeItems: 'center',
+                        color: 'var(--color-text-disabled)',
+                        fontSize: 'var(--text-sm)',
+                      }}>
+                        Sin imagen
+                      </div>
+                    )}
+                  </div>
+                  <div className="card__body">
+                    <p className="card__title">{product.name}</p>
+                    <p className="card__desc">{product.description}</p>
+                    <p className="card__price">
+                      ${Number(product.price).toLocaleString('es-AR')}
+                    </p>
+                  </div>
+                  <div className="card__footer">
+                    <span className="badge badge--success">En stock</span>
+                    <button
+                      className="btn btn--primary btn--sm"
+                      onClick={() => handleAdd(product)}
+                      disabled={added === product.id}
+                      style={{ minWidth: 110 }}
+                    >
+                      {added === product.id ? '✓ Agregado' : 'Agregar'}
+                    </button>
                   </div>
                 </div>
-                <div className="card__body">
-                  <p className="card__title">Producto de ejemplo #{i}</p>
-                  <p className="card__desc">Descripción del producto. Se cargará desde el backend.</p>
-                  <p className="card__price">
-                    $XX.XXX
-                    <span className="card__price--old">$XX.XXX</span>
-                  </p>
-                </div>
-                <div className="card__footer">
-                  <span className="badge badge--success">En stock</span>
-                  <button className="btn btn--primary btn--sm">Agregar</button>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
     </div>
