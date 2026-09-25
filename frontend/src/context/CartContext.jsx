@@ -1,9 +1,23 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 
 const CartContext = createContext(null);
+const STORAGE_KEY = 'nm-cart';
 
 export function CartProvider({ children }) {
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState(() => {
+    // Leer carrito del localStorage al iniciar
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  // Persistir carrito en localStorage cada vez que cambia
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  }, [items]);
 
   const addItem = (product, quantity = 1) => {
     setItems((prev) => {
@@ -28,9 +42,12 @@ export function CartProvider({ children }) {
     );
   };
 
-  const clearCart = () => setItems([]);
+  const clearCart = () => {
+    setItems([]);
+    localStorage.removeItem(STORAGE_KEY);
+  };
 
-  const total = items.reduce((acc, i) => acc + i.price * i.quantity, 0);
+  const total = items.reduce((acc, i) => acc + Number(i.price) * i.quantity, 0);
   const itemCount = items.reduce((acc, i) => acc + i.quantity, 0);
 
   return (
