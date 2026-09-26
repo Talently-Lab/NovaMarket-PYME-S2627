@@ -70,12 +70,7 @@ export default function CheckoutPage() {
         Checkout
       </h1>
 
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '1fr 360px',
-        gap: 'var(--sp-8)',
-        alignItems: 'start',
-      }}>
+      <div className="checkout-layout">
         {/* Datos de envío */}
         <div style={{
           background: 'var(--color-surface)',

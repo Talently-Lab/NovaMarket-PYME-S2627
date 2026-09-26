@@ -47,23 +47,9 @@ export default function CartPage() {
         {/* Items */}
         <div>
           {items.map((item) => (
-            <div key={item.id} style={{
-              display: 'flex',
-              gap: 'var(--sp-4)',
-              padding: 'var(--sp-4)',
-              background: 'var(--color-surface)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius-xl)',
-              marginBottom: 'var(--sp-3)',
-              alignItems: 'center',
-            }}>
+            <div key={item.id} className="cart-item">
               {/* Imagen */}
-              <div style={{
-                width: 80, height: 80, flexShrink: 0,
-                borderRadius: 'var(--radius-md)',
-                overflow: 'hidden',
-                background: 'var(--color-surface-2)',
-              }}>
+              <div className="cart-item__img">
                 {item.image_url
                   ? <img src={item.image_url} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   : <div style={{ width: '100%', height: '100%', display: 'grid', placeItems: 'center', fontSize: '1.5rem' }}>📦</div>
@@ -71,7 +57,7 @@ export default function CartPage() {
               </div>
 
               {/* Info */}
-              <div style={{ flex: 1, minWidth: 0 }}>
+              <div className="cart-item__info">
                 <p style={{ fontWeight: 'var(--weight-semibold)', marginBottom: 'var(--sp-1)' }} className="truncate">
                   {item.name}
                 </p>
@@ -81,7 +67,7 @@ export default function CartPage() {
               </div>
 
               {/* Cantidad */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-2)', flexShrink: 0 }}>
+              <div className="cart-item__qty">
                 <button
                   className="btn btn--secondary btn--sm btn--icon"
                   onClick={() => updateQuantity(item.id, item.quantity - 1)}
@@ -97,18 +83,18 @@ export default function CartPage() {
                 >+</button>
               </div>
 
-              {/* Subtotal */}
-              <p style={{ fontWeight: 'var(--weight-bold)', minWidth: 80, textAlign: 'right', flexShrink: 0 }}>
-                ${Number(item.price * item.quantity).toLocaleString('es-AR')}
-              </p>
-
-              {/* Eliminar */}
-              <button
-                className="btn btn--ghost btn--sm btn--icon"
-                onClick={() => removeItem(item.id)}
-                aria-label="Eliminar producto"
-                style={{ color: 'var(--color-error)', flexShrink: 0 }}
-              >✕</button>
+              {/* Subtotal + eliminar */}
+              <div className="cart-item__actions">
+                <p style={{ fontWeight: 'var(--weight-bold)', textAlign: 'right' }}>
+                  ${Number(item.price * item.quantity).toLocaleString('es-AR')}
+                </p>
+                <button
+                  className="btn btn--ghost btn--sm btn--icon"
+                  onClick={() => removeItem(item.id)}
+                  aria-label="Eliminar producto"
+                  style={{ color: 'var(--color-error)' }}
+                >✕</button>
+              </div>
             </div>
           ))}
 
