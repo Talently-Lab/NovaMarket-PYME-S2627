@@ -1506,6 +1506,16 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Mobile */
 @media (max-width: 768px) {
+  /* Header — reducir gaps en mobile para que todo quepa */
+  .header__inner {
+    gap: var(--sp-2);
+    padding-inline: var(--sp-3);
+  }
+
+  .header__actions {
+    gap: var(--sp-1);
+  }
+
   .header__nav { display: none; }
   .header__hamburger { display: flex; }
 
