@@ -1193,6 +1193,9 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: -0.03em;
   margin-bottom: var(--sp-8);
 }
+
+/* Checkout layout */
+.checkout-layout {
   display: grid;
   grid-template-columns: 1fr 360px;
   gap: var(--sp-8);
