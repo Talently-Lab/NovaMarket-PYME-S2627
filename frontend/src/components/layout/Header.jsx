@@ -78,7 +78,7 @@ export default function Header() {
 
           {/* Login / Usuario (desktop) */}
           {isAuthenticated ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-2)' }}>
+            <div className="header__user" style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-2)' }}>
               <span style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)' }}>
                 {user?.name?.split(' ')[0]}
               </span>

@@ -1453,8 +1453,9 @@ h1, h2, h3, h4, h5, h6 {
   .header__nav { display: none; }
   .header__hamburger { display: flex; }
 
-  /* Ocultar botón Ingresar del header en mobile — está en el menú */
-  .header__actions .btn--primary {
+  /* Ocultar botón Ingresar Y bloque de usuario logueado en mobile — están en el menú */
+  .header__actions .btn--primary,
+  .header__actions .header__user {
     display: none;
   }
 
