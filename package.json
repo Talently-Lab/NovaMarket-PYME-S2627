@@ -8,6 +8,14 @@
     "test:e2e": "playwright test --config=tests/playwright.config.ts",
     "test:e2e:report": "playwright show-report tests/reports/playwright-report"
   },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.3",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.23.0"
+  },
   "devDependencies": {
     "@playwright/test": "^1.63.0",
     "@types/jest": "^29.5.0",
