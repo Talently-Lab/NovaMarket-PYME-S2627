@@ -1186,8 +1186,13 @@ h1, h2, h3, h4, h5, h6 {
   flex-shrink: 0;
 }
 
-/* Checkout layout */
-.checkout-layout {
+/* Título de la página carrito */
+.cart-page-title {
+  font-size: var(--text-3xl);
+  font-weight: var(--weight-extrabold);
+  letter-spacing: -0.03em;
+  margin-bottom: var(--sp-8);
+}
   display: grid;
   grid-template-columns: 1fr 360px;
   gap: var(--sp-8);
