@@ -1524,6 +1524,11 @@ h1, h2, h3, h4, h5, h6 {
     position: static;
   }
 
+  .cart-page-title {
+    font-size: var(--text-xl);
+  }
+  }
+
   /* Item del carrito en mobile: imagen más chica, sin subtotal separado */
   .cart-item {
     flex-wrap: wrap;

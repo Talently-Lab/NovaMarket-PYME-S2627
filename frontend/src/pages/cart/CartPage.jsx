@@ -34,7 +34,7 @@ export default function CartPage() {
 
   return (
     <div>
-      <h1 style={{
+      <h1 className="cart-page-title" style={{
         fontSize: 'var(--text-3xl)',
         fontWeight: 'var(--weight-extrabold)',
         letterSpacing: '-0.03em',
