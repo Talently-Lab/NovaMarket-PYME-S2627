@@ -106,6 +106,10 @@ jobs:
           NODE_ENV: test
           PORT: 3001
 
+      - name: Debug — versiones si falla
+        if: failure()
+        run: node --version && npx jest --version && echo "ts-jest $(npx ts-jest --version 2>&1 || echo n/a)"
+
       - name: Subir reporte de cobertura como artefacto
         uses: actions/upload-artifact@v4
         if: always()
