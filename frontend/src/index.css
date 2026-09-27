@@ -415,8 +415,8 @@ h1, h2, h3, h4, h5, h6 {
 .header__mobile-nav {
   display: none;
   flex-direction: column;
-  gap: var(--sp-2);
-  padding: var(--sp-5) var(--container-pad) var(--sp-8);
+  gap: var(--sp-3);
+  padding: var(--sp-6) var(--container-pad) var(--sp-10);
   border-top: 1px solid var(--color-border);
   background-color: var(--color-bg-elevated);
 }
@@ -424,9 +424,9 @@ h1, h2, h3, h4, h5, h6 {
 .header__mobile-nav.open { display: flex; }
 
 .header__mobile-nav a {
-  padding: var(--sp-4) var(--sp-4);
+  padding: var(--sp-4) var(--sp-5);
   border-radius: var(--radius-md);
-  font-size: var(--text-base);
+  font-size: var(--text-lg);
   font-weight: var(--weight-medium);
   color: var(--color-text-secondary);
   transition: color var(--duration-base) var(--ease),
@@ -436,6 +436,10 @@ h1, h2, h3, h4, h5, h6 {
 .header__mobile-nav a:hover {
   color: var(--color-text);
   background-color: var(--color-surface-2);
+}
+
+.header__mobile-nav .btn {
+  margin-top: var(--sp-2);
 }
 
 /* ── 8. FOOTER ── */
