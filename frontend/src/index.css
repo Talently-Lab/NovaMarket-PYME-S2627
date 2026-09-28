@@ -382,6 +382,22 @@ h1, h2, h3, h4, h5, h6 {
   justify-content: center;
 }
 
+/* Bloque usuario logueado en header */
+.header__user {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.header__user-name {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* Hamburger (mobile) */
 .header__hamburger {
   display: none;

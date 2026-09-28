@@ -78,8 +78,8 @@ export default function Header() {
 
           {/* Login / Usuario (desktop) */}
           {isAuthenticated ? (
-            <div className="header__user" style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-2)' }}>
-              <span style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)' }}>
+            <div className="header__user">
+              <span className="header__user-name">
                 {user?.name?.split(' ')[0]}
               </span>
               <button onClick={handleLogout} className="btn btn--secondary btn--sm">
