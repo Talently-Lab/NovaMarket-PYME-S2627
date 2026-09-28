@@ -1523,6 +1523,10 @@ h1, h2, h3, h4, h5, h6 {
     gap: var(--sp-1);
   }
 
+  .header__logo {
+    font-size: var(--text-base);
+  }
+
   .header__nav { display: none; }
   .header__hamburger { display: flex; }
 
