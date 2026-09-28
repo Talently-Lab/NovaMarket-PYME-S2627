@@ -80,8 +80,8 @@ export default function OrderConfirmedPage() {
         <Link to="/catalogo" className="btn btn--primary btn--lg">
           Seguir comprando
         </Link>
-        <Link to="/" className="btn btn--secondary btn--lg">
-          Volver al inicio
+        <Link to="/mis-pedidos" className="btn btn--secondary btn--lg">
+          Ver mis pedidos
         </Link>
       </div>
     </div>

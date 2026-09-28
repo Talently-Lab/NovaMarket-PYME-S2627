@@ -13,8 +13,11 @@ import ProductDetailPage from './pages/catalog/ProductDetailPage';
 import CartPage from './pages/cart/CartPage';
 import CheckoutPage from './pages/checkout/CheckoutPage';
 import OrderConfirmedPage from './pages/checkout/OrderConfirmedPage';
+import MyOrdersPage from './pages/orders/MyOrdersPage';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
+import TermsPage from './pages/legal/TermsPage';
+import PrivacyPage from './pages/legal/PrivacyPage';
 import DashboardPage from './pages/admin/DashboardPage';
 import ProductsAdminPage from './pages/admin/ProductsAdminPage';
 import OrdersAdminPage from './pages/admin/OrdersAdminPage';
@@ -35,11 +38,14 @@ export default function App() {
               <Route path="/carrito" element={<CartPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/registro" element={<RegisterPage />} />
+              <Route path="/terminos" element={<TermsPage />} />
+              <Route path="/privacidad" element={<PrivacyPage />} />
 
-              {/* Checkout — requiere estar autenticado */}
+              {/* Checkout y pedidos — requiere estar autenticado */}
               <Route element={<ProtectedRoute />}>
                 <Route path="/checkout" element={<CheckoutPage />} />
                 <Route path="/pedido-confirmado" element={<OrderConfirmedPage />} />
+                <Route path="/mis-pedidos" element={<MyOrdersPage />} />
               </Route>
             </Route>
 

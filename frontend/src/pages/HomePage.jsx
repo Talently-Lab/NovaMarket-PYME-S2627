@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { productsAPI } from '../services/api';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import { getProductImage } from '../utils/productImage';
 
 const CATEGORIES = [
@@ -17,9 +18,17 @@ const CATEGORIES = [
 
 export default function HomePage() {
   const { addItem } = useCart();
+  const { flashMessage, clearFlash } = useAuth();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [added, setAdded] = useState(null);
+
+  // Auto-cierra el flash a los 4 segundos
+  useEffect(() => {
+    if (!flashMessage) return;
+    const t = setTimeout(clearFlash, 4000);
+    return () => clearTimeout(t);
+  }, [flashMessage]);
 
   useEffect(() => {
     productsAPI.getAll({ order: 'newest' })
@@ -35,6 +44,14 @@ export default function HomePage() {
   };
   return (
     <div>
+      {/* Toast de bienvenida post-registro */}
+      {flashMessage && (
+        <div className="toast toast--success" role="alert">
+          <span>🎉 {flashMessage}</span>
+          <button className="toast__close" onClick={clearFlash} aria-label="Cerrar">✕</button>
+        </div>
+      )}
+
       {/* Hero */}
       <section className="hero">
         <div className="hero__eyebrow">

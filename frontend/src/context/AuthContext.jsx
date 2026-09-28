@@ -5,7 +5,8 @@ const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true); // evita flash de "no logueado"
+  const [loading, setLoading] = useState(true);
+  const [flashMessage, setFlashMessage] = useState(null);
 
   // Al montar: si hay token en localStorage, recupera el usuario
   useEffect(() => {
@@ -33,11 +34,13 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
+  const clearFlash = () => setFlashMessage(null);
+
   const isAuthenticated = !!user;
   const isAdmin = user?.role === 'admin';
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isAuthenticated, isAdmin, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, isAuthenticated, isAdmin, loading, flashMessage, setFlashMessage, clearFlash }}>
       {children}
     </AuthContext.Provider>
   );

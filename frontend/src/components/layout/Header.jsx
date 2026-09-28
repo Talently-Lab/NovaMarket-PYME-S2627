@@ -91,9 +91,9 @@ export default function Header() {
           {/* Login / Usuario (desktop) */}
           {isAuthenticated ? (
             <div className="header__user">
-              <span className="header__user-name">
+              <Link to="/mis-pedidos" className="header__user-name" title="Mis pedidos">
                 {user?.name?.split(' ')[0]}
-              </span>
+              </Link>
               <button onClick={handleLogout} className="btn btn--secondary btn--sm">
                 Salir
               </button>
@@ -137,13 +137,20 @@ export default function Header() {
             {label}
           </NavLink>
         ))}
-        <Link to="/login" className="btn btn--primary" onClick={closeMenu}>
-          Ingresar
-        </Link>
-        {isAuthenticated && (
-          <button onClick={handleLogout} className="btn btn--secondary">
-            Cerrar sesión
-          </button>
+
+        {isAuthenticated ? (
+          <>
+            <Link to="/mis-pedidos" className="header__mobile-nav-link" onClick={closeMenu}>
+              Mis pedidos
+            </Link>
+            <button onClick={handleLogout} className="header__mobile-btn header__mobile-btn--secondary">
+              Cerrar sesión
+            </button>
+          </>
+        ) : (
+          <Link to="/login" className="header__mobile-btn header__mobile-btn--primary" onClick={closeMenu}>
+            Ingresar
+          </Link>
         )}
       </nav>
     </header>

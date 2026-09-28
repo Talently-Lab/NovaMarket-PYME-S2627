@@ -61,12 +61,7 @@ export default function CheckoutPage() {
 
   return (
     <div>
-      <h1 style={{
-        fontSize: 'var(--text-3xl)',
-        fontWeight: 'var(--weight-extrabold)',
-        letterSpacing: '-0.03em',
-        marginBottom: 'var(--sp-8)',
-      }}>
+      <h1 className="checkout-title">
         Checkout
       </h1>
 
