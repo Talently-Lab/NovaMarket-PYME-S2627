@@ -255,6 +255,7 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  padding-top: 64px; /* compensa el header fixed */
 }
 
 .main {
@@ -268,8 +269,10 @@ h1, h2, h3, h4, h5, h6 {
 
 /* ── 7. HEADER ── */
 .header {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: var(--z-sticky);
   background-color: var(--color-bg-elevated);
   border-bottom: 1px solid var(--color-border);
