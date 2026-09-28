@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import ThemeToggle from '../ui/ThemeToggle';
@@ -26,7 +26,19 @@ export default function Header() {
   const { itemCount } = useCart();
   const { isAuthenticated, user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  const isHome = location.pathname === '/';
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    // reset al cambiar de página
+    setScrolled(window.scrollY > 10);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [location.pathname]);
 
   const closeMenu = () => setMenuOpen(false);
 
@@ -37,7 +49,7 @@ export default function Header() {
   };
 
   return (
-    <header className="header">
+    <header className={`header${isHome && !scrolled ? ' header--transparent' : ''}`}>
       <div className="header__inner">
         {/* Logo */}
         <Link to="/" className="header__logo" onClick={closeMenu}>
