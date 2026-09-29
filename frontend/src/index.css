@@ -1,119 +1,121 @@
 /* ============================================================
    NOVAMARKET — DESIGN SYSTEM
-   Paleta: tech moderna + acento Vice City (GTA 6 inspired)
+   Paleta: NovaMarket Figma oficial (adoptada 26/sep/2026)
+   Primario: Verde lima #D2EE42 | Fondo: #050506 | Acento: #7D1CE2
    Modos: dark (default) / light via [data-theme="light"]
    ============================================================ */
 
 /* ── 1. TOKENS: MODO OSCURO (default) ── */
 :root,
 [data-theme="dark"] {
-  /* Marca */
-  --brand-50:  #f0e9ff;
-  --brand-100: #d9c8ff;
-  --brand-200: #b89dff;
-  --brand-300: #9470ff;
-  --brand-400: #7c4dff;
-  --brand-500: #6c2bd9;   /* primary */
-  --brand-600: #5a21c0;
-  --brand-700: #4316a0;
-  --brand-800: #2e0e7a;
-  --brand-900: #1a0550;
+  /* Marca — verde lima (primario Figma) */
+  --brand-50:  #f7fde0;
+  --brand-100: #edfab3;
+  --brand-200: #e1f57d;
+  --brand-300: #d8f050;
+  --brand-400: #D2EE42;   /* primary Figma */
+  --brand-500: #b8d424;
+  --brand-600: #95ab18;
+  --brand-700: #6e7f10;
+  --brand-800: #48530a;
+  --brand-900: #242904;
 
-  /* Acento — Vice City turquesa (GTA 6) */
-  --accent-300: #5ffff0;
-  --accent-400: #00f5d4;   /* turquesa Vice City */
-  --accent-500: #00c8aa;
-  --accent-600: #009980;
+  /* Acento — violeta Figma */
+  --accent-300: #b06aff;
+  --accent-400: #7D1CE2;   /* violeta Figma */
+  --accent-500: #6615c0;
+  --accent-600: #4e0f96;
 
-  /* Vice City fucsia (GTA 6) */
-  --vice-400: #ff4d9e;
-  --vice-500: #ff2d78;
-  --vice-600: #d91f5e;
+  /* Secundario — rosa Figma */
+  --vice-400: #ee7aff;
+  --vice-500: #E247FD;
+  --vice-600: #c030e0;
 
   /* Semánticos oscuro */
-  --color-primary:        var(--brand-500);
-  --color-primary-hover:  var(--brand-600);
-  --color-primary-subtle: rgba(108, 43, 217, 0.15);
-  --color-accent:         var(--accent-400);
-  --color-accent-hover:   var(--accent-500);
-  --color-vice:           var(--vice-500);
+  --color-primary:        #D2EE42;
+  --color-primary-hover:  #b8d424;
+  --color-primary-subtle: rgba(210, 238, 66, 0.12);
+  --color-accent:         #7D1CE2;
+  --color-accent-hover:   #6615c0;
+  --color-vice:           #E247FD;
 
-  --color-bg:             #0c0c16;
-  --color-bg-elevated:    #13131f;
-  --color-surface:        #1a1a2e;
-  --color-surface-2:      #22223a;
-  --color-surface-3:      #2c2c48;
+  --color-bg:             #050506;
+  --color-bg-elevated:    #0d0d10;
+  --color-surface:        #111116;
+  --color-surface-2:      #1a1a20;
+  --color-surface-3:      #22222a;
   --color-border:         rgba(255,255,255,0.08);
   --color-border-strong:  rgba(255,255,255,0.16);
 
-  --color-text:           #f2f2f8;
-  --color-text-secondary: #a0a0c0;
-  --color-text-disabled:  #5a5a78;
-  --color-text-inverse:   #0c0c16;
+  --color-text:           #FEFEFE;
+  --color-text-secondary: #a0a0b0;
+  --color-text-disabled:  #555560;
+  --color-text-inverse:   #050506;
 
   --color-success:        #22c55e;
   --color-warning:        #f59e0b;
   --color-error:          #ef4444;
-  --color-info:           var(--accent-400);
+  --color-info:           #7D1CE2;
 
   /* Sombras */
-  --shadow-sm:   0 1px 3px rgba(0,0,0,0.4);
-  --shadow-md:   0 4px 16px rgba(0,0,0,0.5);
-  --shadow-lg:   0 8px 40px rgba(0,0,0,0.6);
-  --shadow-glow: 0 0 24px rgba(108,43,217,0.35);
-  --shadow-vice: 0 0 24px rgba(255,45,120,0.3);
-  --shadow-cyan: 0 0 24px rgba(0,245,212,0.3);
+  --shadow-sm:   0 1px 3px rgba(0,0,0,0.5);
+  --shadow-md:   0 4px 16px rgba(0,0,0,0.6);
+  --shadow-lg:   0 8px 40px rgba(0,0,0,0.7);
+  --shadow-glow: 0 0 24px rgba(210,238,66,0.25);
+  --shadow-vice: 0 0 24px rgba(226,71,253,0.3);
+  --shadow-cyan: 0 0 24px rgba(125,28,226,0.3);
 
-  /* Gradientes — incluye Vice City */
-  --gradient-brand:   linear-gradient(135deg, var(--brand-500) 0%, var(--accent-400) 100%);
-  --gradient-vice:    linear-gradient(135deg, var(--vice-500) 0%, var(--brand-500) 50%, var(--accent-400) 100%);
+  /* Gradientes */
+  --gradient-brand:   linear-gradient(135deg, #D2EE42 0%, #7D1CE2 100%);
+  --gradient-vice:    linear-gradient(135deg, #E247FD 0%, #7D1CE2 50%, #D2EE42 100%);
   --gradient-surface: linear-gradient(180deg, var(--color-surface) 0%, var(--color-bg-elevated) 100%);
 
   /* Meta theme-color para browser */
-  --meta-theme: #0c0c16;
+  --meta-theme: #050506;
 }
 
 /* ── 2. TOKENS: MODO CLARO ── */
 [data-theme="light"] {
-  --color-primary:        var(--brand-500);
-  --color-primary-hover:  var(--brand-600);
-  --color-primary-subtle: rgba(108, 43, 217, 0.08);
-  --color-accent:         var(--accent-500);
-  --color-accent-hover:   var(--accent-600);
-  --color-vice:           var(--vice-600);
+  --color-primary:        #95ab18;
+  --color-primary-hover:  #6e7f10;
+  --color-primary-subtle: rgba(148, 171, 24, 0.10);
+  --color-accent:         #7D1CE2;
+  --color-accent-hover:   #6615c0;
+  --color-vice:           #c030e0;
 
-  --color-bg:             #f6f6fb;
+  --color-bg:             #EAEEF7;
   --color-bg-elevated:    #ffffff;
   --color-surface:        #ffffff;
-  --color-surface-2:      #f0f0f8;
-  --color-surface-3:      #e4e4f0;
+  --color-surface-2:      #f0f2f8;
+  --color-surface-3:      #e4e7f0;
   --color-border:         rgba(0,0,0,0.08);
   --color-border-strong:  rgba(0,0,0,0.16);
 
-  --color-text:           #111128;
-  --color-text-secondary: #555570;
-  --color-text-disabled:  #a0a0b8;
-  --color-text-inverse:   #f2f2f8;
+  --color-text:           #050506;
+  --color-text-secondary: #404050;
+  --color-text-disabled:  #9090a8;
+  --color-text-inverse:   #FEFEFE;
 
   --color-success:        #16a34a;
   --color-warning:        #d97706;
   --color-error:          #dc2626;
-  --color-info:           var(--accent-600);
+  --color-info:           #7D1CE2;
 
   --shadow-sm:  0 1px 3px rgba(0,0,0,0.08);
   --shadow-md:  0 4px 16px rgba(0,0,0,0.10);
   --shadow-lg:  0 8px 40px rgba(0,0,0,0.14);
-  --shadow-glow: 0 0 24px rgba(108,43,217,0.18);
+  --shadow-glow: 0 0 24px rgba(148,171,24,0.20);
 
-  --gradient-surface: linear-gradient(180deg, #ffffff 0%, #f6f6fb 100%);
+  --gradient-surface: linear-gradient(180deg, #ffffff 0%, #EAEEF7 100%);
 
-  --meta-theme: #f6f6fb;
+  --meta-theme: #EAEEF7;
 }
 
 /* ── 3. TIPOGRAFÍA & SPACING ── */
 :root {
-  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+  --font-sans:    'Space Grotesk', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-ui:      'Geist', 'Inter', system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
 
   --text-xs:   0.75rem;   /* 12px */
   --text-sm:   0.875rem;  /* 14px */
@@ -201,7 +203,7 @@ html {
 }
 
 body {
-  font-family: var(--font-sans);
+  font-family: var(--font-ui);
   font-size: var(--text-base);
   font-weight: var(--weight-normal);
   line-height: var(--leading-normal);
@@ -215,16 +217,18 @@ body {
               color var(--duration-slow) var(--ease);
 }
 
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+  color: var(--color-text);
+}
+
 img, video, svg { display: block; max-width: 100%; }
 a { color: inherit; text-decoration: none; }
 button { cursor: pointer; font-family: inherit; border: none; background: none; }
 input, select, textarea { font-family: inherit; font-size: inherit; }
 ul, ol { list-style: none; }
-h1, h2, h3, h4, h5, h6 {
-  font-weight: var(--weight-bold);
-  line-height: var(--leading-tight);
-  color: var(--color-text);
-}
 
 /* ── 5. UTILIDADES ── */
 .container {
@@ -308,6 +312,7 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   align-items: center;
   gap: var(--sp-2);
+  font-family: var(--font-sans);
   font-size: var(--text-xl);
   font-weight: var(--weight-black);
   letter-spacing: -0.04em;
@@ -316,10 +321,11 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .header__logo span {
-  background: var(--gradient-brand);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--color-primary);
+  background: none;
+  -webkit-background-clip: unset;
+  -webkit-text-fill-color: var(--color-primary);
+  background-clip: unset;
 }
 
 .header__nav {
@@ -553,10 +559,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .footer__logo span {
-  background: var(--gradient-brand);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--color-primary);
+  -webkit-text-fill-color: var(--color-primary);
 }
 
 .footer__tagline {
@@ -723,8 +727,9 @@ h1, h2, h3, h4, h5, h6 {
 
 .btn--primary {
   background-color: var(--color-primary);
-  color: #fff;
+  color: #050506;
   border-color: var(--color-primary);
+  font-weight: var(--weight-bold);
 }
 .btn--primary:hover {
   background-color: var(--color-primary-hover);
@@ -1263,10 +1268,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .hero__title .gradient {
-  background: var(--gradient-brand);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--color-primary);
+  -webkit-text-fill-color: var(--color-primary);
 }
 
 .hero__subtitle {
@@ -1758,10 +1761,7 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: var(--weight-black);
   letter-spacing: -0.06em;
   line-height: 1;
-  background: var(--gradient-brand);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--color-primary);
   margin-bottom: calc(var(--sp-2) * -1);
 }
 
