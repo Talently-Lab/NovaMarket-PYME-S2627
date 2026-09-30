@@ -37,7 +37,9 @@ export const productsAPI = {
   getAll:   (params) => api.get('/products', { params }),
   getById:  (id)     => api.get(`/products/${id}`),
   // Admin
-  getAllAdmin: ()              => api.get('/products/admin/all'),
+  getAllAdmin:       ()              => api.get('/products/admin/all'),
+  getCategories:    ()              => api.get('/products/admin/categories'),
+  renameCategory:   (oldName, newName) => api.patch('/products/admin/categories/rename', { oldName, newName }),
   create:      (data)         => api.post('/products/admin', data),
   update:      (id, data)     => api.put(`/products/admin/${id}`, data),
   remove:      (id)           => api.delete(`/products/admin/${id}`),
@@ -51,6 +53,11 @@ export const ordersAPI = {
   // Admin
   getAllAdmin:    ()             => api.get('/orders/admin/all'),
   updateStatus:  (id, status)   => api.patch(`/orders/admin/${id}/status`, { status }),
+};
+
+// ── Usuarios (admin) ─────────────────────────────────────────
+export const usersAPI = {
+  getAllAdmin: () => api.get('/auth/admin/users'),
 };
 
 // ── Health ────────────────────────────────────────────────────

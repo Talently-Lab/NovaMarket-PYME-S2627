@@ -117,4 +117,13 @@ async function me(req, res) {
   return res.status(200).json({ user });
 }
 
-module.exports = { register, login, me };
+/**
+ * GET /api/auth/admin/users
+ * Lista todos los usuarios — solo admin
+ */
+async function getAllUsers(req, res) {
+  const users = await UserModel.findAll();
+  return res.status(200).json({ users, total: users.length });
+}
+
+module.exports = { register, login, me, getAllUsers };

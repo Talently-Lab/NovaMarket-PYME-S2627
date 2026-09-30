@@ -2,6 +2,19 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 
+function TrashIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+      aria-hidden="true">
+      <polyline points="3 6 5 6 21 6"/>
+      <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+      <path d="M10 11v6M14 11v6"/>
+      <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+    </svg>
+  );
+}
+
 export default function CartPage() {
   const { items, removeItem, updateQuantity, clearCart, total, itemCount } = useCart();
   const { isAuthenticated } = useAuth();
@@ -9,20 +22,19 @@ export default function CartPage() {
 
   const handleCheckout = () => {
     if (!isAuthenticated) {
-      navigate('/login');
+      navigate('/login', { state: { from: '/carrito' } });
     } else {
       navigate('/checkout');
     }
   };
 
+  // Carrito vacío
   if (items.length === 0) {
     return (
-      <div style={{ textAlign: 'center', padding: 'var(--sp-16) var(--sp-4)' }}>
-        <p style={{ fontSize: '4rem', marginBottom: 'var(--sp-4)' }}>🛒</p>
-        <h1 style={{ fontSize: 'var(--text-2xl)', fontWeight: 'var(--weight-bold)', marginBottom: 'var(--sp-2)' }}>
-          Tu carrito está vacío
-        </h1>
-        <p style={{ color: 'var(--color-text-secondary)', marginBottom: 'var(--sp-8)' }}>
+      <div className="cart-empty">
+        <div className="cart-empty__icon">🛒</div>
+        <h1 className="cart-empty__title">Tu carrito está vacío</h1>
+        <p className="cart-empty__desc">
           Agregá productos desde el catálogo para empezar.
         </p>
         <Link to="/catalogo" className="btn btn--primary btn--lg">
@@ -33,34 +45,43 @@ export default function CartPage() {
   }
 
   return (
-    <div>
-      <h1 className="cart-page-title" style={{
-        fontWeight: 'var(--weight-extrabold)',
-        letterSpacing: '-0.03em',
-        marginBottom: 'var(--sp-8)'
-      }}>
-        Tu carrito ({itemCount} {itemCount === 1 ? 'producto' : 'productos'})
-      </h1>
+    <div className="cart-page-wrapper container">
 
-      <div className="cart-page">
-        {/* Items */}
-        <div>
+      {/* Título */}
+      <div className="cart-page-header">
+        <h1 className="cart-page-title">
+          Tu carrito
+          <span className="cart-page-title__count">
+            {itemCount} {itemCount === 1 ? 'producto' : 'productos'}
+          </span>
+        </h1>
+        <button
+          onClick={clearCart}
+          className="btn btn--ghost btn--sm cart-clear-btn"
+        >
+          Vaciar carrito
+        </button>
+      </div>
+
+      <div className="cart-layout">
+
+        {/* ── Lista de items ── */}
+        <div className="cart-items-list">
           {items.map((item) => (
             <div key={item.id} className="cart-item">
+
               {/* Imagen */}
               <div className="cart-item__img">
                 {item.image_url
-                  ? <img src={item.image_url} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  : <div style={{ width: '100%', height: '100%', display: 'grid', placeItems: 'center', fontSize: '1.5rem' }}>📦</div>
+                  ? <img src={item.image_url} alt={item.name} />
+                  : <div className="cart-item__img-placeholder">📦</div>
                 }
               </div>
 
               {/* Info */}
               <div className="cart-item__info">
-                <p style={{ fontWeight: 'var(--weight-semibold)', marginBottom: 'var(--sp-1)' }} className="truncate">
-                  {item.name}
-                </p>
-                <p style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--text-sm)' }}>
+                <p className="cart-item__name">{item.name}</p>
+                <p className="cart-item__price">
                   ${Number(item.price).toLocaleString('es-AR')} c/u
                 </p>
               </div>
@@ -68,76 +89,75 @@ export default function CartPage() {
               {/* Cantidad */}
               <div className="cart-item__qty">
                 <button
-                  className="btn btn--secondary btn--sm btn--icon"
+                  className="cart-qty-btn"
                   onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                  aria-label="Restar"
+                  aria-label="Restar uno"
                 >−</button>
-                <span style={{ minWidth: 24, textAlign: 'center', fontWeight: 'var(--weight-semibold)' }}>
-                  {item.quantity}
-                </span>
+                <span className="cart-item__qty-num">{item.quantity}</span>
                 <button
-                  className="btn btn--secondary btn--sm btn--icon"
+                  className="cart-qty-btn"
                   onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                  aria-label="Sumar"
+                  aria-label="Sumar uno"
                 >+</button>
               </div>
 
-              {/* Subtotal + eliminar */}
-              <div className="cart-item__actions">
-                <p style={{ fontWeight: 'var(--weight-bold)', textAlign: 'right' }}>
-                  ${Number(item.price * item.quantity).toLocaleString('es-AR')}
-                </p>
-                <button
-                  className="btn btn--ghost btn--sm btn--icon"
-                  onClick={() => removeItem(item.id)}
-                  aria-label="Eliminar producto"
-                  style={{ color: 'var(--color-error)' }}
-                >✕</button>
-              </div>
+              {/* Subtotal */}
+              <p className="cart-item__subtotal">
+                ${Number(item.price * item.quantity).toLocaleString('es-AR')}
+              </p>
+
+              {/* Eliminar */}
+              <button
+                className="cart-item__remove"
+                onClick={() => removeItem(item.id)}
+                aria-label={`Eliminar ${item.name}`}
+              >
+                <TrashIcon />
+              </button>
+
             </div>
           ))}
-
-          <button
-            onClick={clearCart}
-            className="btn btn--ghost btn--sm"
-            style={{ color: 'var(--color-text-disabled)', marginTop: 'var(--sp-2)' }}
-          >
-            Vaciar carrito
-          </button>
         </div>
 
-        {/* Resumen */}
-        <div className="cart-summary">
+        {/* ── Resumen lateral ── */}
+        <aside className="cart-summary">
           <h2 className="cart-summary__title">Resumen</h2>
 
-          {items.map((item) => (
-            <div key={item.id} className="cart-summary__row">
-              <span className="truncate" style={{ maxWidth: 160 }}>{item.name} x{item.quantity}</span>
-              <span>${Number(item.price * item.quantity).toLocaleString('es-AR')}</span>
-            </div>
-          ))}
+          <div className="cart-summary__lines">
+            {items.map((item) => (
+              <div key={item.id} className="cart-summary__row">
+                <span className="cart-summary__row-label truncate">
+                  {item.name} <span className="cart-summary__qty">x{item.quantity}</span>
+                </span>
+                <span className="cart-summary__row-value">
+                  ${Number(item.price * item.quantity).toLocaleString('es-AR')}
+                </span>
+              </div>
+            ))}
+          </div>
 
-          <div className="cart-summary__row cart-summary__row--total">
+          <div className="cart-summary__divider" />
+
+          <div className="cart-summary__total">
             <span>Total</span>
             <span>${Number(total).toLocaleString('es-AR')}</span>
           </div>
 
           <button
-            className="btn btn--gradient btn--full btn--lg"
+            className="btn btn--primary btn--full btn--lg cart-summary__cta"
             onClick={handleCheckout}
-            style={{ marginTop: 'var(--sp-6)' }}
           >
-            {isAuthenticated ? 'Confirmar pedido' : 'Ingresar para comprar'}
+            {isAuthenticated ? 'Confirmar pedido →' : 'Ingresar para comprar'}
           </button>
 
           <Link
             to="/catalogo"
-            className="btn btn--ghost btn--full"
-            style={{ marginTop: 'var(--sp-2)' }}
+            className="btn btn--ghost btn--full cart-summary__back"
           >
-            Seguir comprando
+            ← Seguir comprando
           </Link>
-        </div>
+        </aside>
+
       </div>
     </div>
   );

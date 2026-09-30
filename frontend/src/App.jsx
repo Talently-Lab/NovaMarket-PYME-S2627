@@ -21,6 +21,9 @@ import PrivacyPage from './pages/legal/PrivacyPage';
 import DashboardPage from './pages/admin/DashboardPage';
 import ProductsAdminPage from './pages/admin/ProductsAdminPage';
 import OrdersAdminPage from './pages/admin/OrdersAdminPage';
+import CustomersAdminPage from './pages/admin/CustomersAdminPage';
+import CategoriesAdminPage from './pages/admin/CategoriesAdminPage';
+import ConfigAdminPage from './pages/admin/ConfigAdminPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 export default function App() {
@@ -52,9 +55,12 @@ export default function App() {
             {/* Rutas de administración */}
             <Route element={<AdminRoute />}>
               <Route element={<AdminLayout />}>
-                <Route path="/admin" element={<DashboardPage />} />
-                <Route path="/admin/productos" element={<ProductsAdminPage />} />
-                <Route path="/admin/pedidos" element={<OrdersAdminPage />} />
+                <Route path="/admin"              element={<DashboardPage />} />
+                <Route path="/admin/productos"    element={<ProductsAdminPage />} />
+                <Route path="/admin/pedidos"      element={<OrdersAdminPage />} />
+                <Route path="/admin/clientes"     element={<CustomersAdminPage />} />
+                <Route path="/admin/categorias"   element={<CategoriesAdminPage />} />
+                <Route path="/admin/config"       element={<ConfigAdminPage />} />
               </Route>
             </Route>
 

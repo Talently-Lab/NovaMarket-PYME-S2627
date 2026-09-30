@@ -24,10 +24,10 @@ const OrderModel = {
         0
       );
 
-      // Insertar orden
+      // Insertar orden — status 'confirmed' porque el checkout simulado implica pago inmediato
       const orderRes = await client.query(
-        `INSERT INTO orders (user_id, total, shipping_name, shipping_address, shipping_city, shipping_phone, notes)
-         VALUES ($1, $2, $3, $4, $5, $6, $7)
+        `INSERT INTO orders (user_id, total, status, shipping_name, shipping_address, shipping_city, shipping_phone, notes)
+         VALUES ($1, $2, 'confirmed', $3, $4, $5, $6, $7)
          RETURNING *`,
         [
           userId,

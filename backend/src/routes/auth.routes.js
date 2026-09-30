@@ -1,6 +1,6 @@
 const { Router } = require('express');
-const { register, login, me } = require('../controllers/auth.controller');
-const { authenticate } = require('../middlewares/auth.middleware');
+const { register, login, me, getAllUsers } = require('../controllers/auth.controller');
+const { authenticate, requireAdmin } = require('../middlewares/auth.middleware');
 
 const router = Router();
 
@@ -12,5 +12,8 @@ router.post('/login', login);
 
 // GET /api/auth/me — perfil del usuario autenticado
 router.get('/me', authenticate, me);
+
+// GET /api/auth/admin/users — lista todos los usuarios (solo admin)
+router.get('/admin/users', authenticate, requireAdmin, getAllUsers);
 
 module.exports = router;

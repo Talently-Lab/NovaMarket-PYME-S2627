@@ -115,6 +115,33 @@ const ProductModel = {
     );
     return result.rows;
   },
+  /**
+   * Lista categorías únicas con conteo de productos (admin)
+   */
+  async getCategories() {
+    const result = await query(
+      `SELECT category,
+              COUNT(*)::int        AS product_count,
+              COUNT(*) FILTER (WHERE is_active = true)::int AS active_count
+       FROM products
+       WHERE category IS NOT NULL
+       GROUP BY category
+       ORDER BY category ASC`
+    );
+    return result.rows;
+  },
+
+  /**
+   * Renombra una categoría en todos los productos que la tienen
+   */
+  async renameCategory(oldName, newName) {
+    const result = await query(
+      `UPDATE products SET category = $1 WHERE category ILIKE $2 RETURNING id`,
+      [newName, oldName]
+    );
+    return result.rowCount;
+  },
+
 };
 
 module.exports = ProductModel;

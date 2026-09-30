@@ -1,33 +1,19 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect } from 'react';
 
 const ThemeContext = createContext(null);
 
 export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState(() => {
-    // 1. Preferencia guardada
-    const saved = localStorage.getItem('nm-theme');
-    if (saved === 'light' || saved === 'dark') return saved;
-    // 2. Preferencia del sistema operativo
-    return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-  });
-
   useEffect(() => {
-    const root = document.documentElement;
-    root.setAttribute('data-theme', theme);
-    localStorage.setItem('nm-theme', theme);
+    // Modo único: light. Limpiar cualquier preferencia guardada anteriormente.
+    document.documentElement.removeAttribute('data-theme');
+    localStorage.removeItem('nm-theme');
 
-    // Actualiza meta theme-color para el browser
     const meta = document.getElementById('theme-color-meta');
-    if (meta) {
-      meta.setAttribute('content', theme === 'dark' ? '#0c0c16' : '#f6f6fb');
-    }
-  }, [theme]);
-
-  const toggleTheme = () => setTheme(t => t === 'dark' ? 'light' : 'dark');
-  const isDark = theme === 'dark';
+    if (meta) meta.setAttribute('content', '#F6F8FD');
+  }, []);
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme, isDark }}>
+    <ThemeContext.Provider value={{}}>
       {children}
     </ThemeContext.Provider>
   );

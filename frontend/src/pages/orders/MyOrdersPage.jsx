@@ -2,18 +2,30 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ordersAPI } from '../../services/api';
 
-const STATUS_LABEL = {
-  pending:   { text: 'Pendiente',  badge: 'badge--warning' },
-  confirmed: { text: 'Confirmado', badge: 'badge--primary' },
-  shipped:   { text: 'En camino',  badge: 'badge--primary' },
-  delivered: { text: 'Entregado',  badge: 'badge--success' },
-  cancelled: { text: 'Cancelado',  badge: 'badge--error'   },
+const STATUS_MAP = {
+  pending:   { label: 'Pendiente',  color: '#f59e0b' },
+  confirmed: { label: 'Confirmado', color: '#7D1CE2' },
+  shipped:   { label: 'En camino',  color: '#3b82f6' },
+  delivered: { label: 'Entregado',  color: '#22c55e' },
+  cancelled: { label: 'Cancelado',  color: '#ef4444' },
 };
 
+function PackageIcon() {
+  return (
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
+      aria-hidden="true" style={{ color: 'var(--color-text-disabled)' }}>
+      <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+      <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+      <line x1="12" y1="22.08" x2="12" y2="12"/>
+    </svg>
+  );
+}
+
 export default function MyOrdersPage() {
-  const [orders, setOrders] = useState([]);
+  const [orders, setOrders]   = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError]     = useState('');
 
   useEffect(() => {
     ordersAPI.getAll()
@@ -24,15 +36,15 @@ export default function MyOrdersPage() {
 
   if (loading) {
     return (
-      <div style={{ textAlign: 'center', padding: 'var(--sp-16)' }}>
-        <p style={{ color: 'var(--color-text-secondary)' }}>Cargando tus pedidos...</p>
+      <div className="orders-state">
+        <p className="orders-state__text">Cargando tus pedidos…</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div style={{ textAlign: 'center', padding: 'var(--sp-16)' }}>
+      <div className="orders-state">
         <p className="form-error">{error}</p>
         <Link to="/" className="btn btn--primary" style={{ marginTop: 'var(--sp-4)' }}>
           Volver al inicio
@@ -43,15 +55,13 @@ export default function MyOrdersPage() {
 
   if (orders.length === 0) {
     return (
-      <div style={{ textAlign: 'center', padding: 'var(--sp-16) var(--sp-4)' }}>
-        <p style={{ fontSize: '3rem', marginBottom: 'var(--sp-4)' }}>📦</p>
-        <h1 style={{ fontSize: 'var(--text-2xl)', fontWeight: 'var(--weight-bold)', marginBottom: 'var(--sp-2)' }}>
-          Todavía no hiciste pedidos
-        </h1>
-        <p style={{ color: 'var(--color-text-secondary)', marginBottom: 'var(--sp-8)' }}>
+      <div className="orders-state">
+        <PackageIcon />
+        <h1 className="orders-state__title">Todavía no hiciste pedidos</h1>
+        <p className="orders-state__text">
           Explorá el catálogo y encontrá algo que te guste.
         </p>
-        <Link to="/catalogo" className="btn btn--gradient btn--lg">
+        <Link to="/catalogo" className="btn btn--primary btn--lg">
           Explorar catálogo
         </Link>
       </div>
@@ -59,38 +69,48 @@ export default function MyOrdersPage() {
   }
 
   return (
-    <div>
-      <h1 className="cart-page-title">Mis pedidos</h1>
+    <div className="orders-wrapper container">
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-4)' }}>
+      <div className="orders-header">
+        <h1 className="orders-title">Mis pedidos</h1>
+        <p className="orders-subtitle">{orders.length} {orders.length === 1 ? 'pedido' : 'pedidos'} realizados</p>
+      </div>
+
+      <div className="orders-list">
         {orders.map((order) => {
-          const status = STATUS_LABEL[order.status] || STATUS_LABEL.pending;
+          const st = STATUS_MAP[order.status] ?? STATUS_MAP.pending;
           return (
             <div key={order.id} className="order-card">
+
               {/* Cabecera */}
               <div className="order-card__header">
-                <div>
+                <div className="order-card__meta">
                   <span className="order-card__id">
                     Pedido #{String(order.id).padStart(6, '0')}
                   </span>
                   <span className="order-card__date">
                     {new Date(order.created_at).toLocaleDateString('es-AR', {
-                      day: '2-digit', month: 'long', year: 'numeric'
+                      day: '2-digit', month: 'long', year: 'numeric',
                     })}
                   </span>
                 </div>
-                <span className={`badge ${status.badge}`}>{status.text}</span>
+                <span
+                  className="order-card__badge"
+                  style={{ '--badge-bg': st.color }}
+                >
+                  {st.label}
+                </span>
               </div>
 
-              {/* Items */}
+              {/* Productos */}
               <div className="order-card__items">
                 {order.items?.map((item) => (
                   <div key={item.id} className="order-card__item">
-                    <span className="truncate">{item.product_name}</span>
-                    <span style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--text-sm)', flexShrink: 0 }}>
-                      x{item.quantity}
+                    <span className="order-card__item-name truncate">
+                      {item.product_name}
                     </span>
-                    <span style={{ fontWeight: 'var(--weight-semibold)', flexShrink: 0 }}>
+                    <span className="order-card__item-qty">x{item.quantity}</span>
+                    <span className="order-card__item-price">
                       ${Number(item.unit_price * item.quantity).toLocaleString('es-AR')}
                     </span>
                   </div>
@@ -99,18 +119,17 @@ export default function MyOrdersPage() {
 
               {/* Footer */}
               <div className="order-card__footer">
-                <div>
-                  <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-secondary)' }}>
-                    Envío a {order.shipping_city}
-                  </p>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-secondary)' }}>Total</p>
-                  <p style={{ fontWeight: 'var(--weight-bold)', fontSize: 'var(--text-lg)' }}>
+                <span className="order-card__city">
+                  📍 {order.shipping_city || 'Sin ciudad'}
+                </span>
+                <div className="order-card__total">
+                  <span className="order-card__total-label">Total</span>
+                  <span className="order-card__total-value">
                     ${Number(order.total_amount).toLocaleString('es-AR')}
-                  </p>
+                  </span>
                 </div>
               </div>
+
             </div>
           );
         })}

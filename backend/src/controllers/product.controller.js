@@ -141,6 +141,38 @@ async function deleteProduct(req, res) {
   return res.status(200).json({ message: 'Producto eliminado correctamente.' });
 }
 
+/**
+ * GET /api/products/admin/categories
+ * Lista categorías únicas con conteo de productos — solo admin
+ */
+async function getCategories(req, res) {
+  const categories = await ProductModel.getCategories();
+  return res.status(200).json({ categories, total: categories.length });
+}
+
+/**
+ * PATCH /api/products/admin/categories/rename
+ * Renombra una categoría en todos los productos — solo admin
+ */
+async function renameCategory(req, res) {
+  const { oldName, newName } = req.body;
+
+  if (!oldName || !newName) {
+    return res.status(400).json({ error: 'oldName y newName son requeridos.' });
+  }
+
+  if (oldName.trim() === newName.trim()) {
+    return res.status(400).json({ error: 'El nombre nuevo debe ser diferente al actual.' });
+  }
+
+  const updated = await ProductModel.renameCategory(oldName.trim(), newName.trim());
+
+  return res.status(200).json({
+    message: `Categoría renombrada. ${updated} productos actualizados.`,
+    updated,
+  });
+}
+
 module.exports = {
   getProducts,
   getProductById,
@@ -148,4 +180,6 @@ module.exports = {
   createProduct,
   updateProduct,
   deleteProduct,
+  getCategories,
+  renameCategory,
 };

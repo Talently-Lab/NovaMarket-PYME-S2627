@@ -1,44 +1,47 @@
 import { useState, useEffect } from 'react';
-import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
-import ThemeToggle from '../ui/ThemeToggle';
 
-// Icono carrito SVG inline
+// Icono carrito SVG inline — carrito de compras (ShoppingCart)
 function CartIcon() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
       stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
       aria-hidden="true">
-      <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-      <line x1="3" y1="6" x2="21" y2="6" />
-      <path d="M16 10a4 4 0 0 1-8 0" />
+      <circle cx="9" cy="21" r="1"/>
+      <circle cx="20" cy="21" r="1"/>
+      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+    </svg>
+  );
+}
+
+// Icono usuario SVG inline
+function UserIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+      aria-hidden="true">
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+      <circle cx="12" cy="7" r="4" />
     </svg>
   );
 }
 
 const NAV_LINKS = [
-  { to: '/',         label: 'Inicio',   end: true },
-  { to: '/catalogo', label: 'Catálogo', end: false },
+  { to: '/',         label: 'Inicio',     end: true  },
+  { to: '/catalogo', label: 'Catálogo',   end: false },
+  { to: '/catalogo?categoria=periféricos', label: 'Periféricos', end: false },
+  { to: '/catalogo?categoria=gadgets',     label: 'Gadgets',     end: false },
+  { to: '/catalogo?categoria=audio',       label: 'Audio',       end: false },
+  { to: '/catalogo?categoria=accesorios',  label: 'Ofertas',     end: false },
 ];
 
 export default function Header() {
   const { itemCount } = useCart();
-  const { isAuthenticated, user, logout } = useAuth();
+  const { isAuthenticated, isAdmin, user, logout } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-
-  const isHome = location.pathname === '/';
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 10);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    // reset al cambiar de página
-    setScrolled(window.scrollY > 10);
-    return () => window.removeEventListener('scroll', onScroll);
-  }, [location.pathname]);
 
   const closeMenu = () => setMenuOpen(false);
 
@@ -49,77 +52,106 @@ export default function Header() {
   };
 
   return (
-    <header className={`header${isHome && !scrolled ? ' header--transparent' : ''}`}>
-      <div className="header__inner">
-        {/* Logo */}
-        <Link to="/" className="header__logo" onClick={closeMenu}>
-          Nova<span>Market</span>
-        </Link>
+    <header className="header">
 
-        {/* Nav desktop */}
-        <nav className="header__nav" aria-label="Navegación principal">
+      {/* ── TOP BAR ── */}
+      <div className="header__top">
+        <div className="header__top-inner">
+
+          {/* Logo */}
+          <Link to="/" className="header__logo" onClick={closeMenu}>
+            <img src="/src/assets/logo.png" alt="Nova Market" className="header__logo-img" />
+          </Link>
+
+          {/* Acciones desktop */}
+          <div className="header__actions">
+            {/* Chip Admin — solo visible para administradores */}
+            {isAdmin && (
+              <Link to="/admin" className="header__admin-chip">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+                  aria-hidden="true">
+                  <circle cx="12" cy="12" r="3"/>
+                  <path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/>
+                </svg>
+                Admin
+              </Link>
+            )}
+
+            {/* Mi cuenta / usuario */}
+            {isAuthenticated ? (
+              <div className="header__user">
+                <UserIcon />
+                <Link to="/mis-pedidos" className="header__user-name" title="Mis pedidos">
+                  {user?.name?.split(' ')[0]}
+                </Link>
+              </div>
+            ) : (
+              <Link to="/login" className="header__account-link">
+                <UserIcon />
+                <span>Mi Cuenta</span>
+              </Link>
+            )}
+
+            {/* Carrito */}
+            <Link
+              to="/carrito"
+              className="header__cart-btn"
+              aria-label={`Carrito${itemCount > 0 ? `, ${itemCount} productos` : ' vacío'}`}
+            >
+              <div className="header__cart-icon-wrapper">
+                <CartIcon />
+                {itemCount > 0 && (
+                  <span className="header__cart-badge" aria-hidden="true">
+                    {itemCount > 99 ? '99+' : itemCount}
+                  </span>
+                )}
+              </div>
+              <span className="header__cart-label">Carrito</span>
+            </Link>
+
+            {/* Salir — solo si logueado */}
+            {isAuthenticated && (
+              <button onClick={handleLogout} className="header__logout-btn">
+                Salir
+              </button>
+            )}
+
+            {/* Hamburger (mobile) */}
+            <button
+              className={`header__hamburger${menuOpen ? ' open' : ''}`}
+              onClick={() => setMenuOpen(o => !o)}
+              aria-expanded={menuOpen}
+              aria-controls="mobile-nav"
+              aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
+            >
+              <span />
+              <span />
+              <span />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ── NAV BAR SECUNDARIA (verde lima) ── */}
+      <nav className="header__nav-bar" aria-label="Navegación principal">
+        <div className="header__nav-inner">
           {NAV_LINKS.map(({ to, label, end }) => (
             <NavLink
-              key={to}
+              key={label}
               to={to}
               end={end}
-              className={({ isActive }) => isActive ? 'active' : ''}
+              className={({ isActive }) =>
+                `header__nav-link${isActive ? ' active' : ''}`
+              }
             >
               {label}
             </NavLink>
           ))}
-        </nav>
-
-        {/* Acciones */}
-        <div className="header__actions">
-          <ThemeToggle />
-
-          {/* Carrito */}
-          <Link
-            to="/carrito"
-            className="header__cart-btn"
-            aria-label={`Carrito${itemCount > 0 ? `, ${itemCount} productos` : ' vacío'}`}
-          >
-            <CartIcon />
-            {itemCount > 0 && (
-              <span className="header__cart-badge" aria-hidden="true">
-                {itemCount > 99 ? '99+' : itemCount}
-              </span>
-            )}
-          </Link>
-
-          {/* Login / Usuario (desktop) */}
-          {isAuthenticated ? (
-            <div className="header__user">
-              <Link to="/mis-pedidos" className="header__user-name" title="Mis pedidos">
-                {user?.name?.split(' ')[0]}
-              </Link>
-              <button onClick={handleLogout} className="btn btn--secondary btn--sm">
-                Salir
-              </button>
-            </div>
-          ) : (
-            <Link to="/login" className="btn btn--primary btn--sm">
-              Ingresar
-            </Link>
-          )}
-
-          {/* Hamburger (mobile) */}
-          <button
-            className={`header__hamburger${menuOpen ? ' open' : ''}`}
-            onClick={() => setMenuOpen(o => !o)}
-            aria-expanded={menuOpen}
-            aria-controls="mobile-nav"
-            aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
-          >
-            <span />
-            <span />
-            <span />
-          </button>
         </div>
-      </div>
+      </nav>
 
-      {/* Nav mobile */}
+      {/* ── DRAWER MOBILE ── */}
       <nav
         id="mobile-nav"
         className={`header__mobile-nav${menuOpen ? ' open' : ''}`}
@@ -128,7 +160,7 @@ export default function Header() {
       >
         {NAV_LINKS.map(({ to, label, end }) => (
           <NavLink
-            key={to}
+            key={label}
             to={to}
             end={end}
             className={({ isActive }) => isActive ? 'active' : ''}
@@ -143,6 +175,11 @@ export default function Header() {
             <Link to="/mis-pedidos" className="header__mobile-nav-link" onClick={closeMenu}>
               Mis pedidos
             </Link>
+            {isAdmin && (
+              <Link to="/admin" className="header__mobile-nav-link" onClick={closeMenu}>
+                Panel Admin
+              </Link>
+            )}
             <button onClick={handleLogout} className="header__mobile-btn header__mobile-btn--secondary">
               Cerrar sesión
             </button>
