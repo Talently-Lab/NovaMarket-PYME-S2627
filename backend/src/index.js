@@ -9,7 +9,14 @@ const PORT = process.env.PORT || 3000;
 // Seguridad: no exponer la versión de Express en los headers
 app.disable('x-powered-by');
 
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'http://localhost:4173',
+    'https://novamarket-pyme-s2627.netlify.app',
+  ],
+  credentials: true,
+}));
 app.use(express.json());
 
 // Health check — QA smoke test
@@ -20,6 +27,18 @@ app.get('/api/health', (req, res) => {
     timestamp: new Date().toISOString()
   });
 });
+
+// Rutas de autenticación
+const authRoutes = require('./routes/auth.routes');
+app.use('/api/auth', authRoutes);
+
+// Rutas de productos
+const productRoutes = require('./routes/product.routes');
+app.use('/api/products', productRoutes);
+
+// Rutas de pedidos
+const orderRoutes = require('./routes/order.routes');
+app.use('/api/orders', orderRoutes);
 
 // Manejador de errores global — evita exponer stack traces al cliente
 app.use((err, req, res, next) => {
