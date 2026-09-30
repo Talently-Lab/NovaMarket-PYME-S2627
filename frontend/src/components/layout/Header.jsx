@@ -68,6 +68,14 @@ export default function Header() {
               {label}
             </NavLink>
           ))}
+           {isAuthenticated && user?.role === 'admin' && (
+           <NavLink
+             to="/admin"
+             className={({ isActive }) => isActive ? 'active' : ''}
+           >
+             Administración
+          </NavLink>
+       )}
         </nav>
 
         {/* Acciones */}

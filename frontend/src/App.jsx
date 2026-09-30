@@ -20,6 +20,8 @@ import TermsPage from './pages/legal/TermsPage';
 import PrivacyPage from './pages/legal/PrivacyPage';
 import DashboardPage from './pages/admin/DashboardPage';
 import ProductsAdminPage from './pages/admin/ProductsAdminPage';
+import NewProductAdminPage from './pages/admin/NewProductAdminPage';
+import EditProductAdminPage from './pages/admin/EditProductAdminPage';
 import OrdersAdminPage from './pages/admin/OrdersAdminPage';
 import NotFoundPage from './pages/NotFoundPage';
 
@@ -54,6 +56,8 @@ export default function App() {
               <Route element={<AdminLayout />}>
                 <Route path="/admin" element={<DashboardPage />} />
                 <Route path="/admin/productos" element={<ProductsAdminPage />} />
+                <Route path="/admin/productos/nuevo" element={<NewProductAdminPage />}/>
+                <Route path="/admin/productos/:id/editar" element={<EditProductAdminPage/>}/>
                 <Route path="/admin/pedidos" element={<OrdersAdminPage />} />
               </Route>
             </Route>

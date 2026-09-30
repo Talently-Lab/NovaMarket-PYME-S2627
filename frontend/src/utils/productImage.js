@@ -40,6 +40,7 @@ const CATEGORY_IMAGES = {
 export function getProductImage(product) {
   return (
     PRODUCT_IMAGES[product.name] ||
+    product.image_url || 
     CATEGORY_IMAGES[product.category] ||
     'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=600&q=80'
   );

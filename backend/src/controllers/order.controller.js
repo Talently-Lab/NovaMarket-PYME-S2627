@@ -85,6 +85,31 @@ async function getAllOrders(req, res) {
 }
 
 /**
+ * GET /api/orders/admin/:id
+ * Detalle de cualquier pedido — solo admin
+ */
+async function getAdminOrderById(req, res) {
+  const { id } = req.params;
+
+  if (isNaN(id)) {
+    return res.status(400).json({
+      error: 'El ID del pedido debe ser un número.',
+    });
+  }
+
+  const order = await OrderModel.findById(Number(id));
+
+  if (!order) {
+    return res.status(404).json({
+      error: 'Pedido no encontrado.',
+    });
+  }
+
+  return res.status(200).json({ order });
+}
+
+
+/**
  * PATCH /api/orders/admin/:id/status
  * Actualiza el estado de un pedido — solo admin
  */
@@ -114,4 +139,4 @@ async function updateOrderStatus(req, res) {
   });
 }
 
-module.exports = { createOrder, getMyOrders, getOrderById, getAllOrders, updateOrderStatus };
+module.exports = { createOrder, getMyOrders, getOrderById, getAllOrders, getAdminOrderById, updateOrderStatus };

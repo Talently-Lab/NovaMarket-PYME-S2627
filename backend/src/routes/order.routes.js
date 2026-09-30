@@ -4,6 +4,7 @@ const {
   getMyOrders,
   getOrderById,
   getAllOrders,
+  getAdminOrderById,
   updateOrderStatus,
 } = require('../controllers/order.controller');
 const { authenticate, requireAdmin } = require('../middlewares/auth.middleware');
@@ -28,6 +29,9 @@ router.get('/:id', getOrderById);
 
 // GET /api/orders/admin/all — todos los pedidos
 router.get('/admin/all', requireAdmin, getAllOrders);
+
+// GET /api/orders/admin/:id — detalle de cualquier pedido para admin
+router.get('/admin/:id', requireAdmin, getAdminOrderById);
 
 // PATCH /api/orders/admin/:id/status — cambiar estado
 router.patch('/admin/:id/status', requireAdmin, updateOrderStatus);
