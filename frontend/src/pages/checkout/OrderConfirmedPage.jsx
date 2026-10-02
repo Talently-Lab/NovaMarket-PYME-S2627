@@ -30,10 +30,10 @@ export default function OrderConfirmedPage() {
         <CheckIcon />
       </div>
 
-      <h1 className="order-confirmed__title">¡Pedido confirmado!</h1>
+      <h1 className="order-confirmed__title">¡Pago aprobado!</h1>
 
       <p className="order-confirmed__subtitle">
-        Gracias por tu compra. Tu pedido fue registrado exitosamente.
+        Tu pedido fue registrado y confirmado exitosamente.
       </p>
 
       {order && (

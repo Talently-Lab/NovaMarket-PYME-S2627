@@ -205,7 +205,6 @@ export default function CheckoutPage() {
         payment:  paymentData,
       });
 
-      clearCart();
       navigate('/pedido-confirmado', {
         state: {
           order: {
@@ -220,6 +219,7 @@ export default function CheckoutPage() {
           },
         },
       });
+      clearCart();
     } catch (err) {
       setError(err.response?.data?.error || 'Error al confirmar el pedido. Intentá de nuevo.');
     } finally {
