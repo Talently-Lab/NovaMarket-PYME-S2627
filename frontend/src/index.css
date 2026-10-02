@@ -4992,3 +4992,10 @@ ul, ol { list-style: none; }
   }
   .ocard__total-preview { display: none; }
 }
+
+/* ── Botón descargar recibo ── */
+.order-confirmed__download {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
