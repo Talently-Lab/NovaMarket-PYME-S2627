@@ -106,6 +106,7 @@ export default function CheckoutPage() {
   // UI
   const [loading, setLoading] = useState(false);
   const [error,   setError]   = useState('');
+  const [submitted, setSubmitted] = useState(false);
 
   // ── Cálculos ──────────────────────────────────────────────────────────────
   const subtotal = cartTotal;
@@ -205,6 +206,7 @@ export default function CheckoutPage() {
         payment:  paymentData,
       });
 
+      setSubmitted(true);
       navigate('/pedido-confirmado', {
         state: {
           order: {
@@ -227,7 +229,7 @@ export default function CheckoutPage() {
     }
   };
 
-  if (items.length === 0) {
+  if (!submitted && items.length === 0) {
     navigate('/carrito');
     return null;
   }
