@@ -1685,10 +1685,14 @@ ul, ol { list-style: none; }
     max-width: 100%;
     aspect-ratio: 16 / 9;
     height: auto;
+    overflow: hidden;
   }
 
   .hero__image {
-    object-position: 50% 30%;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 25%;
   }
 
   /* Tags: banda horizontal en mobile */
@@ -4175,6 +4179,14 @@ ul, ol { list-style: none; }
 
   .hero__image-wrapper {
     aspect-ratio: 4 / 3;
+    overflow: hidden;
+  }
+
+  .hero__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 20%;
   }
 
   .hero__right {
