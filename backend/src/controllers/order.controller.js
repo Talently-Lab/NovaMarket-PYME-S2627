@@ -2,48 +2,140 @@ const OrderModel = require('../models/order.model');
 const ProductModel = require('../models/product.model');
 
 const VALID_STATUSES = ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'];
+const VALID_PAYMENT_METHODS = ['tarjeta', 'billetera', 'transferencia'];
+
+// Cupones válidos: { code: descuento % }
+const VALID_COUPONS = {
+  'NOVA10':   10,
+  'NOVA20':   20,
+  'GAMING15': 15,
+  'PROMO5':    5,
+};
+
+const TAX_RATE = 0.21; // IVA 21%
 
 /**
  * POST /api/orders
- * Crea un nuevo pedido (checkout simulado)
- * Requiere autenticación
+ * Crea un nuevo pedido con medio de pago, cupón e IVA
  */
 async function createOrder(req, res) {
-  const { items, shipping } = req.body;
+  const { items, shipping, payment } = req.body;
   const userId = req.user.id;
 
-  // Validaciones básicas
+  // Validar items
   if (!items || !Array.isArray(items) || items.length === 0) {
     return res.status(400).json({ error: 'El pedido debe tener al menos un producto.' });
   }
 
-  // Verificar que cada item tiene los campos requeridos y stock disponible
+  // Validar medio de pago
+  const method = payment?.method || 'tarjeta';
+  if (!VALID_PAYMENT_METHODS.includes(method)) {
+    return res.status(400).json({
+      error: `Medio de pago inválido. Valores permitidos: ${VALID_PAYMENT_METHODS.join(', ')}.`,
+    });
+  }
+
+  // Validar datos de tarjeta si el método es tarjeta
+  if (method === 'tarjeta') {
+    if (!payment?.card_number || payment.card_number.replace(/\s/g, '').length < 13) {
+      return res.status(400).json({ error: 'Número de tarjeta inválido.' });
+    }
+    if (!payment?.card_name) {
+      return res.status(400).json({ error: 'Nombre en la tarjeta es requerido.' });
+    }
+    if (!payment?.card_expiry) {
+      return res.status(400).json({ error: 'Fecha de vencimiento es requerida.' });
+    }
+    if (!payment?.card_cvv || payment.card_cvv.length < 3) {
+      return res.status(400).json({ error: 'CVV inválido.' });
+    }
+  }
+
+  // Verificar stock y tomar precio del backend (seguro)
   for (const item of items) {
     if (!item.product_id || !item.quantity || item.quantity <= 0) {
       return res.status(400).json({ error: 'Cada item debe tener product_id y quantity válidos.' });
     }
-
     const product = await ProductModel.findById(item.product_id);
     if (!product) {
       return res.status(404).json({ error: `Producto #${item.product_id} no encontrado.` });
     }
-
     if (product.stock < item.quantity) {
       return res.status(409).json({
         error: `Stock insuficiente para "${product.name}". Disponible: ${product.stock}.`,
       });
     }
-
-    // Tomar el precio actual del producto (no confiar en el cliente)
+    // Precio siempre desde el backend
     item.unit_price = parseFloat(product.price);
   }
 
-  const order = await OrderModel.create(userId, items, shipping || {});
+  // Calcular subtotal
+  const subtotal = items.reduce((sum, i) => sum + i.quantity * i.unit_price, 0);
+
+  // Aplicar cupón
+  let discountAmount = 0;
+  let couponCode     = null;
+  if (payment?.coupon_code) {
+    const code = payment.coupon_code.toUpperCase().trim();
+    if (VALID_COUPONS[code]) {
+      discountAmount = +(subtotal * (VALID_COUPONS[code] / 100)).toFixed(2);
+      couponCode     = code;
+    }
+    // Cupón inválido no es error fatal — simplemente no aplica descuento
+  }
+
+  // Calcular IVA sobre (subtotal - descuento)
+  const baseForTax  = subtotal - discountAmount;
+  const taxAmount   = +(baseForTax * TAX_RATE).toFixed(2);
+  const totalWithTax = +(baseForTax + taxAmount).toFixed(2);
+
+  // Extraer últimos 4 dígitos de la tarjeta (solo si método es tarjeta)
+  const cardLast4 = method === 'tarjeta'
+    ? payment.card_number.replace(/\s/g, '').slice(-4)
+    : null;
+
+  const paymentData = {
+    method,
+    card_last4:      cardLast4,
+    card_brand:      payment?.card_brand    || null,
+    card_type:       payment?.card_type     || null,
+    installments:    payment?.installments  || 1,
+    coupon_code:     couponCode,
+    discount_amount: discountAmount,
+    tax_amount:      taxAmount,
+    total_with_tax:  totalWithTax,
+  };
+
+  const order = await OrderModel.create(userId, items, shipping || {}, paymentData);
 
   return res.status(201).json({
     message: 'Pedido confirmado exitosamente.',
-    order,
+    order: {
+      ...order,
+      subtotal,
+      discount_amount: discountAmount,
+      tax_amount:      taxAmount,
+      total_with_tax:  totalWithTax,
+    },
   });
+}
+
+/**
+ * POST /api/orders/validate-coupon
+ * Valida un cupón y devuelve el porcentaje de descuento
+ */
+async function validateCoupon(req, res) {
+  const { code } = req.body;
+  if (!code) return res.status(400).json({ error: 'Código requerido.' });
+
+  const normalized = code.toUpperCase().trim();
+  const discount   = VALID_COUPONS[normalized];
+
+  if (!discount) {
+    return res.status(404).json({ error: 'Cupón inválido o expirado.' });
+  }
+
+  return res.status(200).json({ code: normalized, discount_percent: discount });
 }
 
 /**
@@ -61,17 +153,13 @@ async function getMyOrders(req, res) {
  */
 async function getOrderById(req, res) {
   const { id } = req.params;
-
   if (isNaN(id)) {
     return res.status(400).json({ error: 'El ID del pedido debe ser un número.' });
   }
-
   const order = await OrderModel.findById(Number(id), req.user.id);
-
   if (!order) {
     return res.status(404).json({ error: 'Pedido no encontrado.' });
   }
-
   return res.status(200).json({ order });
 }
 
@@ -89,13 +177,12 @@ async function getAllOrders(req, res) {
  * Actualiza el estado de un pedido — solo admin
  */
 async function updateOrderStatus(req, res) {
-  const { id } = req.params;
+  const { id }     = req.params;
   const { status } = req.body;
 
   if (isNaN(id)) {
     return res.status(400).json({ error: 'El ID del pedido debe ser un número.' });
   }
-
   if (!status || !VALID_STATUSES.includes(status)) {
     return res.status(400).json({
       error: `Estado inválido. Valores permitidos: ${VALID_STATUSES.join(', ')}.`,
@@ -103,15 +190,18 @@ async function updateOrderStatus(req, res) {
   }
 
   const order = await OrderModel.updateStatus(Number(id), status);
-
   if (!order) {
     return res.status(404).json({ error: 'Pedido no encontrado.' });
   }
 
-  return res.status(200).json({
-    message: 'Estado del pedido actualizado.',
-    order,
-  });
+  return res.status(200).json({ message: 'Estado del pedido actualizado.', order });
 }
 
-module.exports = { createOrder, getMyOrders, getOrderById, getAllOrders, updateOrderStatus };
+module.exports = {
+  createOrder,
+  validateCoupon,
+  getMyOrders,
+  getOrderById,
+  getAllOrders,
+  updateOrderStatus,
+};

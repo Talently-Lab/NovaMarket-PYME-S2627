@@ -47,9 +47,10 @@ export const productsAPI = {
 
 // ── Pedidos ───────────────────────────────────────────────────
 export const ordersAPI = {
-  create:   (data) => api.post('/orders', data),
-  getAll:   ()     => api.get('/orders'),
-  getById:  (id)   => api.get(`/orders/${id}`),
+  create:         (data)          => api.post('/orders', data),
+  validateCoupon: (code)          => api.post('/orders/validate-coupon', { code }),
+  getAll:         ()              => api.get('/orders'),
+  getById:        (id)            => api.get(`/orders/${id}`),
   // Admin
   getAllAdmin:    ()             => api.get('/orders/admin/all'),
   updateStatus:  (id, status)   => api.patch(`/orders/admin/${id}/status`, { status }),

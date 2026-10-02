@@ -1,6 +1,7 @@
 const { Router } = require('express');
 const {
   createOrder,
+  validateCoupon,
   getMyOrders,
   getOrderById,
   getAllOrders,
@@ -17,6 +18,9 @@ router.use(authenticate);
 
 // POST /api/orders — crear pedido (checkout)
 router.post('/', createOrder);
+
+// POST /api/orders/validate-coupon — validar cupón
+router.post('/validate-coupon', validateCoupon);
 
 // GET /api/orders — mis pedidos
 router.get('/', getMyOrders);

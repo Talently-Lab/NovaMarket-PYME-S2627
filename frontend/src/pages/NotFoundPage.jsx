@@ -78,7 +78,7 @@ export default function NotFoundPage() {
 
       {/* Acciones */}
       <div className="not-found__actions">
-        <Link to="/" className="btn btn--gradient btn--lg">
+        <Link to="/" className="btn btn--primary btn--lg">
           🏠 Volver al inicio
         </Link>
         <button
