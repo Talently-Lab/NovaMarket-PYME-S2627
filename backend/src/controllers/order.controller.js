@@ -84,6 +84,11 @@ async function createOrder(req, res) {
     // Cupón inválido no es error fatal — simplemente no aplica descuento
   }
 
+  // Descuento adicional por billetera virtual (5% OFF)
+  if (method === 'billetera') {
+    discountAmount = +(discountAmount + subtotal * 0.05).toFixed(2);
+  }
+
   // Calcular IVA sobre (subtotal - descuento)
   const baseForTax  = subtotal - discountAmount;
   const taxAmount   = +(baseForTax * TAX_RATE).toFixed(2);

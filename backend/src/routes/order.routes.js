@@ -25,15 +25,15 @@ router.post('/validate-coupon', validateCoupon);
 // GET /api/orders — mis pedidos
 router.get('/', getMyOrders);
 
-// GET /api/orders/:id — detalle de un pedido propio
-router.get('/:id', getOrderById);
-
-// ── Rutas de administración ───────────────────────────────────────────────────
+// ── Rutas de administración (deben ir ANTES de /:id para no ser interceptadas) ──
 
 // GET /api/orders/admin/all — todos los pedidos
 router.get('/admin/all', requireAdmin, getAllOrders);
 
 // PATCH /api/orders/admin/:id/status — cambiar estado
 router.patch('/admin/:id/status', requireAdmin, updateOrderStatus);
+
+// GET /api/orders/:id — detalle de un pedido propio (al final para no interceptar /admin/*)
+router.get('/:id', getOrderById);
 
 module.exports = router;
