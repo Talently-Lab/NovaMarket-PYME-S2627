@@ -2270,6 +2270,7 @@ ul, ol { list-style: none; }
 /* ── Checkout ── */
 .checkout-wrapper {
   padding-block: var(--sp-10);
+  padding-inline: max(var(--container-pad), 16px);
 }
 
 .checkout-header {
@@ -3224,6 +3225,10 @@ ul, ol { list-style: none; }
   .checkout-layout {
     grid-template-columns: 1fr;
     gap: var(--sp-4);
+  }
+
+  .checkout-wrapper {
+    padding-inline: 16px;
   }
 
   /* Resumen de checkout sube al tope en mobile */
@@ -4842,6 +4847,9 @@ ul, ol { list-style: none; }
 }
 
 @media (max-width: 480px) {
+  .checkout-wrapper {
+    padding-inline: 16px;
+  }
   .checkout-section {
     padding: var(--sp-4);
   }
