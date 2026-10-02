@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
+import logoImg from '../../assets/logo.png';
 
 // Icono carrito SVG inline — carrito de compras (ShoppingCart)
 function CartIcon() {
@@ -60,12 +61,13 @@ export default function Header() {
 
           {/* Logo */}
           <Link to="/" className="header__logo" onClick={closeMenu}>
-            <img src="/src/assets/logo.png" alt="Nova Market" className="header__logo-img" />
+            <img src={logoImg} alt="Nova Market" className="header__logo-img" />
           </Link>
 
           {/* Acciones desktop */}
           <div className="header__actions">
-            {/* Chip Admin — solo visible para administradores */}
+
+            {/* Chip Admin */}
             {isAdmin && (
               <Link to="/admin" className="header__admin-chip">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
@@ -78,14 +80,12 @@ export default function Header() {
               </Link>
             )}
 
-            {/* Mi cuenta / usuario */}
+            {/* Mi cuenta */}
             {isAuthenticated ? (
-              <div className="header__user">
+              <Link to="/mis-pedidos" className="header__account-link">
                 <UserIcon />
-                <Link to="/mis-pedidos" className="header__user-name" title="Mis pedidos">
-                  {user?.name?.split(' ')[0]}
-                </Link>
-              </div>
+                <span>{user?.name?.split(' ')[0]}</span>
+              </Link>
             ) : (
               <Link to="/login" className="header__account-link">
                 <UserIcon />
@@ -96,7 +96,7 @@ export default function Header() {
             {/* Carrito */}
             <Link
               to="/carrito"
-              className="header__cart-btn"
+              className="header__account-link"
               aria-label={`Carrito${itemCount > 0 ? `, ${itemCount} productos` : ' vacío'}`}
             >
               <div className="header__cart-icon-wrapper">
@@ -107,17 +107,17 @@ export default function Header() {
                   </span>
                 )}
               </div>
-              <span className="header__cart-label">Carrito</span>
+              <span>Carrito</span>
             </Link>
 
-            {/* Salir — solo si logueado */}
+            {/* Salir */}
             {isAuthenticated && (
               <button onClick={handleLogout} className="header__logout-btn">
                 Salir
               </button>
             )}
 
-            {/* Hamburger (mobile) */}
+            {/* Hamburger */}
             <button
               className={`header__hamburger${menuOpen ? ' open' : ''}`}
               onClick={() => setMenuOpen(o => !o)}
@@ -125,10 +125,9 @@ export default function Header() {
               aria-controls="mobile-nav"
               aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
             >
-              <span />
-              <span />
-              <span />
+              <span /><span /><span />
             </button>
+
           </div>
         </div>
       </div>

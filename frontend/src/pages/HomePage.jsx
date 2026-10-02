@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { productsAPI } from '../services/api';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import audifonosImg from '../assets/audifonos.png';
 import { getProductImage } from '../utils/productImage';
 
 const CATEGORIES = [
@@ -114,12 +115,14 @@ export default function HomePage() {
           </div>
 
           {/* Imagen + panel de tags */}
-          <div className="hero__image-wrapper">
-            <img
-              src="/src/assets/hero.png"
-              alt="Setup tecnológico NovaMarket"
-              className="hero__image"
-            />
+          <div className="hero__right">
+            <div className="hero__image-wrapper">
+              <img
+                src={audifonosImg}
+                alt="Setup tecnológico NovaMarket"
+                className="hero__image"
+              />
+            </div>
             <div className="hero__tags-panel" aria-hidden="true">
               <span className="hero__tag">TECH</span>
               <span className="hero__tag">GAMING</span>
