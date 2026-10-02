@@ -218,6 +218,12 @@ export default function CheckoutPage() {
             payment_method:  payMethod,
             installments:    installment,
             installment_amount: selectedInst.monthly,
+            items: items.map(item => ({
+              product_id:   item.id,
+              product_name: item.name,
+              quantity:     item.quantity,
+              unit_price:   Number(item.price),
+            })),
           },
         },
       });

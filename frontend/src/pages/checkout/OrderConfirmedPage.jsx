@@ -34,6 +34,9 @@ function DownloadIcon() {
 // ── Generador de PDF ─────────────────────────────────────────────────────────
 function generateReceiptPDF(order) {
   const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+  // jsPDF no renderiza bien separadores de miles con punto (es-AR).
+  // Usamos en-US internamente y anteponemos el $ manualmente.
+  const fmtPDF = (n) => Number(n ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const W = 210; // ancho A4
   const pad = 20;
   const col2 = W - pad; // columna derecha
@@ -70,7 +73,7 @@ function generateReceiptPDF(order) {
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(100, 100, 100);
   left(`Pedido #${String(order.id).padStart(6, '0')}`, y);
-  right(new Date().toLocaleDateString('es-AR', { day: '2-digit', month: 'long', year: 'numeric' }), y);
+  right(new Date().toLocaleString('es-AR', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }), y);
   y += 8;
 
   line(y); y += 6;
@@ -100,7 +103,7 @@ function generateReceiptPDF(order) {
     doc.setTextColor(80, 80, 80);
     order.items.forEach(item => {
       const name  = item.product_name || `Producto #${item.product_id}`;
-      const price = `$${fmt(item.unit_price * item.quantity)}`;
+      const price = `$${fmtPDF(item.unit_price * item.quantity)}`;
       left(`${name} x${item.quantity}`, y);
       right(price, y);
       y += 5;
@@ -111,9 +114,9 @@ function generateReceiptPDF(order) {
 
   // ── Desglose financiero ──
   const rows = [];
-  if (order.subtotal != null)       rows.push(['Subtotal',    `$${fmt(order.subtotal)}`]);
-  if (order.discount_amount > 0)    rows.push(['Descuento',   `− $${fmt(order.discount_amount)}`]);
-  if (order.tax_amount > 0)         rows.push(['IVA (21%)',   `$${fmt(order.tax_amount)}`]);
+  if (order.subtotal != null)       rows.push(['Subtotal',    `$${fmtPDF(order.subtotal)}`]);
+  if (order.discount_amount > 0)    rows.push(['Descuento',   `- $${fmtPDF(order.discount_amount)}`]);
+  if (order.tax_amount > 0)         rows.push(['IVA (21%)',   `$${fmtPDF(order.tax_amount)}`]);
 
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(80, 80, 80);
@@ -132,7 +135,7 @@ function generateReceiptPDF(order) {
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(10);
   left('Total pagado', y + 1.5);
-  right(`$${fmt(order.total_with_tax ?? order.total)}`, y + 1.5);
+  right(`$${fmtPDF(order.total_with_tax ?? order.total)}`, y + 1.5);
   y += 12;
 
   // Medio de pago
@@ -192,7 +195,7 @@ export default function OrderConfirmedPage() {
           <div className="order-confirmed__row">
             <span className="order-confirmed__row-label">Fecha</span>
             <span className="order-confirmed__row-value" style={{ fontFamily: 'var(--font-ui)', fontSize: 'var(--text-sm)' }}>
-              {new Date().toLocaleDateString('es-AR', { day: '2-digit', month: 'long', year: 'numeric' })}
+              {new Date().toLocaleString('es-AR', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
             </span>
           </div>
 
@@ -203,6 +206,30 @@ export default function OrderConfirmedPage() {
               {order.shipping_address}, {order.shipping_city}
             </span>
           </div>
+
+          {order.items?.length > 0 && (
+            <>
+              <hr className="order-confirmed__divider" />
+              <div className="order-confirmed__row" style={{ alignItems: 'flex-start' }}>
+                <span className="order-confirmed__row-label" style={{ fontWeight: 'var(--weight-bold)', color: 'var(--color-text)' }}>
+                  Productos
+                </span>
+                <span style={{ fontSize: 'var(--text-sm)', textAlign: 'right' }}>
+                  {order.items.map((item, i) => (
+                    <span key={i} style={{ display: 'block', marginBottom: 'var(--sp-1)' }}>
+                      <span style={{ fontWeight: 'var(--weight-semibold)' }}>
+                        {item.product_name || `Producto #${item.product_id}`}
+                      </span>
+                      {' '}
+                      <span style={{ color: 'var(--color-text-secondary)' }}>
+                        x{item.quantity} — ${fmt(item.unit_price * item.quantity)}
+                      </span>
+                    </span>
+                  ))}
+                </span>
+              </div>
+            </>
+          )}
 
           <hr className="order-confirmed__divider" />
 

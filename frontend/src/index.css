@@ -4026,15 +4026,16 @@ ul, ol { list-style: none; }
 }
 
 .order-confirmed__title {
-  font-size: var(--text-3xl);
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
   font-weight: var(--weight-extrabold);
   letter-spacing: -0.03em;
   color: var(--color-text);
+  white-space: nowrap;
 }
 
 .order-confirmed__subtitle {
   color: var(--color-text-secondary);
-  max-width: 480px;
+  max-width: 560px;
 }
 
 .order-confirmed__card {
@@ -4043,7 +4044,7 @@ ul, ol { list-style: none; }
   border-radius: var(--radius-xl);
   padding: var(--sp-6);
   width: 100%;
-  max-width: 480px;
+  max-width: 560px;
   text-align: left;
 }
 
@@ -4088,6 +4089,8 @@ ul, ol { list-style: none; }
   flex-wrap: wrap;
   justify-content: center;
   margin-top: var(--sp-4);
+  width: 100%;
+  max-width: 560px;
 }
 
 /* ── 27. RESPONSIVE — mobile pequeño (480px) mejorado ── */
@@ -4232,7 +4235,8 @@ ul, ol { list-style: none; }
   }
 
   .order-confirmed__title {
-    font-size: var(--text-2xl);
+    font-size: var(--text-3xl);
+    white-space: normal;
   }
 
   .order-confirmed__card {
