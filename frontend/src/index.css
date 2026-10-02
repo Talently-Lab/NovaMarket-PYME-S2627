@@ -2189,6 +2189,8 @@ ul, ol { list-style: none; }
   padding: var(--sp-6);
   position: sticky;
   top: calc(105px + var(--sp-4));
+  overflow: hidden; /* evita que los precios desborden el contenedor */
+  min-width: 0;
 }
 
 .cart-summary__title {
@@ -2220,6 +2222,9 @@ ul, ol { list-style: none; }
   color: var(--color-text-secondary);
   flex: 1;
   min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .cart-summary__qty {
@@ -2230,6 +2235,8 @@ ul, ol { list-style: none; }
   font-weight: var(--weight-medium);
   color: var(--color-text);
   flex-shrink: 0;
+  white-space: nowrap;
+  text-align: right;
 }
 
 .cart-summary__divider {
@@ -3174,6 +3181,7 @@ ul, ol { list-style: none; }
 
   .cart-summary {
     position: static;
+    padding: var(--sp-4);
   }
 
   .cart-page-title {
