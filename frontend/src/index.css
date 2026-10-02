@@ -1650,6 +1650,12 @@ ul, ol { list-style: none; }
     align-items: stretch;
   }
 
+  /* Hero inner: anula el padding del .container para que la imagen llegue de borde a borde */
+  .hero__inner.container {
+    padding-inline: 0;
+    max-width: 100%;
+  }
+
   /* Texto primero, centrado */
   .hero__content {
     order: 1;
@@ -4160,6 +4166,11 @@ ul, ol { list-style: none; }
   /* Hero */
   .hero__inner {
     padding-block: 0;
+  }
+
+  .hero__inner.container {
+    padding-inline: 0;
+    max-width: 100%;
   }
 
   .hero__content {
