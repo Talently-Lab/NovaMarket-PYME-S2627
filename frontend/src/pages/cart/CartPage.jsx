@@ -32,7 +32,14 @@ export default function CartPage() {
   if (items.length === 0) {
     return (
       <div className="cart-empty">
-        <div className="cart-empty__icon">🛒</div>
+        <div className="cart-empty__icon">
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
+            style={{ color: 'var(--color-text-disabled)' }}>
+            <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+          </svg>
+        </div>
         <h1 className="cart-empty__title">Tu carrito está vacío</h1>
         <p className="cart-empty__desc">
           Agregá productos desde el catálogo para empezar.
@@ -74,7 +81,13 @@ export default function CartPage() {
               <div className="cart-item__img">
                 {item.image_url
                   ? <img src={item.image_url} alt={item.name} />
-                  : <div className="cart-item__img-placeholder">📦</div>
+                  : <div className="cart-item__img-placeholder">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
+                        style={{ color: 'var(--color-text-disabled)' }}>
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                      </svg>
+                    </div>
                 }
               </div>
 

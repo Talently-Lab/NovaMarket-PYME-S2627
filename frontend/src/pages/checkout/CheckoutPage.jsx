@@ -411,7 +411,7 @@ export default function CheckoutPage() {
             {payMethod === 'billetera' && (
               <div className="pay-info-box">
                 <p className="pay-info-box__text">
-                  🎉 <strong>5% OFF</strong> aplicado automáticamente al pagar con Mercado Pago, MODO o Ualá.
+                  <strong>5% OFF</strong> aplicado automáticamente al pagar con Mercado Pago, MODO o Ualá.
                 </p>
                 <p className="pay-info-box__sub">
                   Serás redirigido a la plataforma de pago al confirmar el pedido.
@@ -423,7 +423,7 @@ export default function CheckoutPage() {
             {payMethod === 'transferencia' && (
               <div className="pay-info-box">
                 <p className="pay-info-box__text">
-                  🏦 Realizá la transferencia al <strong>CBU/Alias</strong> que te enviaremos por email.
+                  Realizá la transferencia al <strong>CBU/Alias</strong> que te enviaremos por email.
                 </p>
                 <p className="pay-info-box__sub">
                   Tu pedido se confirmará dentro de las 24hs hábiles de acreditado el pago.

@@ -14,9 +14,9 @@ const STATUS_MAP = {
 };
 
 const METHOD_LABEL = {
-  tarjeta:       '💳 Tarjeta',
-  billetera:     '📱 Billetera virtual',
-  transferencia: '🏦 Transferencia',
+  tarjeta:       'Tarjeta',
+  billetera:     'Billetera virtual',
+  transferencia: 'Transferencia',
 };
 
 const TABS = [
@@ -159,7 +159,7 @@ function OrderCard({ order }) {
               <p className="ocard__info-text">
                 {order.shipping_name && <>{order.shipping_name}<br /></>}
                 {order.shipping_address && <>{order.shipping_address}<br /></>}
-                {order.shipping_city && <>📍 {order.shipping_city}</>}
+                {order.shipping_city && <>{order.shipping_city}</>}
               </p>
             </div>
             {order.payment_method && (

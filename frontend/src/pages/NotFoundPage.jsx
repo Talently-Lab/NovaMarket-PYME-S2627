@@ -45,7 +45,14 @@ export default function NotFoundPage() {
 
       {/* Ícono animado */}
       <div className="not-found__icon" aria-hidden="true">
-        🤖
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
+          style={{ color: '#D2EE42' }}>
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          <line x1="11" y1="8" x2="11" y2="12"/>
+          <line x1="11" y1="16" x2="11.01" y2="16"/>
+        </svg>
       </div>
 
       {/* Código de error */}
@@ -79,7 +86,7 @@ export default function NotFoundPage() {
       {/* Acciones */}
       <div className="not-found__actions">
         <Link to="/" className="btn btn--primary btn--lg">
-          🏠 Volver al inicio
+          Volver al inicio
         </Link>
         <button
           onClick={() => navigate(-1)}
@@ -97,7 +104,7 @@ export default function NotFoundPage() {
           title="Pro tip: la página del catálogo sí existe 😉"
           style={{ cursor: 'help', fontSize: 'var(--text-xs)', color: 'var(--color-text-disabled)' }}
         >
-          💡 Pro tip: intentá buscar en el catálogo
+          Pro tip: intentá buscar en el catálogo
         </span>
       </p>
 
