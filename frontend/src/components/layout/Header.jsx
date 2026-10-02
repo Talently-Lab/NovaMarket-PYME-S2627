@@ -96,7 +96,7 @@ export default function Header() {
             {/* Carrito */}
             <Link
               to="/carrito"
-              className="header__account-link"
+              className="header__account-link header__cart-link"
               aria-label={`Carrito${itemCount > 0 ? `, ${itemCount} productos` : ' vacío'}`}
             >
               <div className="header__cart-icon-wrapper">
@@ -168,6 +168,19 @@ export default function Header() {
             {label}
           </NavLink>
         ))}
+
+        {/* Carrito en drawer */}
+        <Link to="/carrito" className="header__mobile-cart-link" onClick={closeMenu}>
+          <div className="header__cart-icon-wrapper">
+            <CartIcon />
+            {itemCount > 0 && (
+              <span className="header__cart-badge" aria-hidden="true">
+                {itemCount > 99 ? '99+' : itemCount}
+              </span>
+            )}
+          </div>
+          Carrito {itemCount > 0 ? `(${itemCount})` : ''}
+        </Link>
 
         {isAuthenticated ? (
           <>

@@ -549,6 +549,19 @@ ul, ol { list-style: none; }
 }
 .header__mobile-nav-link:hover { background: rgba(125,28,226,0.08); }
 
+/* Carrito en drawer mobile — destaque con fondo lima */
+.header__mobile-cart-link {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-weight: 700;
+  color: #050506;
+  background: #D2EE42;
+  border-radius: var(--radius-md);
+  padding: var(--sp-3) var(--sp-4);
+}
+.header__mobile-cart-link:hover { background: #b8d424; }
+
 /* ── 8. FOOTER ── */
 .footer {
   background-color: #050506;
@@ -3135,8 +3148,8 @@ ul, ol { list-style: none; }
     gap: var(--sp-3);
   }
 
-  /* Ocultar cuenta/salir en mobile — están en el drawer */
-  .header__account-link,
+  /* Ocultar cuenta/salir en mobile — están en el drawer. El carrito se mantiene visible */
+  .header__account-link:not(.header__cart-link),
   .header__user,
   .header__logout-btn {
     display: none;
@@ -3173,7 +3186,7 @@ ul, ol { list-style: none; }
   }
 
   .cart-item__subtotal {
-    display: none;
+    display: none; /* en mobile puro se oculta — en tablet se ve */
   }
 
   .checkout-title {
@@ -3210,7 +3223,13 @@ ul, ol { list-style: none; }
     gap: var(--sp-4);
   }
 
-  /* Mis pedidos */
+  /* Resumen de checkout sube al tope en mobile */
+  .checkout-summary {
+    order: -1;
+  }
+  .checkout-left {
+    order: 1;
+  }
   .orders-wrapper {
     padding-block: var(--sp-6);
   }
@@ -4236,6 +4255,10 @@ ul, ol { list-style: none; }
     gap: var(--sp-2);
   }
 
+  .cart-item__subtotal {
+    display: none; /* ocultar en mobile pequeño — se ve en tablet y mobile 768px */
+  }
+
   /* Checkout */
   .checkout-form-card {
     padding: var(--sp-4);
@@ -4774,9 +4797,13 @@ ul, ol { list-style: none; }
   }
   .checkout-summary {
     position: static;
+    order: -1; /* resumen arriba del formulario en mobile */
+  }
+  .checkout-left {
+    order: 1;
   }
   .pay-methods {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr; /* tarjetas de pago apiladas en mobile */
   }
   .checkout-row {
     grid-template-columns: 1fr;
