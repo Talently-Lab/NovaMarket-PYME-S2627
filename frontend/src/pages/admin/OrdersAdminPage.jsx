@@ -22,10 +22,12 @@ const METHOD_LABEL = {
   billetera:     'Billetera',
   transferencia: 'Transferencia',
 };
-  const [orders, setOrders]   = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError]     = useState('');
-  const [updating, setUpdating] = useState(null); // id del pedido en proceso
+
+export default function OrdersAdminPage() {
+  const [orders,   setOrders]   = useState([]);
+  const [loading,  setLoading]  = useState(true);
+  const [error,    setError]    = useState('');
+  const [updating, setUpdating] = useState(null);
 
   useEffect(() => {
     ordersAPI.getAllAdmin()
