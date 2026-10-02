@@ -109,7 +109,7 @@ export default function HomePage() {
               Descubrí nuestra selección de gadgets, periféricos y accesorios diseñados para optimizar{' '}
               <span className="hero__subtitle--accent">tu espacio de trabajo y setup diario.</span>
             </p>
-            <Link to="/catalogo" className="btn btn--primary btn--lg">
+            <Link to="/catalogo" className="btn btn--primary btn--hero">
               Explorar productos
             </Link>
           </div>

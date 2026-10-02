@@ -147,7 +147,7 @@
 
   /* Contenedor */
   --container-max: 100%;
-  --container-pad: clamp(1rem, 5vw, 2rem);
+  --container-pad: 48px;
 }
 
 /* ── 4. RESET ── */
@@ -422,7 +422,7 @@ ul, ol { list-style: none; }
   display: flex;
   flex-direction: row;
   align-items: flex-start;
-  padding: 12px 64px;
+  padding: 12px 48px;
   gap: 32px;
   height: 41px;
   max-width: var(--container-max);
@@ -581,6 +581,13 @@ ul, ol { list-style: none; }
 
 .footer__logo {
   display: block;
+}
+
+.footer__logo-img {
+  height: 48px;
+  width: auto;
+  display: block;
+  object-fit: contain;
 }
 
 .footer__logo-text {
@@ -802,6 +809,13 @@ ul, ol { list-style: none; }
 }
 
 .btn--full { width: 100%; }
+
+/* Botón hero — tamaño base con border-radius pequeño, igual al mockup */
+.btn--hero {
+  padding: 0.625rem 1.375rem;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+}
 
 .btn--icon {
   width: 40px;
@@ -1496,6 +1510,7 @@ ul, ol { list-style: none; }
   align-items: stretch;
   gap: 24px;
   padding-block: 48px;
+  padding-inline: 48px; /* alineado con header__top-inner */
 }
 
 .hero__content {
@@ -1513,18 +1528,18 @@ ul, ol { list-style: none; }
 
 .hero__title {
   font-family: 'Space Grotesk', sans-serif;
-  font-size: 40px;
+  font-size: 36px;
   font-weight: 700;
-  line-height: 46px;
+  line-height: 44px;
   color: #FEFEFE;
   letter-spacing: -0.02em;
 }
 
 .hero__subtitle {
   font-family: 'Space Grotesk', sans-serif;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 400;
-  line-height: 24px;
+  line-height: 23px;
   color: #D2EE42;
 }
 
@@ -2976,6 +2991,10 @@ ul, ol { list-style: none; }
 
 /* Tablet */
 @media (max-width: 1024px) {
+  :root {
+    --container-pad: 32px;
+  }
+
   /* Layout general */
   .layout {
     padding-top: 88px; /* top bar ~52px + nav bar ~36px en tablet */
@@ -3047,6 +3066,10 @@ ul, ol { list-style: none; }
 
 /* Mobile */
 @media (max-width: 768px) {
+  :root {
+    --container-pad: 20px;
+  }
+
   /* Header mobile — top bar compacto, nav bar oculta */
   .header__top-inner {
     padding: 12px var(--sp-4);
