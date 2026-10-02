@@ -2283,12 +2283,7 @@ ul, ol { list-style: none; }
   color: var(--color-text-secondary);
 }
 
-.checkout-layout {
-  display: grid;
-  grid-template-columns: 1fr 360px;
-  gap: var(--sp-8);
-  align-items: start;
-}
+/* checkout-layout definido en sección 28 — checkout extendido */
 
 .checkout-form-card {
   background: var(--color-surface);
@@ -4381,7 +4376,7 @@ ul, ol { list-style: none; }
 /* Layout dos columnas */
 .checkout-layout {
   display: grid;
-  grid-template-columns: 1fr 380px;
+  grid-template-columns: 1fr 340px;
   gap: var(--sp-8);
   align-items: start;
 }
@@ -4797,13 +4792,35 @@ ul, ol { list-style: none; }
   }
   .checkout-summary {
     position: static;
-    order: -1; /* resumen arriba del formulario en mobile */
+    order: -1;
+    padding: var(--sp-4);
+    border-radius: var(--radius-lg);
+    gap: var(--sp-3);
+  }
+  /* En mobile ocultar items individuales y desglose — solo mostrar total + cupón + CTA */
+  .checkout-summary__items,
+  .checkout-summary__count,
+  .checkout-summary__breakdown,
+  .checkout-summary__installment-note {
+    display: none;
+  }
+  /* Compactar el título del resumen */
+  .checkout-summary__title {
+    font-size: var(--text-base);
+    margin-bottom: 0;
+  }
+  /* El total más prominente */
+  .checkout-summary__total {
+    padding-block: var(--sp-1);
+  }
+  .checkout-summary__total-value {
+    font-size: var(--text-xl);
   }
   .checkout-left {
     order: 1;
   }
   .pay-methods {
-    grid-template-columns: 1fr; /* tarjetas de pago apiladas en mobile */
+    grid-template-columns: 1fr;
   }
   .checkout-row {
     grid-template-columns: 1fr;
