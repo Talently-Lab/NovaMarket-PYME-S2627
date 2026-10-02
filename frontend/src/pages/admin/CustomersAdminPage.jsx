@@ -68,7 +68,14 @@ export default function CustomersAdminPage() {
                     {u.order_count ?? 0}
                   </td>
                   <td style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--text-sm)' }}>
-                    {new Date(u.created_at).toLocaleDateString('es-AR')}
+                    {new Date(u.created_at).toLocaleDateString('es-AR', {
+                      day: '2-digit', month: '2-digit', year: 'numeric',
+                    })}
+                    <span style={{ display: 'block', fontSize: '11px', color: 'var(--color-text-disabled)' }}>
+                      {new Date(u.created_at).toLocaleTimeString('es-AR', {
+                        hour: '2-digit', minute: '2-digit',
+                      })}
+                    </span>
                   </td>
                 </tr>
               ))

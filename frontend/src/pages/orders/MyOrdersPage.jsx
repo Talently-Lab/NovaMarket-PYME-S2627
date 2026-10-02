@@ -70,6 +70,9 @@ function OrderCard({ order }) {
           <span className="ocard__date">
             {new Date(order.created_at).toLocaleDateString('es-AR', {
               day: '2-digit', month: 'short', year: 'numeric',
+            })}{' '}
+            {new Date(order.created_at).toLocaleTimeString('es-AR', {
+              hour: '2-digit', minute: '2-digit',
             })}
           </span>
         </div>

@@ -111,7 +111,14 @@ export default function OrdersAdminPage() {
                     ${fmt(order.total_with_tax ?? order.total_amount ?? order.total)}
                   </td>
                   <td style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--text-sm)' }}>
-                    {new Date(order.created_at).toLocaleDateString('es-AR')}
+                    {new Date(order.created_at).toLocaleDateString('es-AR', {
+                      day: '2-digit', month: '2-digit', year: 'numeric',
+                    })}
+                    <span style={{ display: 'block', fontSize: '11px', color: 'var(--color-text-disabled)' }}>
+                      {new Date(order.created_at).toLocaleTimeString('es-AR', {
+                        hour: '2-digit', minute: '2-digit',
+                      })}
+                    </span>
                   </td>
                   <td>
                     <select
