@@ -17,7 +17,11 @@ const STATUS_COLORS = {
   cancelled: '#ef4444',
 };
 
-export default function OrdersAdminPage() {
+const METHOD_LABEL = {
+  tarjeta:       'Tarjeta',
+  billetera:     'Billetera',
+  transferencia: 'Transferencia',
+};
   const [orders, setOrders]   = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState('');
@@ -64,6 +68,7 @@ export default function OrdersAdminPage() {
               <th>#</th>
               <th>Cliente</th>
               <th>Ciudad</th>
+              <th>Pago</th>
               <th>Total</th>
               <th>Fecha</th>
               <th>Estado</th>
@@ -72,13 +77,13 @@ export default function OrdersAdminPage() {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={6} style={{ textAlign: 'center', padding: 'var(--sp-8)', color: 'var(--color-text-disabled)' }}>
+                <td colSpan={7} style={{ textAlign: 'center', padding: 'var(--sp-8)', color: 'var(--color-text-disabled)' }}>
                   Cargando pedidos…
                 </td>
               </tr>
             ) : orders.length === 0 ? (
               <tr>
-                <td colSpan={6} style={{ textAlign: 'center', padding: 'var(--sp-8)', color: 'var(--color-text-disabled)' }}>
+                <td colSpan={7} style={{ textAlign: 'center', padding: 'var(--sp-8)', color: 'var(--color-text-disabled)' }}>
                   No hay pedidos aún.
                 </td>
               </tr>
@@ -92,8 +97,16 @@ export default function OrdersAdminPage() {
                   <td style={{ color: 'var(--color-text-secondary)' }}>
                     {order.shipping_city || '—'}
                   </td>
+                  <td style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--text-sm)' }}>
+                    {METHOD_LABEL[order.payment_method] || '—'}
+                    {order.card_last4 && (
+                      <span style={{ display: 'block', fontSize: '11px', color: 'var(--color-text-disabled)' }}>
+                        ****{order.card_last4}
+                      </span>
+                    )}
+                  </td>
                   <td style={{ fontWeight: 'var(--weight-semibold)' }}>
-                    ${fmt(order.total_amount ?? order.total)}
+                    ${fmt(order.total_with_tax ?? order.total_amount ?? order.total)}
                   </td>
                   <td style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--text-sm)' }}>
                     {new Date(order.created_at).toLocaleDateString('es-AR')}
