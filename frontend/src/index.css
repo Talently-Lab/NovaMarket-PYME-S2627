@@ -1016,7 +1016,7 @@ ul, ol { list-style: none; }
   display: flex;
   flex-direction: row;
   gap: 24px;
-  align-items: flex-start;
+  align-items: stretch;
 }
 
 /* Featured Card — diseño Figma */
@@ -1031,6 +1031,7 @@ ul, ol { list-style: none; }
   flex-direction: column;
   align-items: center;
   gap: 16px;
+  justify-content: space-between;
   transition:
     box-shadow var(--duration-base) var(--ease),
     transform var(--duration-base) var(--ease);
@@ -1076,6 +1077,7 @@ ul, ol { list-style: none; }
   font-weight: 700;
   color: #050506;
   line-height: 1.4;
+  min-height: calc(14px * 1.4 * 2); /* reserva espacio para 2 líneas siempre */
 }
 
 .featured-card__footer {
@@ -1814,16 +1816,16 @@ ul, ol { list-style: none; }
 .categories-grid {
   display: flex;
   flex-direction: row;
-  gap: 20px;
   flex-wrap: nowrap;
-  justify-content: center;
+  gap: 20px;
+  justify-content: space-between;
   align-items: stretch;
-  gap: 44px;
-  padding-inline: 32px;
 }
 
 .category-card {
   flex: 1 1 0;
+  width: 100%;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1834,6 +1836,7 @@ ul, ol { list-style: none; }
   border-radius: 24px;
   cursor: pointer;
   text-decoration: none;
+  box-sizing: border-box;
   transition:
     background-color var(--duration-base) var(--ease),
     transform var(--duration-base) var(--ease),
@@ -4020,6 +4023,19 @@ ul, ol { list-style: none; }
   opacity: 0.6;
 }
 
+/* Badge "Sin stock" — reemplaza al botón cuando stock = 0 */
+.catalog-card__no-stock {
+  font-size: 11px;
+  font-weight: var(--weight-semibold);
+  color: var(--color-error);
+  background: rgba(239, 68, 68, 0.10);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: var(--radius-sm);
+  padding: 4px 10px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
 /* ── Paginación ── */
 .catalog-pagination {
   display: flex;
@@ -5151,6 +5167,28 @@ ul, ol { list-style: none; }
   font-size: var(--text-sm);
   color: var(--color-text-secondary);
   line-height: 1.6;
+}
+
+/* Botón descargar recibo dentro del detalle */
+.ocard__actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: var(--sp-3);
+}
+
+.ocard__download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--text-sm);
+}
+
+/* Botones agrupados en la cabecera de mis pedidos */
+.orders-header__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  flex-shrink: 0;
 }
 
 /* Responsive */

@@ -46,8 +46,9 @@ function ChevronIcon() {
 }
 
 // ── Tarjeta de producto ───────────────────────────────────────
-function ProductCard({ product, onAdd, added }) {
+function ProductCard({ product, onAdd, added, cartQty = 0 }) {
   const inStock = product.stock > 0;
+  const stockAgotado = !inStock || cartQty >= product.stock;
 
   return (
     <motion.article
@@ -82,25 +83,28 @@ function ProductCard({ product, onAdd, added }) {
         <span className="catalog-card__price">
           ${Number(product.price).toLocaleString('es-AR')}
         </span>
-        <motion.button
-          className={`catalog-card__add-btn${added ? ' catalog-card__add-btn--added' : ''}${!inStock ? ' catalog-card__add-btn--disabled' : ''}`}
-          onClick={() => inStock && onAdd(product)}
-          disabled={!inStock || added}
-          aria-label={`Agregar ${product.name} al carrito`}
-          title={inStock ? 'Agregar al carrito' : 'Sin stock'}
-          whileHover={inStock && !added ? { scale: 1.12 } : {}}
-          whileTap={inStock && !added ? { scale: 0.92 } : {}}
-        >
-          {added ? (
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-              aria-hidden="true">
-              <polyline points="20 6 9 17 4 12"/>
-            </svg>
-          ) : (
-            <CartIcon />
-          )}
-        </motion.button>
+        {stockAgotado ? (
+          <span className="catalog-card__no-stock">Sin stock</span>
+        ) : (
+          <motion.button
+            className={`catalog-card__add-btn${added ? ' catalog-card__add-btn--added' : ''}`}
+            onClick={() => onAdd(product)}
+            disabled={added}
+            aria-label={`Agregar ${product.name} al carrito`}
+            whileHover={!added ? { scale: 1.12 } : {}}
+            whileTap={!added ? { scale: 0.92 } : {}}
+          >
+            {added ? (
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+                aria-hidden="true">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            ) : (
+              <CartIcon />
+            )}
+          </motion.button>
+        )}
       </div>
     </motion.article>
   );
@@ -108,7 +112,7 @@ function ProductCard({ product, onAdd, added }) {
 
 // ── Componente principal ──────────────────────────────────────
 export default function CatalogPage() {
-  const { addItem } = useCart();
+  const { addItem, items: cartItems } = useCart();
   const [searchParams, setSearchParams] = useSearchParams();
 
   // ── Estado de filtros (sincronizado con URL) ──
@@ -402,6 +406,7 @@ export default function CatalogPage() {
                     product={product}
                     onAdd={handleAddToCart}
                     added={added === product.id}
+                    cartQty={cartItems.find(i => i.id === product.id)?.quantity ?? 0}
                   />
                 ))}
               </AnimatePresence>

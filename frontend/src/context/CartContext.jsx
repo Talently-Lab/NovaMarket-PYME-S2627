@@ -22,12 +22,18 @@ export function CartProvider({ children }) {
   const addItem = (product, quantity = 1) => {
     setItems((prev) => {
       const existing = prev.find((i) => i.id === product.id);
+      const maxStock = product.stock ?? Infinity;
+
       if (existing) {
+        // No superar el stock disponible
+        const newQty = Math.min(existing.quantity + quantity, maxStock);
         return prev.map((i) =>
-          i.id === product.id ? { ...i, quantity: i.quantity + quantity } : i
+          i.id === product.id ? { ...i, quantity: newQty } : i
         );
       }
-      return [...prev, { ...product, quantity }];
+      // No agregar si stock === 0
+      if (maxStock === 0) return prev;
+      return [...prev, { ...product, quantity: Math.min(quantity, maxStock) }];
     });
   };
 

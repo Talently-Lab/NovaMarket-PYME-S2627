@@ -112,7 +112,7 @@ function CategoryIcon({ type, featured }) {
 }
 
 export default function HomePage() {
-  const { addItem } = useCart();
+  const { addItem, items: cartItems } = useCart();
   const { flashMessage, clearFlash } = useAuth();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -261,23 +261,23 @@ export default function HomePage() {
             initial="hidden"
             animate={catInView ? 'visible' : 'hidden'}
           >
-            {CATEGORIES.map(({ icon, name, slug, featured }) => (
-              <motion.div key={name} variants={staggerItem}>
-                <motion.div
-                  whileHover={{ y: -6, boxShadow: '0 12px 32px rgba(125,28,226,0.18)' }}
-                  whileTap={{ scale: 0.97 }}
-                  style={{ borderRadius: 20 }}
+            {CATEGORIES.map(({ icon, name, slug }) => (
+              <motion.div
+                key={name}
+                variants={staggerItem}
+                whileHover={{ y: -6, boxShadow: '0 12px 32px rgba(125,28,226,0.18)' }}
+                whileTap={{ scale: 0.97 }}
+                style={{ flex: '1 1 0', minWidth: 0, borderRadius: 24 }}
+              >
+                <Link
+                  to={`/catalogo?categoria=${slug}`}
+                  className="category-card"
                 >
-                  <Link
-                    to={`/catalogo?categoria=${slug}`}
-                    className={`category-card${featured ? ' category-card--featured' : ''}`}
-                  >
-                    <div className="category-card__icon-ring">
-                      <CategoryIcon type={icon} featured={featured} />
-                    </div>
-                    <span className="category-card__name">{name}</span>
-                  </Link>
-                </motion.div>
+                  <div className="category-card__icon-ring">
+                    <CategoryIcon type={icon} featured={false} />
+                  </div>
+                  <span className="category-card__name">{name}</span>
+                </Link>
               </motion.div>
             ))}
           </motion.div>
@@ -333,26 +333,34 @@ export default function HomePage() {
                       <span className="featured-card__price">
                         ${Number(product.price).toLocaleString('es-AR')}
                       </span>
-                      <motion.button
-                        className={`featured-card__add-btn${added === product.id ? ' featured-card__add-btn--added' : ''}`}
-                        onClick={() => handleAdd(product)}
-                        disabled={added === product.id}
-                        aria-label={`Agregar ${product.name} al carrito`}
-                        whileHover={{ scale: 1.12 }}
-                        whileTap={{ scale: 0.92 }}
-                      >
-                        {added === product.id ? (
-                          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                            <polyline points="20 6 9 17 4 12" stroke="#050506" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                          </svg>
+                      {(() => {
+                        const cartQty = cartItems.find(i => i.id === product.id)?.quantity ?? 0;
+                        const stockAgotado = product.stock === 0 || cartQty >= product.stock;
+                        return stockAgotado ? (
+                          <span className="catalog-card__no-stock">Sin stock</span>
                         ) : (
-                          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                            <circle cx="9" cy="21" r="1" stroke="#050506" strokeWidth="2"/>
-                            <circle cx="20" cy="21" r="1" stroke="#050506" strokeWidth="2"/>
-                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" stroke="#050506" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                          </svg>
-                        )}
-                      </motion.button>
+                          <motion.button
+                            className={`featured-card__add-btn${added === product.id ? ' featured-card__add-btn--added' : ''}`}
+                            onClick={() => handleAdd(product)}
+                            disabled={added === product.id}
+                            aria-label={`Agregar ${product.name} al carrito`}
+                            whileHover={added !== product.id ? { scale: 1.12 } : {}}
+                            whileTap={added !== product.id ? { scale: 0.92 } : {}}
+                          >
+                            {added === product.id ? (
+                              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <polyline points="20 6 9 17 4 12" stroke="#050506" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                            ) : (
+                              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <circle cx="9" cy="21" r="1" stroke="#050506" strokeWidth="2"/>
+                                <circle cx="20" cy="21" r="1" stroke="#050506" strokeWidth="2"/>
+                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" stroke="#050506" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                            )}
+                          </motion.button>
+                        );
+                      })()}
                     </div>
                   </div>
                 </motion.div>
@@ -374,7 +382,7 @@ export default function HomePage() {
           <p className="promo-banner__title">¡Oferta especial de lanzamiento!</p>
           <p className="promo-banner__text">
             Descuento del 20% en toda la categoría de Periféricos usando el código{' '}
-            <strong>NOVAFREE</strong>.
+            <strong>NOVA20</strong>.
           </p>
         </div>
       </motion.section>
