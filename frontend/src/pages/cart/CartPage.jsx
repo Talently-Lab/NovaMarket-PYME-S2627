@@ -116,30 +116,36 @@ export default function CartPage() {
                 </div>
 
                 {/* Cantidad */}
-                <div className="cart-item__qty">
-                  <motion.button
-                    className="cart-qty-btn"
-                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                    aria-label="Restar uno"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                  >−</motion.button>
-                  <motion.span
-                    key={item.quantity}
-                    className="cart-item__qty-num"
-                    initial={{ scale: 1.3, opacity: 0.5 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    {item.quantity}
-                  </motion.span>
-                  <motion.button
-                    className="cart-qty-btn"
-                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                    aria-label="Sumar uno"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                  >+</motion.button>
+                <div className="cart-item__qty-wrapper">
+                  <div className="cart-item__qty">
+                    <motion.button
+                      className="cart-qty-btn"
+                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                      aria-label="Restar uno"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                    >−</motion.button>
+                    <motion.span
+                      key={item.quantity}
+                      className="cart-item__qty-num"
+                      initial={{ scale: 1.3, opacity: 0.5 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      {item.quantity}
+                    </motion.span>
+                    <motion.button
+                      className="cart-qty-btn"
+                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                      aria-label="Sumar uno"
+                      disabled={item.stock != null && item.quantity >= item.stock}
+                      whileHover={item.stock == null || item.quantity < item.stock ? { scale: 1.1 } : {}}
+                      whileTap={item.stock == null || item.quantity < item.stock ? { scale: 0.9 } : {}}
+                    >+</motion.button>
+                  </div>
+                  {item.stock != null && item.quantity >= item.stock && (
+                    <span className="cart-item__stock-limit">Máx. disponible</span>
+                  )}
                 </div>
 
                 {/* Subtotal */}

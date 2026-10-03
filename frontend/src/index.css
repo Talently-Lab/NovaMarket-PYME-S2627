@@ -2158,6 +2158,22 @@ ul, ol { list-style: none; }
 }
 
 /* Quantity controls */
+/* Wrapper cantidad + aviso stock */
+.cart-item__qty-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.cart-item__stock-limit {
+  font-size: 10px;
+  color: var(--color-error);
+  font-weight: var(--weight-semibold);
+  white-space: nowrap;
+}
+
 .cart-item__qty {
   display: flex;
   align-items: center;

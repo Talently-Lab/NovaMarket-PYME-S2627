@@ -44,7 +44,12 @@ export function CartProvider({ children }) {
   const updateQuantity = (productId, quantity) => {
     if (quantity <= 0) return removeItem(productId);
     setItems((prev) =>
-      prev.map((i) => (i.id === productId ? { ...i, quantity } : i))
+      prev.map((i) => {
+        if (i.id !== productId) return i;
+        // Respetar el stock del producto si está disponible
+        const maxStock = i.stock ?? Infinity;
+        return { ...i, quantity: Math.min(quantity, maxStock) };
+      })
     );
   };
 
