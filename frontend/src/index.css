@@ -1814,6 +1814,8 @@ ul, ol { list-style: none; }
 .categories-grid {
   display: flex;
   flex-direction: row;
+  gap: 20px;
+  flex-wrap: nowrap;
   justify-content: center;
   align-items: stretch;
   gap: 44px;
@@ -1826,10 +1828,10 @@ ul, ol { list-style: none; }
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 16px;
-  padding: 35px 24px;
+  gap: 20px;
+  padding: 48px 32px;
   background-color: #EAEEF7;
-  border-radius: 20px;
+  border-radius: 24px;
   cursor: pointer;
   text-decoration: none;
   transition:
@@ -1853,10 +1855,10 @@ ul, ol { list-style: none; }
 }
 
 .category-card__icon-ring {
-  width: 48px;
-  height: 48px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
-  border: 1px solid #7D1CE2;
+  border: 1.5px solid #7D1CE2;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1869,7 +1871,7 @@ ul, ol { list-style: none; }
 
 .category-card__name {
   font-family: 'Geist', 'Inter', sans-serif;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
   color: #050506;
   text-align: center;

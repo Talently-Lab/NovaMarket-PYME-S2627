@@ -65,7 +65,7 @@ const CATEGORIES = [
 const CATEGORY_ICONS = {
   accessory: ({ color }) => (
     // Mouse con rueda de scroll
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path d="M12 2C8.686 2 6 4.686 6 8v8c0 3.314 2.686 6 6 6s6-2.686 6-6V8c0-3.314-2.686-6-6-6Z" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
       <line x1="12" y1="2" x2="12" y2="10" stroke={color} strokeWidth="1.8" strokeLinecap="round"/>
       <path d="M12 7v3" stroke={color} strokeWidth="2.2" strokeLinecap="round"/>
@@ -73,14 +73,14 @@ const CATEGORY_ICONS = {
   ),
   peripheral: ({ color }) => (
     // Teclado con teclas
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <rect x="2" y="6" width="20" height="13" rx="2.5" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
       <path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M6 14h.01M10 14h8" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
   ),
   gadget: ({ color }) => (
     // Smartphone / gadget
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <rect x="5" y="2" width="14" height="20" rx="3" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
       <circle cx="12" cy="17.5" r="1" fill={color}/>
       <line x1="9" y1="6" x2="15" y2="6" stroke={color} strokeWidth="1.8" strokeLinecap="round"/>
@@ -88,7 +88,7 @@ const CATEGORY_ICONS = {
   ),
   audio: ({ color }) => (
     // Auriculares over-ear
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path d="M4 14V11a8 8 0 0 1 16 0v3" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
       <path d="M4 14a2 2 0 0 1 2-2h1a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H6a2 2 0 0 1-2-2v-2Z" stroke={color} strokeWidth="1.8" strokeLinejoin="round"/>
       <path d="M20 14a2 2 0 0 0-2-2h-1a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h1a2 2 0 0 0 2-2v-2Z" stroke={color} strokeWidth="1.8" strokeLinejoin="round"/>
@@ -96,7 +96,7 @@ const CATEGORY_ICONS = {
   ),
   gaming: ({ color }) => (
     // Gamepad / control
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path d="M17 8H7L4.5 15A3.5 3.5 0 0 0 8 19.5c1.2 0 2.3-.6 3-1.5h2c.7.9 1.8 1.5 3 1.5a3.5 3.5 0 0 0 3.5-4.5L17 8Z" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
       <path d="M9 12v3M7.5 13.5h3" stroke={color} strokeWidth="1.8" strokeLinecap="round"/>
       <circle cx="15.5" cy="12" r=".8" fill={color}/>
