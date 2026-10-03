@@ -1,8 +1,15 @@
 import { useEffect, useState, useMemo, useCallback } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { productsAPI } from '../../services/api';
 import { useCart } from '../../context/CartContext';
 import { getProductImage } from '../../utils/productImage';
+
+const cardVariants = {
+  hidden:  { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] } },
+  exit:    { opacity: 0, scale: 0.95, transition: { duration: 0.2 } },
+};
 
 // ── Constantes ────────────────────────────────────────────────
 const CATEGORIES = ['Accesorios', 'Periféricos', 'Gadgets', 'Audio'];
@@ -43,7 +50,16 @@ function ProductCard({ product, onAdd, added }) {
   const inStock = product.stock > 0;
 
   return (
-    <article className="catalog-card">
+    <motion.article
+      className="catalog-card"
+      variants={cardVariants}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
+      layout
+      whileHover={{ y: -6, boxShadow: '0 16px 40px rgba(0,0,0,0.12)' }}
+      transition={{ type: 'tween', duration: 0.25 }}
+    >
       <Link to={`/catalogo/${product.id}`} className="catalog-card__image-link" tabIndex={-1}>
         <div className="catalog-card__image">
           <img
@@ -66,12 +82,14 @@ function ProductCard({ product, onAdd, added }) {
         <span className="catalog-card__price">
           ${Number(product.price).toLocaleString('es-AR')}
         </span>
-        <button
+        <motion.button
           className={`catalog-card__add-btn${added ? ' catalog-card__add-btn--added' : ''}${!inStock ? ' catalog-card__add-btn--disabled' : ''}`}
           onClick={() => inStock && onAdd(product)}
           disabled={!inStock || added}
           aria-label={`Agregar ${product.name} al carrito`}
           title={inStock ? 'Agregar al carrito' : 'Sin stock'}
+          whileHover={inStock && !added ? { scale: 1.12 } : {}}
+          whileTap={inStock && !added ? { scale: 0.92 } : {}}
         >
           {added ? (
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none"
@@ -82,9 +100,9 @@ function ProductCard({ product, onAdd, added }) {
           ) : (
             <CartIcon />
           )}
-        </button>
+        </motion.button>
       </div>
-    </article>
+    </motion.article>
   );
 }
 
@@ -377,14 +395,16 @@ export default function CatalogPage() {
           {/* Grilla de productos */}
           {!loading && !error && pageProducts.length > 0 && (
             <div className="catalog-grid">
-              {pageProducts.map(product => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  onAdd={handleAddToCart}
-                  added={added === product.id}
-                />
-              ))}
+              <AnimatePresence mode="popLayout">
+                {pageProducts.map(product => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    onAdd={handleAddToCart}
+                    added={added === product.id}
+                  />
+                ))}
+              </AnimatePresence>
             </div>
           )}
 

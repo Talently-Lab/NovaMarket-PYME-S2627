@@ -1,6 +1,13 @@
 import { Link, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
+
+const itemVariants = {
+  hidden:  { opacity: 0, height: 0, marginBottom: 0 },
+  visible: { opacity: 1, height: 'auto', transition: { duration: 0.3, ease: [0.22, 1, 0.36, 1] } },
+  exit:    { opacity: 0, x: -40, height: 0, marginBottom: 0, transition: { duration: 0.25, ease: 'easeIn' } },
+};
 
 function TrashIcon() {
   return (
@@ -74,62 +81,86 @@ export default function CartPage() {
 
         {/* ── Lista de items ── */}
         <div className="cart-items-list">
-          {items.map((item) => (
-            <div key={item.id} className="cart-item">
-
-              {/* Imagen */}
-              <div className="cart-item__img">
-                {item.image_url
-                  ? <img src={item.image_url} alt={item.name} />
-                  : <div className="cart-item__img-placeholder">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
-                        style={{ color: 'var(--color-text-disabled)' }}>
-                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-                      </svg>
-                    </div>
-                }
-              </div>
-
-              {/* Info */}
-              <div className="cart-item__info">
-                <p className="cart-item__name">{item.name}</p>
-                <p className="cart-item__price">
-                  ${Number(item.price).toLocaleString('es-AR')} c/u
-                </p>
-              </div>
-
-              {/* Cantidad */}
-              <div className="cart-item__qty">
-                <button
-                  className="cart-qty-btn"
-                  onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                  aria-label="Restar uno"
-                >−</button>
-                <span className="cart-item__qty-num">{item.quantity}</span>
-                <button
-                  className="cart-qty-btn"
-                  onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                  aria-label="Sumar uno"
-                >+</button>
-              </div>
-
-              {/* Subtotal */}
-              <p className="cart-item__subtotal">
-                ${Number(item.price * item.quantity).toLocaleString('es-AR')}
-              </p>
-
-              {/* Eliminar */}
-              <button
-                className="cart-item__remove"
-                onClick={() => removeItem(item.id)}
-                aria-label={`Eliminar ${item.name}`}
+          <AnimatePresence initial={false}>
+            {items.map((item) => (
+              <motion.div
+                key={item.id}
+                className="cart-item"
+                variants={itemVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                layout
               >
-                <TrashIcon />
-              </button>
 
-            </div>
-          ))}
+                {/* Imagen */}
+                <div className="cart-item__img">
+                  {item.image_url
+                    ? <img src={item.image_url} alt={item.name} />
+                    : <div className="cart-item__img-placeholder">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                          stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
+                          style={{ color: 'var(--color-text-disabled)' }}>
+                          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                        </svg>
+                      </div>
+                  }
+                </div>
+
+                {/* Info */}
+                <div className="cart-item__info">
+                  <p className="cart-item__name">{item.name}</p>
+                  <p className="cart-item__price">
+                    ${Number(item.price).toLocaleString('es-AR')} c/u
+                  </p>
+                </div>
+
+                {/* Cantidad */}
+                <div className="cart-item__qty">
+                  <motion.button
+                    className="cart-qty-btn"
+                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                    aria-label="Restar uno"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                  >−</motion.button>
+                  <motion.span
+                    key={item.quantity}
+                    className="cart-item__qty-num"
+                    initial={{ scale: 1.3, opacity: 0.5 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    {item.quantity}
+                  </motion.span>
+                  <motion.button
+                    className="cart-qty-btn"
+                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                    aria-label="Sumar uno"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                  >+</motion.button>
+                </div>
+
+                {/* Subtotal */}
+                <p className="cart-item__subtotal">
+                  ${Number(item.price * item.quantity).toLocaleString('es-AR')}
+                </p>
+
+                {/* Eliminar */}
+                <motion.button
+                  className="cart-item__remove"
+                  onClick={() => removeItem(item.id)}
+                  aria-label={`Eliminar ${item.name}`}
+                  whileHover={{ scale: 1.15, rotate: -8 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  <TrashIcon />
+                </motion.button>
+
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
 
         {/* ── Resumen lateral ── */}

@@ -756,8 +756,12 @@ ul, ol { list-style: none; }
   user-select: none;
 }
 
-.btn:active { transform: scale(0.97); }
-.btn:disabled { opacity: 0.45; pointer-events: none; }
+.btn:active { transform: scale(0.96); }
+.btn:disabled { opacity: 0.45; pointer-events: none; transform: none !important; box-shadow: none !important; }
+.btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
 
 .btn--primary {
   background-color: var(--color-primary);
@@ -769,7 +773,9 @@ ul, ol { list-style: none; }
   background-color: var(--color-primary-hover);
   border-color: var(--color-primary-hover);
   box-shadow: var(--shadow-glow);
+  transform: translateY(-2px) scale(1.015);
 }
+.btn--primary:active { transform: translateY(0) scale(0.96); }
 
 .btn--secondary {
   background-color: var(--color-surface-2);
@@ -779,6 +785,8 @@ ul, ol { list-style: none; }
 .btn--secondary:hover {
   background-color: var(--color-surface-3);
   border-color: var(--color-border-strong);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
 }
 
 .btn--ghost {
@@ -798,6 +806,28 @@ ul, ol { list-style: none; }
 }
 .btn--outline:hover {
   background-color: var(--color-primary-subtle);
+  box-shadow: 0 0 0 3px rgba(210,238,66,0.12);
+}
+
+/* Estado de carga — spinner inline girando */
+.btn--loading {
+  position: relative;
+  color: transparent !important;
+  pointer-events: none;
+}
+.btn--loading::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  color: #050506;
+  animation: btn-spin 0.7s linear infinite;
+}
+@keyframes btn-spin {
+  to { transform: rotate(360deg); }
 }
 
 .btn--gradient {
@@ -1006,10 +1036,7 @@ ul, ol { list-style: none; }
     transform var(--duration-base) var(--ease);
 }
 
-.featured-card:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
-}
+/* Hover (translateY + shadow) gestionado por Framer Motion en HomePage.jsx — evita doble transform */
 
 .featured-card__image {
   width: 100%;
@@ -1080,8 +1107,8 @@ ul, ol { list-style: none; }
     transform var(--duration-fast) var(--ease-spring);
 }
 
-.featured-card__add-btn:hover:not(:disabled) { background: #b8d424; transform: scale(1.08); }
-.featured-card__add-btn:active:not(:disabled) { transform: scale(0.92); }
+/* scale hover/active gestionado por Framer Motion (whileHover/whileTap) en HomePage.jsx */
+.featured-card__add-btn:hover:not(:disabled) { background: #b8d424; }
 .featured-card__add-btn--added { background: #7D1CE2; }
 .featured-card__add-btn:disabled { cursor: default; }
 
@@ -1135,11 +1162,26 @@ ul, ol { list-style: none; }
   border-color: var(--color-primary);
   background-color: var(--color-surface);
   box-shadow: 0 0 0 3px var(--color-primary-subtle);
+  transform: translateY(-1px);
 }
 
 .form-input.error {
   border-color: var(--color-error);
   box-shadow: 0 0 0 3px rgba(239,68,68,0.12);
+  animation: input-shake 0.35s ease;
+}
+
+.form-input.valid {
+  border-color: #16a34a;
+  box-shadow: 0 0 0 3px rgba(22,163,74,0.10);
+}
+
+@keyframes input-shake {
+  0%, 100% { transform: translateX(0); }
+  20%      { transform: translateX(-5px); }
+  40%      { transform: translateX(4px); }
+  60%      { transform: translateX(-3px); }
+  80%      { transform: translateX(2px); }
 }
 
 .form-hint {
@@ -1796,10 +1838,9 @@ ul, ol { list-style: none; }
     box-shadow var(--duration-base) var(--ease);
 }
 
+/* Hover gestionado por Framer Motion en el wrapper (HomePage.jsx) — solo color aquí */
 .category-card:hover {
   background-color: #d8ddf0;
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-md);
 }
 
 /* Estado destacado — fondo violeta oscuro */
@@ -3863,10 +3904,7 @@ ul, ol { list-style: none; }
               transform var(--duration-base) var(--ease);
 }
 
-.catalog-card:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
-}
+/* Hover (translateY + shadow) gestionado por Framer Motion en CatalogPage.jsx */
 
 .catalog-card__image-link {
   display: block;
@@ -3963,14 +4001,10 @@ ul, ol { list-style: none; }
               box-shadow var(--duration-base) var(--ease);
 }
 
+/* scale hover/active gestionado por Framer Motion (whileHover/whileTap) en CatalogPage.jsx */
 .catalog-card__add-btn:hover:not(:disabled) {
   background: #b8d424;
-  transform: scale(1.08);
   box-shadow: var(--shadow-glow);
-}
-
-.catalog-card__add-btn:active:not(:disabled) {
-  transform: scale(0.94);
 }
 
 .catalog-card__add-btn--added {

@@ -1,10 +1,57 @@
 import { Link } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, lazy, Suspense } from 'react';
+import { motion, useInView } from 'framer-motion';
+import { useRef } from 'react';
 import { productsAPI } from '../services/api';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import audifonosImg from '../assets/audifonos.png';
 import { getProductImage } from '../utils/productImage';
+
+// Three.js cargado de forma lazy para no bloquear el bundle inicial
+const HeroParticles = lazy(() => import('../components/ui/HeroParticles'));
+
+// ── Variantes Framer Motion ───────────────────────────────────────────────────
+
+const fadeUp = {
+  hidden:  { opacity: 0, y: 32 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] } },
+};
+
+const staggerContainer = {
+  hidden:  {},
+  visible: { transition: { staggerChildren: 0.1, delayChildren: 0.1 } },
+};
+
+const staggerItem = {
+  hidden:  { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } },
+};
+
+const heroTitle = {
+  hidden:  {},
+  visible: { transition: { staggerChildren: 0.07 } },
+};
+
+const heroWord = {
+  hidden:  { opacity: 0, y: 40, rotateX: -20 },
+  visible: { opacity: 1, y: 0,  rotateX: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
+};
+
+const tagVariant = {
+  hidden:  { opacity: 0, x: 30 },
+  visible: (i) => ({
+    opacity: 1, x: 0,
+    transition: { delay: 0.6 + i * 0.1, duration: 0.4, ease: 'easeOut' },
+  }),
+};
+
+// ── Hook scroll reveal ────────────────────────────────────────────────────────
+function useScrollReveal() {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: '-80px' });
+  return [ref, inView];
+}
 
 const CATEGORIES = [
   { icon: 'accessory', name: 'Accesorios',  slug: 'accesorios' },
@@ -71,7 +118,10 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [added, setAdded] = useState(null);
 
-  // Auto-cierra el flash a los 4 segundos
+  const [catRef,      catInView]      = useScrollReveal();
+  const [featRef,     featInView]     = useScrollReveal();
+  const [promoRef,    promoInView]    = useScrollReveal();
+
   useEffect(() => {
     if (!flashMessage) return;
     const t = setTimeout(clearFlash, 4000);
@@ -90,9 +140,12 @@ export default function HomePage() {
     setAdded(product.id);
     setTimeout(() => setAdded(null), 1500);
   };
+
+  const titleWords = 'Tecnología que simplifica tu vida'.split(' ');
+
   return (
     <div>
-      {/* Toast de bienvenida post-registro */}
+      {/* Toast */}
       {flashMessage && (
         <div className="toast toast--success" role="alert" aria-live="polite">
           <span>{flashMessage}</span>
@@ -100,86 +153,172 @@ export default function HomePage() {
         </div>
       )}
 
-      <section className="hero">
-        <div className="hero__inner container">
-          {/* Columna texto */}
-          <div className="hero__content">
-            <h1 className="hero__title">Tecnología que simplifica tu vida</h1>
-            <p className="hero__subtitle">
+      {/* ── HERO ── */}
+      <section className="hero" style={{ position: 'relative' }}>
+
+        {/* Fondo Three.js — cargado lazy */}
+        <Suspense fallback={null}>
+          <HeroParticles />
+        </Suspense>
+
+        <div className="hero__inner container" style={{ position: 'relative', zIndex: 1 }}>
+
+          {/* Columna texto con animaciones stagger */}
+          <motion.div
+            className="hero__content"
+            variants={staggerContainer}
+            initial="hidden"
+            animate="visible"
+          >
+            {/* Título palabra por palabra */}
+            <motion.h1 className="hero__title" variants={heroTitle} initial="hidden" animate="visible" style={{ perspective: 600 }}>
+              {titleWords.map((word, i) => (
+                <motion.span
+                  key={i}
+                  variants={heroWord}
+                  style={{ display: 'inline-block', marginRight: '0.25em' }}
+                >
+                  {word}
+                </motion.span>
+              ))}
+            </motion.h1>
+
+            {/* Subtítulo */}
+            <motion.p className="hero__subtitle" variants={fadeUp}>
               Descubrí nuestra selección de gadgets, periféricos y accesorios diseñados para optimizar{' '}
               <span className="hero__subtitle--accent">tu espacio de trabajo y setup diario.</span>
-            </p>
-            <Link to="/catalogo" className="btn btn--primary btn--hero">
-              Explorar productos
-            </Link>
-          </div>
+            </motion.p>
+
+            {/* Botón CTA */}
+            <motion.div variants={fadeUp}>
+              <motion.div
+                whileHover={{ scale: 1.04, boxShadow: '0 8px 32px rgba(210,238,66,0.35)' }}
+                whileTap={{ scale: 0.97 }}
+                style={{ display: 'inline-block', borderRadius: 4 }}
+              >
+                <Link to="/catalogo" className="btn btn--primary btn--hero">
+                  Explorar productos
+                </Link>
+              </motion.div>
+            </motion.div>
+          </motion.div>
 
           {/* Imagen + panel de tags */}
           <div className="hero__right">
-            <div className="hero__image-wrapper">
+            <motion.div
+              className="hero__image-wrapper"
+              initial={{ opacity: 0, scale: 1.06 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
+            >
               <img
                 src={audifonosImg}
                 alt="Setup tecnológico NovaMarket"
                 className="hero__image"
               />
-            </div>
+            </motion.div>
+
+            {/* Tags en cascada */}
             <div className="hero__tags-panel" aria-hidden="true">
-              <span className="hero__tag">TECH</span>
-              <span className="hero__tag">GAMING</span>
-              <span className="hero__tag">ACCESORIOS</span>
-              <span className="hero__tag">PERIFÉRICOS</span>
-              <span className="hero__tag">GADGETS</span>
-              <span className="hero__tags-line"></span>
+              {['TECH','GAMING','ACCESORIOS','PERIFÉRICOS','GADGETS'].map((tag, i) => (
+                <motion.span
+                  key={tag}
+                  className="hero__tag"
+                  custom={i}
+                  variants={tagVariant}
+                  initial="hidden"
+                  animate="visible"
+                >
+                  {tag}
+                </motion.span>
+              ))}
+              <motion.span
+                className="hero__tags-line"
+                initial={{ scaleX: 0, originX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ delay: 1.2, duration: 0.5, ease: 'easeOut' }}
+              />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Categorías */}
+      {/* ── CATEGORÍAS — scroll reveal ── */}
       <section className="categories-section">
         <div className="categories-section__inner container">
-          <h2 className="categories-section__title">Categorías Principales</h2>
-          <div className="categories-grid">
+          <motion.h2
+            className="categories-section__title"
+            ref={catRef}
+            variants={fadeUp}
+            initial="hidden"
+            animate={catInView ? 'visible' : 'hidden'}
+          >
+            Categorías Principales
+          </motion.h2>
+          <motion.div
+            className="categories-grid"
+            variants={staggerContainer}
+            initial="hidden"
+            animate={catInView ? 'visible' : 'hidden'}
+          >
             {CATEGORIES.map(({ icon, name, slug, featured }) => (
-              <Link
-                to={`/catalogo?categoria=${slug}`}
-                key={name}
-                className={`category-card${featured ? ' category-card--featured' : ''}`}
-              >
-                <div className="category-card__icon-ring">
-                  <CategoryIcon type={icon} featured={featured} />
-                </div>
-                <span className="category-card__name">{name}</span>
-              </Link>
+              <motion.div key={name} variants={staggerItem}>
+                <motion.div
+                  whileHover={{ y: -6, boxShadow: '0 12px 32px rgba(125,28,226,0.18)' }}
+                  whileTap={{ scale: 0.97 }}
+                  style={{ borderRadius: 20 }}
+                >
+                  <Link
+                    to={`/catalogo?categoria=${slug}`}
+                    className={`category-card${featured ? ' category-card--featured' : ''}`}
+                  >
+                    <div className="category-card__icon-ring">
+                      <CategoryIcon type={icon} featured={featured} />
+                    </div>
+                    <span className="category-card__name">{name}</span>
+                  </Link>
+                </motion.div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      <section className="featured-section">
+      {/* ── FEATURED PRODUCTS — scroll reveal ── */}
+      <section className="featured-section" ref={featRef}>
         <div className="featured-section__inner">
-
-          {/* Header de sección */}
-          <div className="featured-section__header">
+          <motion.div
+            className="featured-section__header"
+            variants={fadeUp}
+            initial="hidden"
+            animate={featInView ? 'visible' : 'hidden'}
+          >
             <h2 className="featured-section__title">Productos Destacados</h2>
             <Link to="/catalogo" className="featured-section__link">
               Ver todos los productos →
             </Link>
-          </div>
+          </motion.div>
 
-          {loading && (
-            <p className="featured-section__state">Cargando productos...</p>
-          )}
-
+          {loading && <p className="featured-section__state">Cargando productos...</p>}
           {!loading && products.length === 0 && (
             <p className="featured-section__state">No hay productos disponibles aún.</p>
           )}
 
           {!loading && products.length > 0 && (
-            <div className="featured-grid">
+            <motion.div
+              className="featured-grid"
+              variants={staggerContainer}
+              initial="hidden"
+              animate={featInView ? 'visible' : 'hidden'}
+            >
               {products.map((product) => (
-                <div className="featured-card" key={product.id}>
-                  {/* Imagen */}
+                <motion.div
+                  key={product.id}
+                  className="featured-card"
+                  variants={staggerItem}
+                  whileHover={{ y: -8, boxShadow: '0 16px 40px rgba(0,0,0,0.18)' }}
+                  whileTap={{ scale: 0.98 }}
+                >
                   <div className="featured-card__image">
                     <img
                       src={getProductImage(product)}
@@ -188,19 +327,19 @@ export default function HomePage() {
                       className="featured-card__img"
                     />
                   </div>
-
-                  {/* Info */}
                   <div className="featured-card__body">
                     <p className="featured-card__name">{product.name}</p>
                     <div className="featured-card__footer">
                       <span className="featured-card__price">
                         ${Number(product.price).toLocaleString('es-AR')}
                       </span>
-                      <button
+                      <motion.button
                         className={`featured-card__add-btn${added === product.id ? ' featured-card__add-btn--added' : ''}`}
                         onClick={() => handleAdd(product)}
                         disabled={added === product.id}
                         aria-label={`Agregar ${product.name} al carrito`}
+                        whileHover={{ scale: 1.12 }}
+                        whileTap={{ scale: 0.92 }}
                       >
                         {added === product.id ? (
                           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -213,18 +352,24 @@ export default function HomePage() {
                             <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" stroke="#050506" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                           </svg>
                         )}
-                      </button>
+                      </motion.button>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           )}
         </div>
       </section>
 
-      {/* Banner Promocional */}
-      <section className="promo-banner">
+      {/* ── PROMO BANNER — scroll reveal ── */}
+      <motion.section
+        className="promo-banner"
+        ref={promoRef}
+        variants={fadeUp}
+        initial="hidden"
+        animate={promoInView ? 'visible' : 'hidden'}
+      >
         <div className="promo-banner__card">
           <p className="promo-banner__title">¡Oferta especial de lanzamiento!</p>
           <p className="promo-banner__text">
@@ -232,7 +377,7 @@ export default function HomePage() {
             <strong>NOVAFREE</strong>.
           </p>
         </div>
-      </section>
+      </motion.section>
     </div>
   );
 }
