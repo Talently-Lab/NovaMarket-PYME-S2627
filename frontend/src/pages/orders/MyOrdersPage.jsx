@@ -307,10 +307,14 @@ function OrderCard({ order }) {
   const [open, setOpen] = useState(false);
   const st = STATUS_MAP[order.status] ?? STATUS_MAP.pending;
 
-  const totalFinal = order.total_with_tax ?? order.total ?? 0;
-  const subtotal   = order.total ?? 0;
-  const discount   = order.discount_amount ?? 0;
-  const tax        = order.tax_amount ?? 0;
+  const subtotal   = Number(order.total ?? 0);
+  const discount   = Number(order.discount_amount ?? 0);
+  const tax        = Number(order.tax_amount ?? 0);
+  // Si total_with_tax no existe (pedidos anteriores a migración 008),
+  // lo recalcula para mantener consistencia con lo mostrado en checkout
+  const totalFinal = order.total_with_tax != null
+    ? Number(order.total_with_tax)
+    : +(((subtotal - discount) * 1.21)).toFixed(2);
 
   return (
     <div className="ocard">

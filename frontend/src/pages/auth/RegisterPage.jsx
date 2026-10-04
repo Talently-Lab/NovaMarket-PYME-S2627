@@ -29,10 +29,27 @@ export default function RegisterPage() {
       setTermsError('Debés aceptar los Términos y la Política de Privacidad para continuar.');
       return;
     }
+    // Validar que no sean solo espacios en blanco
+    if (!form.name.trim()) {
+      setError('El nombre no puede contener solo espacios.');
+      return;
+    }
+    if (!form.password.trim()) {
+      setError('La contraseña no puede contener solo espacios.');
+      return;
+    }
+    if (form.password.trim().length < 8) {
+      setError('La contraseña debe tener al menos 8 caracteres.');
+      return;
+    }
     setLoading(true);
     setError('');
     try {
-      const { data } = await authAPI.register(form);
+      const { data } = await authAPI.register({
+        name:     form.name.trim(),
+        email:    form.email.trim(),
+        password: form.password.trim(),
+      });
       localStorage.setItem('nm-token', data.token);
       login(data.user, data.token);
       setFlashMessage(`¡Bienvenido/a, ${data.user.name.split(' ')[0]}! Tu cuenta fue creada exitosamente.`);

@@ -95,7 +95,7 @@ export default function OrdersAdminPage() {
                   <td style={{ fontWeight: 'var(--weight-semibold)', fontFamily: 'var(--font-mono)' }}>
                     #{String(order.id).padStart(5, '0')}
                   </td>
-                  <td>{order.user_name ?? order.user?.name ?? '—'}</td>
+                  <td>{order.user_name || order.shipping_name || '—'}</td>
                   <td style={{ color: 'var(--color-text-secondary)' }}>
                     {order.shipping_city || '—'}
                   </td>

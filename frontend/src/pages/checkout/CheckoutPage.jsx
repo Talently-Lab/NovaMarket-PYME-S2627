@@ -128,8 +128,15 @@ export default function CheckoutPage() {
   const selectedInst  = installments.find(i => i.n === installment) || installments[0];
 
   // ── Handlers ─────────────────────────────────────────────────────────────
-  const handleShipping = (e) =>
-    setShipping(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  // Regex: solo letras (incluyendo acentos, ñ) y espacios
+  const NAME_REGEX = /^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$/;
+
+  const handleShipping = (e) => {
+    const { name, value } = e.target;
+    // Para el campo nombre: filtrar caracteres no permitidos en tiempo real
+    if (name === 'name' && value !== '' && !NAME_REGEX.test(value)) return;
+    setShipping(prev => ({ ...prev, [name]: value }));
+  };
 
   // Formatear número de tarjeta con espacios cada 4 dígitos
   const handleCardNumber = (e) => {
@@ -167,6 +174,10 @@ export default function CheckoutPage() {
   const handleConfirm = async () => {
     if (!shipping.name || !shipping.address || !shipping.city) {
       setError('Nombre, dirección y ciudad son requeridos.');
+      return;
+    }
+    if (!NAME_REGEX.test(shipping.name.trim())) {
+      setError('El nombre de envío solo puede contener letras y espacios.');
       return;
     }
     if (payMethod === 'tarjeta') {
@@ -346,15 +357,22 @@ export default function CheckoutPage() {
                   <label className="form-label" htmlFor="cardNumber">Número de tarjeta</label>
                   <input className="form-input form-input--mono" type="text" id="cardNumber"
                     value={cardNumber} onChange={handleCardNumber}
-                    placeholder="0000 0000 0000 0000" maxLength={19} />
+                    placeholder="0000 0000 0000 0000" maxLength={19}
+                    autoComplete="cc-number" inputMode="numeric" />
                 </div>
 
                 {/* Nombre */}
                 <div className="form-group">
                   <label className="form-label" htmlFor="cardName">Nombre como figura en la tarjeta</label>
                   <input className="form-input" type="text" id="cardName"
-                    value={cardName} onChange={e => setCardName(e.target.value.toUpperCase())}
-                    placeholder="NOMBRE APELLIDO" />
+                    value={cardName}
+                    onChange={e => {
+                      const val = e.target.value.toUpperCase();
+                      // Solo letras, espacios y acentos
+                      if (val === '' || NAME_REGEX.test(val)) setCardName(val);
+                    }}
+                    placeholder="NOMBRE APELLIDO"
+                    autoComplete="cc-name" />
                 </div>
 
                 {/* Vencimiento + CVV + Banco */}
@@ -363,13 +381,15 @@ export default function CheckoutPage() {
                     <label className="form-label" htmlFor="cardExpiry">Vencimiento</label>
                     <input className="form-input form-input--mono" type="text" id="cardExpiry"
                       value={cardExpiry} onChange={handleExpiry}
-                      placeholder="MM/AA" maxLength={5} />
+                      placeholder="MM/AA" maxLength={5}
+                      autoComplete="cc-exp" inputMode="numeric" />
                   </div>
                   <div className="form-group">
                     <label className="form-label" htmlFor="cardCvv">CVV</label>
                     <input className="form-input form-input--mono" type="password" id="cardCvv"
                       value={cardCvv} onChange={e => setCardCvv(e.target.value.replace(/\D/g,'').slice(0,4))}
-                      placeholder="3 dígitos" maxLength={4} />
+                      placeholder="3 dígitos" maxLength={4}
+                      autoComplete="cc-csc" inputMode="numeric" />
                   </div>
                   <div className="form-group">
                     <label className="form-label" htmlFor="cardBrand">Banco emisor</label>

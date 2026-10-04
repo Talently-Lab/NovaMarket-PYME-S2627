@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { usersAPI } from '../../services/api';
 
 export default function CustomersAdminPage() {
@@ -6,20 +6,34 @@ export default function CustomersAdminPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState('');
 
-  useEffect(() => {
+  const fetchUsers = useCallback(() => {
+    setLoading(true);
+    setError('');
     usersAPI.getAllAdmin()
       .then(({ data }) => setUsers(data.users ?? []))
       .catch(() => setError('No se pudieron cargar los clientes.'))
       .finally(() => setLoading(false));
   }, []);
 
+  useEffect(() => { fetchUsers(); }, [fetchUsers]);
+
   return (
     <div className="admin-dashboard">
       <div className="admin-dashboard__header">
-        <h1 className="admin-dashboard__title">Clientes</h1>
-        <p className="admin-dashboard__subtitle">
-          {loading ? '…' : `${users.length} usuarios registrados`}
-        </p>
+        <div>
+          <h1 className="admin-dashboard__title">Clientes</h1>
+          <p className="admin-dashboard__subtitle">
+            {loading ? '…' : `${users.length} usuarios registrados`}
+          </p>
+        </div>
+        <button
+          className="btn btn--secondary btn--sm"
+          onClick={fetchUsers}
+          disabled={loading}
+          title="Actualizar lista de clientes"
+        >
+          {loading ? 'Cargando…' : '↻ Actualizar'}
+        </button>
       </div>
 
       {error && <p className="form-error">{error}</p>}

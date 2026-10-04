@@ -24,31 +24,40 @@ function generateToken(user) {
 async function register(req, res) {
   const { name, email, password } = req.body;
 
+  // Normalizar — eliminar espacios al inicio y al final
+  const trimmedName     = (name     ?? '').trim();
+  const trimmedEmail    = (email    ?? '').trim();
+  const trimmedPassword = (password ?? '').trim();
+
   // Validación básica
-  if (!name || !email || !password) {
+  if (!trimmedName || !trimmedEmail || !trimmedPassword) {
     return res.status(400).json({ error: 'Nombre, email y contraseña son requeridos.' });
   }
 
-  if (password.length < 8) {
+  if (trimmedName.length < 2) {
+    return res.status(400).json({ error: 'El nombre debe tener al menos 2 caracteres.' });
+  }
+
+  if (trimmedPassword.length < 8) {
     return res.status(400).json({ error: 'La contraseña debe tener al menos 8 caracteres.' });
   }
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
+  if (!emailRegex.test(trimmedEmail)) {
     return res.status(400).json({ error: 'El email no tiene un formato válido.' });
   }
 
   // Verificar si el email ya existe
-  const existing = await UserModel.findByEmail(email);
+  const existing = await UserModel.findByEmail(trimmedEmail);
   if (existing) {
     return res.status(409).json({ error: 'Ya existe una cuenta con ese email.' });
   }
 
   // Hash de la contraseña
-  const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+  const hashedPassword = await bcrypt.hash(trimmedPassword, SALT_ROUNDS);
 
   // Crear usuario
-  const user = await UserModel.create(name, email, hashedPassword);
+  const user = await UserModel.create(trimmedName, trimmedEmail, hashedPassword);
 
   // Generar token
   const token = generateToken(user);

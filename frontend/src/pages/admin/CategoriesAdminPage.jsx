@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { productsAPI } from '../../services/api';
 
 function EditIcon() {
@@ -41,17 +41,16 @@ export default function CategoriesAdminPage() {
   // Estado de edición: { id: categoryName, value: newName, saving: bool, error: str }
   const [editing, setEditing] = useState({});
 
-  useEffect(() => {
-    load();
-  }, []);
+  useEffect(() => { load(); }, [load]);
 
-  const load = () => {
+  const load = useCallback(() => {
     setLoading(true);
+    setError('');
     productsAPI.getCategories()
       .then(({ data }) => setCategories(data.categories ?? []))
       .catch(() => setError('No se pudieron cargar las categorías.'))
       .finally(() => setLoading(false));
-  };
+  }, []);
 
   const startEdit = (name) => {
     setEditing(prev => ({ ...prev, [name]: { value: name, saving: false, error: '' } }));
@@ -89,10 +88,20 @@ export default function CategoriesAdminPage() {
   return (
     <div className="admin-dashboard">
       <div className="admin-dashboard__header">
-        <h1 className="admin-dashboard__title">Categorías</h1>
-        <p className="admin-dashboard__subtitle">
-          {loading ? '…' : `${categories.length} categorías activas`}
-        </p>
+        <div>
+          <h1 className="admin-dashboard__title">Categorías</h1>
+          <p className="admin-dashboard__subtitle">
+            {loading ? '…' : `${categories.length} categorías activas`}
+          </p>
+        </div>
+        <button
+          className="btn btn--secondary btn--sm"
+          onClick={load}
+          disabled={loading}
+          title="Actualizar lista de categorías"
+        >
+          {loading ? 'Cargando…' : '↻ Actualizar'}
+        </button>
       </div>
 
       {error && <p className="form-error">{error}</p>}

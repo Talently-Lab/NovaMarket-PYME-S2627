@@ -122,8 +122,9 @@ export default function CartPage() {
                       className="cart-qty-btn"
                       onClick={() => updateQuantity(item.id, item.quantity - 1)}
                       aria-label="Restar uno"
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
+                      disabled={item.quantity <= 1}
+                      whileHover={item.quantity > 1 ? { scale: 1.1 } : {}}
+                      whileTap={item.quantity > 1 ? { scale: 0.9 } : {}}
                     >−</motion.button>
                     <motion.span
                       key={item.quantity}
