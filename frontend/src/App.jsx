@@ -17,6 +17,8 @@ import OrderConfirmedPage from './pages/checkout/OrderConfirmedPage';
 import MyOrdersPage from './pages/orders/MyOrdersPage';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
+import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
+import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 import TermsPage from './pages/legal/TermsPage';
 import PrivacyPage from './pages/legal/PrivacyPage';
 import DashboardPage from './pages/admin/DashboardPage';
@@ -52,6 +54,8 @@ export default function App() {
               <Route path="/carrito" element={<CartPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/registro" element={<RegisterPage />} />
+              <Route path="/olvide-contrasena" element={<ForgotPasswordPage />} />
+              <Route path="/restablecer-contrasena" element={<ResetPasswordPage />} />
               <Route path="/terminos" element={<TermsPage />} />
               <Route path="/privacidad" element={<PrivacyPage />} />
 

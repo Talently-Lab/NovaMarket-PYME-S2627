@@ -56,6 +56,33 @@ const UserModel = {
     );
     return result.rows[0] || null;
   },
+
+  async setResetToken(email, token, expires) {
+    const result = await query(
+      `UPDATE users SET reset_token = $1, reset_token_expires = $2
+       WHERE email = $3
+       RETURNING id, email`,
+      [token, expires, email]
+    );
+    return result.rows[0] || null;
+  },
+
+  async findByResetToken(token) {
+    const result = await query(
+      `SELECT id, email, name, reset_token_expires
+       FROM users
+       WHERE reset_token = $1 LIMIT 1`,
+      [token]
+    );
+    return result.rows[0] || null;
+  },
+
+  async clearResetToken(userId) {
+    await query(
+      `UPDATE users SET reset_token = NULL, reset_token_expires = NULL WHERE id = $1`,
+      [userId]
+    );
+  },
 };
 
 module.exports = UserModel;

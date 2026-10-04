@@ -110,7 +110,9 @@ export default function LoginPage() {
                 <input type="checkbox" className="auth-card__checkbox" />
                 <span>Recordarme</span>
               </label>
-              <span className="auth-card__forgot">Olvidé mi contraseña</span>
+              <Link to="/olvide-contrasena" className="auth-card__forgot">
+                Olvidé mi contraseña
+              </Link>
             </div>
 
             {error && (

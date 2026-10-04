@@ -169,4 +169,74 @@ async function changePassword(req, res) {
   return res.status(200).json({ message: 'Contraseña actualizada correctamente.' });
 }
 
-module.exports = { register, login, me, getAllUsers, changePassword };
+/**
+ * POST /api/auth/forgot-password
+ * Genera un token de reseteo y lo muestra en la respuesta (flujo simulado sin email)
+ */
+async function forgotPassword(req, res) {
+  const { email } = req.body;
+
+  if (!email || !email.trim()) {
+    return res.status(400).json({ error: 'El email es requerido.' });
+  }
+
+  const user = await UserModel.findByEmail(email.trim().toLowerCase());
+
+  // Responder igual si el email no existe — evita enumeración de usuarios
+  if (!user) {
+    return res.status(200).json({
+      message: 'Si el email existe, recibirás instrucciones para recuperar tu contraseña.',
+    });
+  }
+
+  // Generar token aleatorio de 6 dígitos (simulado — en producción sería un UUID largo)
+  const crypto = require('crypto');
+  const token   = crypto.randomInt(100000, 999999).toString();
+  const expires = new Date(Date.now() + 15 * 60 * 1000); // 15 minutos
+
+  await UserModel.setResetToken(user.email, token, expires);
+
+  // En producción se enviaría por email — aquí lo devolvemos directamente
+  return res.status(200).json({
+    message: 'Código de recuperación generado. En producción se enviaría por email.',
+    reset_token: token,          // ← visible solo en modo simulado
+    expires_in: '15 minutos',
+    note: 'Checkout simulado — NovaMarket MVP',
+  });
+}
+
+/**
+ * POST /api/auth/reset-password
+ * Verifica el token y actualiza la contraseña
+ */
+async function resetPassword(req, res) {
+  const { token, newPassword } = req.body;
+
+  if (!token || !newPassword) {
+    return res.status(400).json({ error: 'Token y nueva contraseña son requeridos.' });
+  }
+
+  const trimmedPassword = (newPassword ?? '').trim();
+  if (trimmedPassword.length < 8) {
+    return res.status(400).json({ error: 'La contraseña debe tener al menos 8 caracteres.' });
+  }
+
+  const user = await UserModel.findByResetToken(token);
+
+  if (!user) {
+    return res.status(400).json({ error: 'El código es inválido o ya fue utilizado.' });
+  }
+
+  if (new Date() > new Date(user.reset_token_expires)) {
+    await UserModel.clearResetToken(user.id);
+    return res.status(400).json({ error: 'El código expiró. Solicitá uno nuevo.' });
+  }
+
+  const hashedPassword = await bcrypt.hash(trimmedPassword, SALT_ROUNDS);
+  await UserModel.updatePassword(user.id, hashedPassword);
+  await UserModel.clearResetToken(user.id);
+
+  return res.status(200).json({ message: 'Contraseña actualizada correctamente. Ya podés iniciar sesión.' });
+}
+
+module.exports = { register, login, me, getAllUsers, changePassword, forgotPassword, resetPassword };

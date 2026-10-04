@@ -1466,6 +1466,7 @@ ul, ol { list-style: none; }
   font-weight: 600;
   color: #EAEEF7;
   cursor: pointer;
+  text-decoration: none;
   transition: color var(--duration-base) var(--ease);
 }
 
@@ -5687,4 +5688,77 @@ tr:hover .stock-display__edit {
 .stock-edit__error {
   font-size: var(--text-xs);
   color: var(--color-error);
+}
+
+/* ── Forgot / Reset password ── */
+.auth-card__desc {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--sp-4);
+  line-height: 1.6;
+}
+
+.auth-card__footer-link {
+  margin-top: var(--sp-4);
+  text-align: center;
+  font-size: var(--text-sm);
+}
+
+.auth-card__footer-link a {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+.forgot-token {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-4);
+  text-align: center;
+  padding: var(--sp-2) 0;
+}
+
+.forgot-token__icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #D2EE42;
+  color: #050506;
+  font-size: 22px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.forgot-token__title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-text);
+}
+
+.forgot-token__desc {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  max-width: 320px;
+}
+
+.forgot-token__code {
+  font-family: var(--font-mono);
+  font-size: 2.5rem;
+  font-weight: var(--weight-black);
+  letter-spacing: 0.2em;
+  color: #D2EE42;
+  background: #050506;
+  border: 2px solid #D2EE42;
+  border-radius: var(--radius-lg);
+  padding: var(--sp-3) var(--sp-6);
+  user-select: all;
+}
+
+.forgot-token__note {
+  font-size: var(--text-xs);
+  color: var(--color-text-disabled);
 }
