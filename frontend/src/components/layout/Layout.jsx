@@ -3,6 +3,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Header from './Header';
 import Footer from './Footer';
 import ScrollToTop from '../ui/ScrollToTop';
+import RouteScrollReset from '../ui/RouteScrollReset';
+import CartToast from '../ui/CartToast';
 
 // Variantes de transición de página — fade + slide up suave
 const pageVariants = {
@@ -16,6 +18,7 @@ export default function Layout() {
 
   return (
     <div className="layout">
+      <RouteScrollReset />
       <Header />
       <main className="main">
         <AnimatePresence mode="wait" initial={false}>
@@ -32,6 +35,7 @@ export default function Layout() {
       </main>
       <Footer />
       <ScrollToTop />
+      <CartToast />
     </div>
   );
 }

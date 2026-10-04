@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
 const CartContext = createContext(null);
 
@@ -8,6 +8,7 @@ const storageKey = (userId) =>
 
 export function CartProvider({ children, userId }) {
   const key = storageKey(userId);
+  const [lastAdded, setLastAdded] = useState(null); // { name, id } del último producto agregado
 
   const [items, setItems] = useState(() => {
     try {
@@ -33,7 +34,14 @@ export function CartProvider({ children, userId }) {
     localStorage.setItem(storageKey(userId), JSON.stringify(items));
   }, [items, userId]);
 
-  const addItem = (product, quantity = 1) => {
+  // Auto-limpiar el lastAdded después de 2.5s
+  useEffect(() => {
+    if (!lastAdded) return;
+    const t = setTimeout(() => setLastAdded(null), 2500);
+    return () => clearTimeout(t);
+  }, [lastAdded]);
+
+  const addItem = useCallback((product, quantity = 1) => {
     setItems((prev) => {
       const existing = prev.find((i) => i.id === product.id);
       const maxStock = product.stock ?? Infinity;
@@ -46,7 +54,9 @@ export function CartProvider({ children, userId }) {
       if (maxStock === 0) return prev;
       return [...prev, { ...product, quantity: Math.min(quantity, maxStock) }];
     });
-  };
+    // Dispara el toast de feedback
+    setLastAdded({ id: product.id, name: product.name });
+  }, []);
 
   const removeItem = (productId) => {
     setItems((prev) => prev.filter((i) => i.id !== productId));
@@ -72,7 +82,7 @@ export function CartProvider({ children, userId }) {
   const itemCount = items.reduce((acc, i) => acc + i.quantity, 0);
 
   return (
-    <CartContext.Provider value={{ items, addItem, removeItem, updateQuantity, clearCart, total, itemCount }}>
+    <CartContext.Provider value={{ items, addItem, removeItem, updateQuantity, clearCart, total, itemCount, lastAdded }}>
       {children}
     </CartContext.Provider>
   );
