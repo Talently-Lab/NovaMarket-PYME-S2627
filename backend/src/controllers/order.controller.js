@@ -1,5 +1,4 @@
 const OrderModel = require('../models/order.model');
-const OrderModel = require('../models/order.model');
 const ProductModel = require('../models/product.model');
 
 const VALID_STATUSES = ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'];
