@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { useAuth } from './context/AuthContext';
 
 import Layout from './components/layout/Layout';
 import AdminLayout from './pages/admin/AdminLayout';
@@ -26,12 +27,22 @@ import CategoriesAdminPage from './pages/admin/CategoriesAdminPage';
 import ConfigAdminPage from './pages/admin/ConfigAdminPage';
 import NotFoundPage from './pages/NotFoundPage';
 
+// Puente entre AuthContext y CartContext — pasa el userId al carrito
+function CartWrapper({ children }) {
+  const { user } = useAuth();
+  return (
+    <CartProvider userId={user?.id ?? null}>
+      {children}
+    </CartProvider>
+  );
+}
+
 export default function App() {
   return (
     <BrowserRouter>
       <ThemeProvider>
         <AuthProvider>
-          <CartProvider>
+          <CartWrapper>
           <Routes>
             {/* Rutas públicas */}
             <Route element={<Layout />}>
@@ -67,7 +78,7 @@ export default function App() {
             {/* 404 */}
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
-        </CartProvider>
+        </CartWrapper>
         </AuthProvider>
       </ThemeProvider>
     </BrowserRouter>
