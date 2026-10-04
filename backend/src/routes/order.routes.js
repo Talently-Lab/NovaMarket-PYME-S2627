@@ -6,6 +6,9 @@ const {
   getOrderById,
   getAllOrders,
   updateOrderStatus,
+  getCoupons,
+  createCoupon,
+  deleteCoupon,
 } = require('../controllers/order.controller');
 const { authenticate, requireAdmin } = require('../middlewares/auth.middleware');
 
@@ -32,6 +35,14 @@ router.get('/admin/all', requireAdmin, getAllOrders);
 
 // PATCH /api/orders/admin/:id/status — cambiar estado
 router.patch('/admin/:id/status', requireAdmin, updateOrderStatus);
+
+// ── Cupones (admin) ───────────────────────────────────────────────────────────
+// GET    /api/orders/admin/coupons         — listar cupones
+router.get('/admin/coupons', requireAdmin, getCoupons);
+// POST   /api/orders/admin/coupons         — crear cupón
+router.post('/admin/coupons', requireAdmin, createCoupon);
+// DELETE /api/orders/admin/coupons/:code   — eliminar cupón
+router.delete('/admin/coupons/:code', requireAdmin, deleteCoupon);
 
 // GET /api/orders/:id — detalle de un pedido propio (al final para no interceptar /admin/*)
 router.get('/:id', getOrderById);

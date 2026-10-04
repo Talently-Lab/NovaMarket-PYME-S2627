@@ -1,11 +1,12 @@
 const OrderModel = require('../models/order.model');
+const OrderModel = require('../models/order.model');
 const ProductModel = require('../models/product.model');
 
 const VALID_STATUSES = ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'];
 const VALID_PAYMENT_METHODS = ['tarjeta', 'billetera', 'transferencia'];
 
-// Cupones válidos: { code: descuento % }
-const VALID_COUPONS = {
+// Cupones válidos: { code: descuento % } — gestionable via /api/admin/coupons
+let VALID_COUPONS = {
   'NOVA10':   10,
   'NOVA20':   20,
   'GAMING15': 15,
@@ -202,6 +203,59 @@ async function updateOrderStatus(req, res) {
   return res.status(200).json({ message: 'Estado del pedido actualizado.', order });
 }
 
+/**
+ * GET /api/orders/admin/coupons — lista cupones activos — solo admin
+ */
+function getCoupons(req, res) {
+  const list = Object.entries(VALID_COUPONS).map(([code, discount_percent]) => ({
+    code,
+    discount_percent,
+  }));
+  return res.status(200).json({ coupons: list, total: list.length });
+}
+
+/**
+ * POST /api/orders/admin/coupons — crea un cupón — solo admin
+ */
+function createCoupon(req, res) {
+  const { code, discount_percent } = req.body;
+
+  if (!code || !discount_percent) {
+    return res.status(400).json({ error: 'Código y porcentaje de descuento son requeridos.' });
+  }
+
+  const normalized = code.toUpperCase().trim().replace(/\s/g, '');
+  if (!/^[A-Z0-9]+$/.test(normalized)) {
+    return res.status(400).json({ error: 'El código solo puede contener letras y números.' });
+  }
+
+  const pct = Number(discount_percent);
+  if (isNaN(pct) || pct <= 0 || pct > 100) {
+    return res.status(400).json({ error: 'El porcentaje debe ser un número entre 1 y 100.' });
+  }
+
+  if (VALID_COUPONS[normalized]) {
+    return res.status(409).json({ error: `El cupón ${normalized} ya existe.` });
+  }
+
+  VALID_COUPONS[normalized] = pct;
+  return res.status(201).json({ message: 'Cupón creado.', coupon: { code: normalized, discount_percent: pct } });
+}
+
+/**
+ * DELETE /api/orders/admin/coupons/:code — elimina un cupón — solo admin
+ */
+function deleteCoupon(req, res) {
+  const code = (req.params.code ?? '').toUpperCase().trim();
+
+  if (!VALID_COUPONS[code]) {
+    return res.status(404).json({ error: `Cupón ${code} no encontrado.` });
+  }
+
+  delete VALID_COUPONS[code];
+  return res.status(200).json({ message: `Cupón ${code} eliminado.` });
+}
+
 module.exports = {
   createOrder,
   validateCoupon,
@@ -209,4 +263,7 @@ module.exports = {
   getOrderById,
   getAllOrders,
   updateOrderStatus,
+  getCoupons,
+  createCoupon,
+  deleteCoupon,
 };

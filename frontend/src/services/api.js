@@ -54,11 +54,16 @@ export const ordersAPI = {
   // Admin
   getAllAdmin:    ()             => api.get('/orders/admin/all'),
   updateStatus:  (id, status)   => api.patch(`/orders/admin/${id}/status`, { status }),
+  // Cupones admin
+  getCoupons:    ()              => api.get('/orders/admin/coupons'),
+  createCoupon:  (data)         => api.post('/orders/admin/coupons', data),
+  deleteCoupon:  (code)         => api.delete(`/orders/admin/coupons/${code}`),
 };
 
 // ── Usuarios (admin) ─────────────────────────────────────────
 export const usersAPI = {
-  getAllAdmin: () => api.get('/auth/admin/users'),
+  getAllAdmin:      ()     => api.get('/auth/admin/users'),
+  changePassword:  (data) => api.patch('/auth/admin/change-password', data),
 };
 
 // ── Health ────────────────────────────────────────────────────

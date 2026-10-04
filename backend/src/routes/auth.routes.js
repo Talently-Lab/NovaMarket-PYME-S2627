@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { register, login, me, getAllUsers } = require('../controllers/auth.controller');
+const { register, login, me, getAllUsers, changePassword } = require('../controllers/auth.controller');
 const { authenticate, requireAdmin } = require('../middlewares/auth.middleware');
 
 const router = Router();
@@ -15,5 +15,8 @@ router.get('/me', authenticate, me);
 
 // GET /api/auth/admin/users — lista todos los usuarios (solo admin)
 router.get('/admin/users', authenticate, requireAdmin, getAllUsers);
+
+// PATCH /api/auth/admin/change-password — cambia contraseña del admin autenticado
+router.patch('/admin/change-password', authenticate, requireAdmin, changePassword);
 
 module.exports = router;

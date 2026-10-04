@@ -5451,3 +5451,183 @@ ul, ol { list-style: none; }
   align-items: center;
   gap: var(--sp-2);
 }
+
+/* ── 30. CONFIG ADMIN PAGE ── */
+
+.config-sections {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-8);
+  max-width: 760px;
+}
+
+.config-section {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--sp-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+
+.config-section--danger {
+  border-color: rgba(239, 68, 68, 0.30);
+}
+
+.config-section__title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  color: var(--color-text);
+}
+
+.config-section__subtitle {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+}
+
+.config-section__desc {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin-top: calc(var(--sp-1) * -1);
+}
+
+.config-section__note {
+  font-size: var(--text-xs);
+  color: var(--color-text-disabled);
+  background: var(--color-surface-2);
+  border-radius: var(--radius-md);
+  padding: var(--sp-2) var(--sp-3);
+}
+
+.config-section__note code {
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.config-section__feedback {
+  margin: 0;
+}
+
+.config-section__success {
+  font-size: var(--text-sm);
+  color: #16a34a;
+  font-weight: var(--weight-medium);
+}
+
+.config-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-4);
+}
+
+.config-grid--sm {
+  grid-template-columns: 180px 1fr;
+}
+
+/* Cupones */
+.config-coupons-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.config-coupon-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--color-surface-2);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+}
+
+.config-coupon-row__code {
+  font-family: var(--font-mono);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-sm);
+  color: var(--color-text);
+  flex: 1;
+}
+
+.config-coupon-row__pct {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: #16a34a;
+  background: rgba(22,163,74,0.10);
+  border-radius: var(--radius-sm);
+  padding: 2px 8px;
+}
+
+.config-coupon-row__del {
+  color: var(--color-error);
+  opacity: 0.7;
+  padding: var(--sp-1);
+}
+.config-coupon-row__del:hover { opacity: 1; background: rgba(239,68,68,0.08); }
+
+.config-coupon-add {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  padding-top: var(--sp-2);
+  border-top: 1px solid var(--color-border);
+}
+
+.config-coupon-add__row {
+  display: flex;
+  gap: var(--sp-3);
+  align-items: flex-end;
+}
+
+.config-coupon-add__pct {
+  max-width: 130px;
+}
+
+/* IVA display */
+.config-iva-display {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.config-iva-display__value {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-black);
+  color: var(--color-text);
+}
+
+.config-iva-display__label {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+}
+
+/* Formulario contraseña */
+.config-password-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  max-width: 400px;
+}
+
+/* Responsive config */
+@media (max-width: 768px) {
+  .config-grid,
+  .config-grid--sm {
+    grid-template-columns: 1fr;
+  }
+  .config-coupon-add__row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .config-coupon-add__pct {
+    max-width: 100%;
+  }
+}

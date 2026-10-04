@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const jwt    = require('jsonwebtoken');
+const { query } = require('../config/db');
 const UserModel = require('../models/user.model');
 
 const SALT_ROUNDS = 12;
@@ -135,4 +136,37 @@ async function getAllUsers(req, res) {
   return res.status(200).json({ users, total: users.length });
 }
 
-module.exports = { register, login, me, getAllUsers };
+/**
+ * PATCH /api/auth/admin/change-password
+ * Cambia la contraseña del admin autenticado
+ */
+async function changePassword(req, res) {
+  const { currentPassword, newPassword } = req.body;
+  const userId = req.user.id;
+
+  if (!currentPassword || !newPassword) {
+    return res.status(400).json({ error: 'Contraseña actual y nueva son requeridas.' });
+  }
+
+  const trimmedNew = (newPassword ?? '').trim();
+  if (trimmedNew.length < 8) {
+    return res.status(400).json({ error: 'La nueva contraseña debe tener al menos 8 caracteres.' });
+  }
+
+  // Obtener usuario completo (con password hash)
+  const result = await query('SELECT * FROM users WHERE id = $1 LIMIT 1', [userId]);
+  const user   = result.rows[0];
+  if (!user) return res.status(404).json({ error: 'Usuario no encontrado.' });
+
+  const match = await bcrypt.compare(currentPassword, user.password);
+  if (!match) {
+    return res.status(401).json({ error: 'La contraseña actual es incorrecta.' });
+  }
+
+  const hashed = await bcrypt.hash(trimmedNew, SALT_ROUNDS);
+  await UserModel.updatePassword(userId, hashed);
+
+  return res.status(200).json({ message: 'Contraseña actualizada correctamente.' });
+}
+
+module.exports = { register, login, me, getAllUsers, changePassword };
