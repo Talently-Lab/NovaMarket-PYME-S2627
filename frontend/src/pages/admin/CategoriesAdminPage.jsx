@@ -41,8 +41,6 @@ export default function CategoriesAdminPage() {
   // Estado de edición: { id: categoryName, value: newName, saving: bool, error: str }
   const [editing, setEditing] = useState({});
 
-  useEffect(() => { load(); }, [load]);
-
   const load = useCallback(() => {
     setLoading(true);
     setError('');
@@ -51,6 +49,8 @@ export default function CategoriesAdminPage() {
       .catch(() => setError('No se pudieron cargar las categorías.'))
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => { load(); }, [load]);
 
   const startEdit = (name) => {
     setEditing(prev => ({ ...prev, [name]: { value: name, saving: false, error: '' } }));
