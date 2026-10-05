@@ -1572,8 +1572,8 @@ ul, ol { list-style: none; }
   border: 1px solid #D2EE42;
   border-radius: var(--radius-xl);
   box-shadow: 0 8px 32px rgba(0,0,0,0.25);
-  max-width: calc(100vw - 32px);
   width: max-content;
+  max-width: calc(100vw - 32px);
 }
 
 .cart-toast__check {
@@ -1590,6 +1590,25 @@ ul, ol { list-style: none; }
   text-overflow: ellipsis;
   white-space: nowrap;
   max-width: 180px;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Mobile — toast ocupa el ancho disponible, texto con wrap */
+@media (max-width: 480px) {
+  .cart-toast {
+    width: calc(100vw - 32px);
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+  }
+  .cart-toast__text {
+    white-space: normal;
+    max-width: calc(100% - 80px);
+    font-size: var(--text-xs);
+  }
+  .cart-toast__btn {
+    margin-left: auto;
+  }
 }
 
 .cart-toast__btn {
