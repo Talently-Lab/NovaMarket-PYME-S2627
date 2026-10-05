@@ -1594,20 +1594,33 @@ ul, ol { list-style: none; }
   min-width: 0;
 }
 
-/* Mobile — toast ocupa el ancho disponible, texto con wrap */
-@media (max-width: 480px) {
+/* Mobile — toast centrado sin transform, ocupa el ancho disponible */
+@media (max-width: 768px) {
   .cart-toast {
-    width: calc(100vw - 32px);
+    left: 16px;
+    right: 16px;
+    width: auto;
+    transform: none;
     flex-wrap: wrap;
     gap: var(--sp-2);
+    justify-content: center;
+    text-align: center;
   }
   .cart-toast__text {
     white-space: normal;
-    max-width: calc(100% - 80px);
-    font-size: var(--text-xs);
+    max-width: 100%;
+    font-size: var(--text-sm);
+    flex: 1 1 100%;
+    text-align: center;
   }
   .cart-toast__btn {
-    margin-left: auto;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .cart-toast__text {
+    font-size: var(--text-xs);
   }
 }
 
