@@ -1873,6 +1873,12 @@ ul, ol { list-style: none; }
   align-items: stretch;
 }
 
+/* Wrapper Framer Motion — controla flex en desktop, grid en mobile */
+.category-card-wrapper {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
 .category-card {
   flex: 1 1 0;
   width: 100%;
@@ -1945,20 +1951,28 @@ ul, ol { list-style: none; }
 
 @media (max-width: 768px) {
   .categories-grid {
-    flex-wrap: wrap;
-    gap: 16px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
   }
 
   .category-card {
-    flex: 1 1 calc(33% - 16px);
-    min-width: 100px;
-    padding: 24px 16px;
+    flex: none;
+    width: 100%;
+    padding: 24px 12px;
+    gap: 12px;
   }
 }
 
 @media (max-width: 480px) {
+  .categories-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
   .category-card {
-    flex: 1 1 calc(50% - 16px);
+    padding: 20px 8px;
+    gap: 10px;
   }
 }
 

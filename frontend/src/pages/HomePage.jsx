@@ -267,7 +267,8 @@ export default function HomePage() {
                 variants={staggerItem}
                 whileHover={{ y: -6, boxShadow: '0 12px 32px rgba(125,28,226,0.18)' }}
                 whileTap={{ scale: 0.97 }}
-                style={{ flex: '1 1 0', minWidth: 0, borderRadius: 24 }}
+                className="category-card-wrapper"
+                style={{ borderRadius: 24 }}
               >
                 <Link
                   to={`/catalogo?categoria=${slug}`}
