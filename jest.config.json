@@ -2,7 +2,8 @@
   "testEnvironment": "node",
   "roots": [
     "<rootDir>/tests/api",
-    "<rootDir>/tests/security"
+    "<rootDir>/tests/security",
+    "<rootDir>/tests/unit"
   ],
   "transform": {
     "^.+\\.tsx?$": "ts-jest"
@@ -18,7 +19,7 @@
   ],
   "coverageThreshold": {
     "global": {
-      "lines": 20
+      "lines": 40
     }
   },
   "coverageReporters": ["html", "lcov", "text-summary"],
