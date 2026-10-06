@@ -41,6 +41,35 @@ NovaMarket-PYME/
 
 ---
 
+## 🧩 Decisiones de arquitectura del Frontend
+
+Carpetas de `frontend/src` (ver el detalle de cada componente en `docs/COMPONENTES-FRONTEND.md`):
+
+| Carpeta | Para qué se usa |
+|---|---|
+| `components/` | Piezas reutilizables (`layout/` y `ui/`) |
+| `pages/` | Vistas completas, una por ruta |
+| `services/` | Llamadas HTTP a la API (`api.js`, con Axios) |
+| `context/` | Estado global (React Context) |
+| `hooks/`, `utils/`, `constants/` | Lógica compartida, utilidades y listas fijas |
+
+**Qué va en estado global (Context) y qué en estado local**
+
+| Estado | Dónde | Por qué |
+|---|---|---|
+| Sesión (`user`, `token`, `loading`) | `AuthContext` | Lo necesitan el header, las rutas protegidas y el checkout |
+| Carrito (`items`, total y cantidad) | `CartContext` | Se ve en el header y en varias páginas, y se guarda en `localStorage` |
+| Tema claro/oscuro | `ThemeContext` | Afecta a toda la aplicación |
+| Formularios (login, registro, checkout) | Local en cada página (`useState`) | Solo importan mientras la página está abierta |
+| Filtros, orden y paginación del catálogo | Local en la página | No hace falta compartirlos |
+| Estados de carga y error de cada pantalla | Local en la página | Dependen de cada petición |
+
+**Sesión:** el token se guarda en `localStorage` (`nm-token`). Al cargar la app se llama a `GET /api/auth/me` para restaurar la sesión. Si la API responde 401, el interceptor de `services/api.js` borra el token y avisa al `AuthContext` para cerrar la sesión también en pantalla.
+
+**Rutas:** `ProtectedRoute` exige sesión y `AdminRoute` además exige rol admin.
+
+---
+
 ## 🚀 Puesta en marcha
 
 ### 1. Clonar el repositorio

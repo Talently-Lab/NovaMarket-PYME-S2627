@@ -100,10 +100,10 @@ export default function Header() {
           {isAuthenticated ? (
             <div className="header__user">
               <Link to="/mis-pedidos" className="header__user-name" title="Mis pedidos">
-                {user?.name?.split(' ')[0]}
+                Hola, {user?.name?.split(' ')[0]}
               </Link>
               <button onClick={handleLogout} className="btn btn--secondary btn--sm">
-                Salir
+                Cerrar sesión
               </button>
             </div>
           ) : (

@@ -5,7 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 export default function RegisterPage() {
   const { register, setFlashMessage } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ name: '', email: '', password: '' });
+  const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [terms, setTerms] = useState(false);
   const [error, setError] = useState('');
@@ -28,10 +28,16 @@ export default function RegisterPage() {
       setTermsError('Debés aceptar los Términos y la Política de Privacidad para continuar.');
       return;
     }
+    if (form.password !== form.confirmPassword) {
+      setError('Las contraseñas no coinciden.');
+      return;
+    }
     setLoading(true);
     setError('');
     try {
-      const newUser = await register(form);
+      // confirmPassword es solo de la pantalla: no se envía a la API
+      const { name, email, password } = form;
+      const newUser = await register({ name, email, password });
       setFlashMessage(`¡Bienvenido/a, ${newUser.name.split(' ')[0]}! Tu cuenta fue creada exitosamente.`);
       navigate('/');
     } catch (err) {
@@ -115,6 +121,20 @@ export default function RegisterPage() {
               </button>
             </div>
             <span className="form-hint">Usá letras, números y símbolos para mayor seguridad.</span>
+          </div>
+          <div className="form-group">
+            <label className="form-label" htmlFor="confirmPassword">Repetir contraseña</label>
+            <input
+              className={`form-input${error ? ' error' : ''}`}
+              type={showPassword ? 'text' : 'password'}
+              id="confirmPassword"
+              name="confirmPassword"
+              value={form.confirmPassword}
+              onChange={handleChange}
+              placeholder="Repetí tu contraseña"
+              autoComplete="new-password"
+              required
+            />
           </div>
 
           {/* Checkbox Términos y Privacidad */}
