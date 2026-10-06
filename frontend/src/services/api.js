@@ -20,6 +20,8 @@ api.interceptors.response.use(
   (err) => {
     if (err.response?.status === 401) {
       localStorage.removeItem('nm-token');
+      // Avisa al AuthContext para que limpie también el usuario del estado
+      window.dispatchEvent(new Event('nm:unauthorized'));
     }
     return Promise.reject(err);
   }

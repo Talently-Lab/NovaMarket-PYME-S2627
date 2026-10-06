@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { authAPI } from '../../services/api';
 
 export default function RegisterPage() {
-  const { login, setFlashMessage } = useAuth();
+  const { register, setFlashMessage } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({ name: '', email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
@@ -32,10 +31,8 @@ export default function RegisterPage() {
     setLoading(true);
     setError('');
     try {
-      const { data } = await authAPI.register(form);
-      localStorage.setItem('nm-token', data.token);
-      login(data.user, data.token);
-      setFlashMessage(`¡Bienvenido/a, ${data.user.name.split(' ')[0]}! Tu cuenta fue creada exitosamente.`);
+      const newUser = await register(form);
+      setFlashMessage(`¡Bienvenido/a, ${newUser.name.split(' ')[0]}! Tu cuenta fue creada exitosamente.`);
       navigate('/');
     } catch (err) {
       setError(err.response?.data?.error || 'Error al crear la cuenta. Intentá de nuevo.');

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { authAPI } from '../../services/api';
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -21,9 +20,7 @@ export default function LoginPage() {
     setLoading(true);
     setError('');
     try {
-      const { data } = await authAPI.login(form);
-      localStorage.setItem('nm-token', data.token);
-      login(data.user, data.token);
+      await login(form);
       navigate('/');
     } catch (err) {
       setError(err.response?.data?.error || 'Error al iniciar sesión. Intentá de nuevo.');
