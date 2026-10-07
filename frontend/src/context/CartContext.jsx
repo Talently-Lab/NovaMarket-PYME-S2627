@@ -20,10 +20,40 @@ export function CartProvider({ children, userId }) {
   });
 
   // Cuando cambia el usuario (login / logout) — carga el carrito del nuevo usuario
+  // Si el usuario era guest y tenía productos, los transfiere al carrito del usuario
   useEffect(() => {
     try {
-      const saved = localStorage.getItem(storageKey(userId));
-      setItems(saved ? JSON.parse(saved) : []);
+      const newKey   = storageKey(userId);
+      const userCart = localStorage.getItem(newKey);
+
+      if (userId) {
+        // Acaba de hacer login — verificar si había carrito guest
+        const guestKey  = storageKey(null);
+        const guestCart = localStorage.getItem(guestKey);
+
+        if (guestCart) {
+          const guestItems = JSON.parse(guestCart);
+          if (guestItems.length > 0) {
+            // Fusionar: prioriza items del usuario, agrega los del guest que no estén
+            const userItems = userCart ? JSON.parse(userCart) : [];
+            const merged = [...userItems];
+            for (const guestItem of guestItems) {
+              const existing = merged.find(i => i.id === guestItem.id);
+              if (!existing) {
+                merged.push(guestItem);
+              }
+            }
+            // Guardar fusión en el carrito del usuario y limpiar guest
+            localStorage.setItem(newKey, JSON.stringify(merged));
+            localStorage.removeItem(guestKey);
+            setItems(merged);
+            return;
+          }
+        }
+      }
+
+      // Sin carrito guest o logout — carga el carrito del nuevo usuario/guest
+      setItems(userCart ? JSON.parse(userCart) : []);
     } catch {
       setItems([]);
     }

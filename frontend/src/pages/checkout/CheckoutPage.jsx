@@ -528,7 +528,7 @@ export default function CheckoutPage() {
               </div>
             )}
             <div className="checkout-summary__row checkout-summary__row--tax">
-              <span>IVA (21%)</span>
+              <span>IVA (21%){totalDiscount > 0 ? ' s/base neta' : ''}</span>
               <span>${fmt(taxAmount)}</span>
             </div>
           </div>

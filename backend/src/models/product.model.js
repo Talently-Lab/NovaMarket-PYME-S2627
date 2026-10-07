@@ -122,7 +122,7 @@ const ProductModel = {
     const result = await query(
       `SELECT category,
               COUNT(*)::int        AS product_count,
-              COUNT(*) FILTER (WHERE is_active = true)::int AS active_count
+              COUNT(*) FILTER (WHERE is_active = true AND stock > 0)::int AS active_count
        FROM products
        WHERE category IS NOT NULL
        GROUP BY category

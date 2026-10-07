@@ -35,7 +35,7 @@ const NAV_LINKS = [
   { to: '/catalogo?categoria=periféricos', label: 'Periféricos', end: false },
   { to: '/catalogo?categoria=gadgets',     label: 'Gadgets',     end: false },
   { to: '/catalogo?categoria=audio',       label: 'Audio',       end: false },
-  { to: '/catalogo?categoria=accesorios',  label: 'Ofertas',     end: false },
+  { to: '/catalogo',                       label: 'Ofertas',     end: false },
 ];
 
 export default function Header() {

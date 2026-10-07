@@ -120,6 +120,13 @@ export default function CatalogPage() {
     const cat = searchParams.get('categoria');
     return cat ? [cat] : [];
   });
+
+  // Sincronizar selectedCategories cuando cambia el parámetro de URL
+  // (ej: el usuario hace clic en "Periféricos" desde el header estando ya en /catalogo)
+  useEffect(() => {
+    const cat = searchParams.get('categoria');
+    setSelectedCategories(cat ? [cat] : []);
+  }, [searchParams]);
   const [priceMin, setPriceMin]   = useState('');
   const [priceMax, setPriceMax]   = useState('');
   const [onlyStock, setOnlyStock] = useState(false);
