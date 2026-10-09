@@ -2,7 +2,7 @@
 
 > Este archivo es para uso interno de Christian Santibáñez (QA).
 > Sirve como punto de partida para sesiones nuevas de Kiro.
-> Última actualización: 9/oct/2026 (sesión 33)
+> Última actualización: 9/oct/2026 (sesión 34)
 
 ---
 
@@ -791,8 +791,8 @@ Tests:       72 passed · 23 todo · 0 failed
    - Mensaje a Carina en #frontend — coordinación rebase a develop para el domingo
 
    **Pendientes de esta sesión:**
-   - [ ] Carina debe redirigir PRs #2 y #3 a `develop` (el domingo)
-   - [ ] Hacer rebase y resolver conflictos de AuthContext.jsx con develop
+   - [x] ~~Carina debe redirigir PRs #2 y #3 a `develop` (el domingo)~~ ✅ Rehízo PRs como #5 y #6 sobre develop
+   - [x] ~~Hacer rebase y resolver conflictos de AuthContext.jsx con develop~~ ✅ Sin conflictos, PR #5 aprobado
    - [ ] Revisar si hay más tickets reasignados a Christian tras salida de Laura
 
 ---
@@ -962,6 +962,47 @@ Archivo: `.kiro/hooks/`
 El repo anterior `Talently-Lab/NovaMarket-PYME` fue creado por Florencia Sombra (quien salió del proyecto).
 Ya no se usa. Todo el trabajo de QA fue migrado al repo actual el 22/sep/2026.
 El repo viejo sigue en `/home/christian/Escritorio/NovaMarket-PYME` como referencia local.
+
+---
+
+---
+
+**Sesión 34 — 9/oct/2026:**
+
+107. **PRs de Carina Luna revisados y aprobados (PR #5 y #6):**
+
+   **PR #5 — `feature/auth-confirmar-contrasena` (SCRUM-45, 56, 57):**
+   - `AuthContext.jsx`: agrega `useEffect` que escucha el evento `nm:unauthorized` y llama `setUser(null)` — fix correcto del BR06 (token expirado no limpiaba el estado del usuario en pantalla).
+   - `RegisterPage.jsx`: agrega campo "Repetir contraseña" con validación `form.password !== form.confirmPassword` antes del submit. `showPassword` alterna ambos campos. `autoComplete="new-password"` en ambos inputs.
+   - `services/api.js`: interceptor 401 agrega `window.dispatchEvent(new Event('nm:unauthorized'))` — completa el ciclo con el nuevo `useEffect` del AuthContext. Sin conflictos con develop.
+   - `AuthPage.ts` (POM): agrega `confirmPasswordInput` y `heading` a `RegisterPage`, ajusta locator de password con `exact: true` para no coincidir con "Repetir contraseña".
+   - `register.spec.ts`: nuevos tests para campo confirmPassword, hint, `autocomplete="new-password"` ×2, URL `/registro`.
+   - **Observaciones menores documentadas (no bloquearon el merge):**
+     - Token doble-guardado en RegisterPage (patrón heredado de develop) — limpiar al extraer `AuthCard`.
+     - `aria-label` del botón ojo no diferencia entre campo password y confirmPassword — minor de accesibilidad.
+     - Clase `.error` se aplica a `confirmPassword` ante cualquier error, no solo de contraseña — mismo patrón heredado, resolver con `FormField`.
+
+   **PR #6 — `docs/componentes-frontend-develop` (SCRUM-28, 29):**
+   - `docs/COMPONENTES-FRONTEND.md`: documentación exhaustiva del frontend. Mapea 10 componentes existentes, propone extracción de 14 nuevos con props/estados, lista 9 hallazgos técnicos (85 `style={{}}` inline, `ThemeToggle` sin uso, categorías definidas en 3 lugares, token doble-guardado, etc.).
+   - Calidad alta — será la referencia para la extracción de componentes en las próximas sesiones.
+   - Sin conflictos. Solo documentación.
+
+108. **Fix CI — job `notify` fallaba con 403:**
+   - **Causa raíz:** el `GITHUB_TOKEN` no tiene permiso de escritura en `pull-requests` por defecto — `actions/github-script` no podía comentar en el PR.
+   - **Fix:** agregado `permissions: pull-requests: write` al job `notify` en `.github/workflows/ci.yml`.
+   - **Fix secundario:** agregado `await` a `github.rest.issues.createComment` (sin `await` los errores de la API se tragaban silenciosamente).
+   - Commit `df2dea6` pusheado a `develop`. YAML validado ✅.
+
+109. **Decisión SCRUM-38/39 — Tailwind descartado:**
+   - Los tickets pedían Tailwind CSS pero el proyecto usa CSS vanilla con tokens BEM desde el inicio.
+   - **Decisión:** continuar con CSS plano + `src/index.css`. No se introduce Tailwind.
+   - SCRUM-38 (Inicializar proyecto React) y SCRUM-39 (Maquetado base y enrutamiento) ya están implementados — Carina debe cerrarlos con comentario.
+   - Para componentización: usar `docs/COMPONENTES-FRONTEND.md` como referencia. Punto de entrada sugerido: `Button`, `FormField`, `PasswordInput`.
+
+**Pendientes de esta sesión:**
+- [ ] Christian aprueba PR #5 y #6 manualmente en GitHub (textos de review listos)
+- [ ] Carina cierra SCRUM-38 y SCRUM-39 en Jira con comentario de estado real
+- [ ] Coordinar con Carina qué componente ataca primero para no pisar trabajo
 
 ---
 
