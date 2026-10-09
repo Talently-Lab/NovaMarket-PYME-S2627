@@ -41,6 +41,35 @@ NovaMarket-PYME/
 
 ---
 
+## 🧩 Decisiones de arquitectura del Frontend
+
+Carpetas de `frontend/src` (el detalle de cada componente está en `docs/COMPONENTES-FRONTEND.md`):
+
+| Carpeta | Para qué se usa |
+|---|---|
+| `components/` | Piezas reutilizables (`layout/` y `ui/`) |
+| `pages/` | Vistas completas, una por ruta (`admin/` para el panel) |
+| `services/` | Llamadas HTTP a la API (`api.js`, con Axios) |
+| `context/` | Estado global (React Context) |
+| `utils/` | Funciones compartidas (por ejemplo, la imagen de cada producto) |
+
+**Qué va en estado global (Context) y qué en estado local**
+
+| Estado | Dónde | Por qué |
+|---|---|---|
+| Sesión (`user`, `loading`, mensaje de bienvenida) | `AuthContext` | Lo necesitan el header, las rutas protegidas y el checkout |
+| Carrito (`items`, total y cantidad) | `CartContext` | Se ve en el header y en varias páginas; se guarda en `localStorage` por usuario (`nm-cart-{userId}`) |
+| Tema | `ThemeContext` | Hoy solo fija el tema claro |
+| Formularios (login, registro, checkout) | Local en cada página (`useState`) | Solo importan mientras la página está abierta |
+| Filtros y orden del catálogo | Local en la página | No hace falta compartirlos |
+| Estados de carga y error de cada pantalla | Local en la página | Dependen de cada petición |
+
+**Sesión:** el token se guarda en `localStorage` (`nm-token`). Al cargar la app se llama a `GET /api/auth/me` para restaurar la sesión.
+
+**Rutas:** `ProtectedRoute` exige sesión y `AdminRoute` además exige rol admin.
+
+---
+
 ## 🚀 Puesta en marcha
 
 ### 1. Clonar el repositorio
