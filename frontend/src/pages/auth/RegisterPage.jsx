@@ -6,7 +6,7 @@ import { authAPI } from '../../services/api';
 export default function RegisterPage() {
   const { login, setFlashMessage } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ name: '', email: '', password: '' });
+  const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [terms, setTerms] = useState(false);
   const [error, setError] = useState('');
@@ -40,6 +40,10 @@ export default function RegisterPage() {
     }
     if (form.password.trim().length < 8) {
       setError('La contraseña debe tener al menos 8 caracteres.');
+      return;
+    }
+    if (form.password !== form.confirmPassword) {
+      setError('Las contraseñas no coinciden.');
       return;
     }
     setLoading(true);
@@ -145,6 +149,21 @@ export default function RegisterPage() {
                 </button>
               </div>
               <span className="form-hint">Usá letras, números y símbolos para mayor seguridad.</span>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label" htmlFor="confirmPassword">Repetir contraseña</label>
+              <input
+                className={`form-input${error ? ' error' : ''}`}
+                type={showPassword ? 'text' : 'password'}
+                id="confirmPassword"
+                name="confirmPassword"
+                value={form.confirmPassword}
+                onChange={handleChange}
+                placeholder="Repetí tu contraseña"
+                autoComplete="new-password"
+                required
+              />
             </div>
 
             {/* Checkbox T&C */}
