@@ -171,7 +171,7 @@ async function changePassword(req, res) {
 
 /**
  * POST /api/auth/forgot-password
- * Genera un token de reseteo y lo muestra en la respuesta (flujo simulado sin email)
+ * Genera un token de reseteo y lo envía por email con Resend
  */
 async function forgotPassword(req, res) {
   const { email } = req.body;
@@ -189,19 +189,24 @@ async function forgotPassword(req, res) {
     });
   }
 
-  // Generar token aleatorio de 6 dígitos (simulado — en producción sería un UUID largo)
+  // Generar token de 6 dígitos, expira en 15 minutos
   const crypto = require('crypto');
   const token   = crypto.randomInt(100000, 999999).toString();
-  const expires = new Date(Date.now() + 15 * 60 * 1000); // 15 minutos
+  const expires = new Date(Date.now() + 15 * 60 * 1000);
 
   await UserModel.setResetToken(user.email, token, expires);
 
-  // En producción se enviaría por email — aquí lo devolvemos directamente
+  // Enviar email con Resend
+  const { sendPasswordResetEmail } = require('../services/email.service');
+  const sent = await sendPasswordResetEmail(user.email, token);
+
+  if (!sent) {
+    // Si falla el email, igual responder 200 para no exponer si el usuario existe
+    console.error(`[Auth] No se pudo enviar email de reseteo a ${user.email}`);
+  }
+
   return res.status(200).json({
-    message: 'Código de recuperación generado. En producción se enviaría por email.',
-    reset_token: token,          // ← visible solo en modo simulado
-    expires_in: '15 minutos',
-    note: 'Checkout simulado — NovaMarket MVP',
+    message: 'Si el email existe, recibirás instrucciones para recuperar tu contraseña.',
   });
 }
 
