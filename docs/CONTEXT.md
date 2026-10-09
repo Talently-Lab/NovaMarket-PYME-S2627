@@ -2,7 +2,7 @@
 
 > Este archivo es para uso interno de Christian Santibáñez (QA).
 > Sirve como punto de partida para sesiones nuevas de Kiro.
-> Última actualización: 9/oct/2026 (sesión 34)
+> Última actualización: 9/oct/2026 (sesión 34 — parte 2)
 
 ---
 
@@ -747,7 +747,7 @@ Tests:       72 passed · 23 todo · 0 failed
 - [ ] Subir `coverageThreshold` 40% → 80% con tests de integración con DB real
 - [ ] Implementar 80 `.todo` de los tests (requieren pg-mem o schema separado Supabase)
 - [x] ~~Cerrar en Jira: SCRUM-36, 28, 45, 54, 38~~ → comentarios de avance agregados
-- [x] ~~SCRUM-3, 4 (basura)~~ → comentarios de cierre sugerido a PM agregados
+- [x] ~~SCRUM-3 y SCRUM-4 (basura)~~ → ✅ Cerrados como Finalizado (9/oct/2026)
 - [ ] SCRUM-26, 29 (Gastón salió) — reasignar en Jira
 
 **Sesión 32 — 7/oct/2026:**
@@ -1000,9 +1000,29 @@ El repo viejo sigue en `/home/christian/Escritorio/NovaMarket-PYME` como referen
    - Para componentización: usar `docs/COMPONENTES-FRONTEND.md` como referencia. Punto de entrada sugerido: `Button`, `FormField`, `PasswordInput`.
 
 **Pendientes de esta sesión:**
-- [ ] Christian aprueba PR #5 y #6 manualmente en GitHub (textos de review listos)
+- [x] ~~Christian aprueba PR #5 y #6 manualmente en GitHub~~ ✅ Aprobados y mergeados a develop
 - [ ] Carina cierra SCRUM-38 y SCRUM-39 en Jira con comentario de estado real
 - [ ] Coordinar con Carina qué componente ataca primero para no pisar trabajo
+
+110. **Reorganización del backlog Jira (sesión 34 — 9/oct/2026):**
+
+   **Sprints creados:**
+   | Sprint | ID Jira | Fechas | Estado |
+   |--------|---------|--------|--------|
+   | Sprint 0 | 2 | 14-20/sep | ✅ Cerrado |
+   | Sprint 1 — SPR01 | 1 | 21-27/sep | future (tickets: SCRUM-16 al 21) |
+   | Sprint 2 — SPR02 | 74 | 28/sep-4/oct | future (tickets: SCRUM-22 al 31) |
+   | Sprint 3 — SPR03 | 75 | 5-11/oct | future (tickets: SCRUM-32 al 41) |
+   | **Sprint 4 — SPR04** | **70** | **12-18/oct** | **🟢 Activo (tickets: SCRUM-42 al 57)** |
+   | Sprint 5 — SPR05 | 71 | 19-25/oct | future (tickets: SCRUM-47 al 51) |
+   | Sprint 6 — SPR06 | 72 | 26/oct-1/nov | future (vacío) |
+   | Sprint 7 — SPR07 | 73 | 2-5/nov | future (vacío) — entrega final |
+
+   **Otras acciones:**
+   - SCRUM-3 y SCRUM-4 cerrados como "Finalizado" con comentario — eran basura del repo anterior.
+   - SCRUM-15 no existe (número salteado desde el inicio, probablemente borrado por Florencia Sombra). No se crea placeholder.
+   - Sprints 1, 2 y 3 vencidos con tickets incompletos — decisión pendiente de Gisele (PM). Mensaje enviado por Discord con 3 opciones: cerrar y mover pendientes / dejar abiertos / cancelar los que no aplican (ej: SCRUM-37 MongoDB).
+   - El +1 que aparece en los tickets del Sprint 4 es historial del Sprint 0 cerrado — comportamiento normal de Jira, no afecta el tablero activo.
 
 ---
 
