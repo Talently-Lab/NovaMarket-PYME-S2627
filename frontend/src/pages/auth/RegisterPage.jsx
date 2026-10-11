@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { authAPI } from '../../services/api';
+import Button from '../../components/ui/Button';
 
 export default function RegisterPage() {
   const { login, setFlashMessage } = useAuth();
@@ -200,13 +201,9 @@ export default function RegisterPage() {
               </p>
             )}
 
-            <button
-              type="submit"
-              className="btn btn--primary btn--full"
-              disabled={loading}
-            >
+            <Button type="submit" full disabled={loading}>
               {loading ? 'Creando cuenta...' : 'Crear cuenta'}
-            </button>
+            </Button>
           </form>
         </div>
 

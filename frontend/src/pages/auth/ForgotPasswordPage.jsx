@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { authAPI } from '../../services/api';
+import Button from '../../components/ui/Button';
 
 export default function ForgotPasswordPage() {
   const [email,   setEmail]   = useState('');
@@ -60,14 +61,14 @@ export default function ForgotPasswordPage() {
                   />
                 </div>
 
-                <button
+                <Button
                   type="submit"
-                  className="btn btn--primary btn--full"
+                  full
                   disabled={loading}
                   style={{ marginTop: 'var(--sp-4)' }}
                 >
                   {loading ? 'Enviando…' : 'Enviar código'}
-                </button>
+                </Button>
               </form>
 
               <p className="auth-card__footer-link">
@@ -86,13 +87,13 @@ export default function ForgotPasswordPage() {
               <p className="forgot-token__note">
                 El código expira en 15 minutos. Revisá también tu carpeta de spam.
               </p>
-              <Link
+              <Button
                 to="/restablecer-contrasena"
-                className="btn btn--primary btn--full"
+                full
                 style={{ marginTop: 'var(--sp-4)' }}
               >
                 Tengo mi código →
-              </Link>
+              </Button>
               <p className="auth-card__footer-link" style={{ marginTop: 'var(--sp-3)' }}>
                 <button
                   onClick={() => { setSent(false); setEmail(''); }}
