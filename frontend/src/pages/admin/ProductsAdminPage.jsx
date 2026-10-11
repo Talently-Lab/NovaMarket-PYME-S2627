@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { productsAPI } from '../../services/api';
+import ProductFormModal from './ProductFormModal';
 
 const fmt = (n) => Number(n).toLocaleString('es-AR', { minimumFractionDigits: 2 });
 
@@ -89,6 +90,9 @@ export default function ProductsAdminPage() {
   const [products, setProducts] = useState([]);
   const [loading,  setLoading]  = useState(true);
   const [error,    setError]    = useState('');
+  // null = modal cerrado · {} = producto nuevo · producto = edición
+  const [modalProduct, setModalProduct] = useState(null);
+  const [deletingId,   setDeletingId]   = useState(null);
 
   const load = useCallback(() => {
     setLoading(true);
@@ -107,6 +111,30 @@ export default function ProductsAdminPage() {
     );
   };
 
+  const handleSaved = (saved) => {
+    setProducts(prev => {
+      const exists = prev.some(p => p.id === saved.id);
+      return exists ? prev.map(p => p.id === saved.id ? { ...p, ...saved } : p) : [saved, ...prev];
+    });
+    setModalProduct(null);
+  };
+
+  const handleDelete = async (product) => {
+    if (!window.confirm(`¿Eliminar «${product.name}»? Dejará de mostrarse en la tienda.`)) return;
+    setDeletingId(product.id);
+    setError('');
+    try {
+      await productsAPI.remove(product.id);
+      setProducts(prev => prev.filter(p => p.id !== product.id));
+    } catch (err) {
+      setError(err.response?.data?.error || 'No se pudo eliminar el producto.');
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  const categories = [...new Set(products.map(p => p.category).filter(Boolean))].sort();
+
   return (
     <div className="admin-dashboard">
       <div className="admin-dashboard__header">
@@ -116,6 +144,12 @@ export default function ProductsAdminPage() {
             {loading ? '…' : `${products.length} productos en total`}
           </p>
         </div>
+        <button
+          className="btn btn--primary btn--sm"
+          onClick={() => setModalProduct({})}
+        >
+          + Nuevo producto
+        </button>
         <button
           className="btn btn--secondary btn--sm"
           onClick={load}
@@ -138,18 +172,19 @@ export default function ProductsAdminPage() {
               <th>Precio</th>
               <th>Stock</th>
               <th>Estado</th>
+              <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={6} style={{ textAlign: 'center', padding: 'var(--sp-8)', color: 'var(--color-text-disabled)' }}>
+                <td colSpan={7} style={{ textAlign: 'center', padding: 'var(--sp-8)', color: 'var(--color-text-disabled)' }}>
                   Cargando productos…
                 </td>
               </tr>
             ) : products.length === 0 ? (
               <tr>
-                <td colSpan={6} style={{ textAlign: 'center', padding: 'var(--sp-8)', color: 'var(--color-text-disabled)' }}>
+                <td colSpan={7} style={{ textAlign: 'center', padding: 'var(--sp-8)', color: 'var(--color-text-disabled)' }}>
                   No hay productos aún.
                 </td>
               </tr>
@@ -176,12 +211,40 @@ export default function ProductsAdminPage() {
                       {p.stock > 0 ? 'Activo' : 'Sin stock'}
                     </span>
                   </td>
+                  <td>
+                    <div className="admin-row-actions">
+                      <button
+                        className="btn btn--secondary btn--sm"
+                        onClick={() => setModalProduct(p)}
+                        aria-label={`Editar ${p.name}`}
+                      >
+                        Editar
+                      </button>
+                      <button
+                        className="btn btn--ghost btn--sm admin-row-actions__delete"
+                        onClick={() => handleDelete(p)}
+                        disabled={deletingId === p.id}
+                        aria-label={`Eliminar ${p.name}`}
+                      >
+                        {deletingId === p.id ? 'Eliminando…' : 'Eliminar'}
+                      </button>
+                    </div>
+                  </td>
                 </tr>
               ))
             )}
           </tbody>
         </table>
       </div>
+
+      {modalProduct && (
+        <ProductFormModal
+          product={modalProduct.id ? modalProduct : null}
+          categories={categories}
+          onSaved={handleSaved}
+          onClose={() => setModalProduct(null)}
+        />
+      )}
     </div>
   );
 }

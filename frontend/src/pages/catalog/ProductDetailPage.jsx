@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { productsAPI } from '../../services/api';
+import { getProductById } from '../../services/productService';
 import { useCart } from '../../context/CartContext';
 import { getProductImage } from '../../utils/productImage';
 
@@ -52,8 +52,8 @@ export default function ProductDetailPage() {
   useEffect(() => {
     setLoading(true);
     setError('');
-    productsAPI.getById(id)
-      .then(({ data }) => setProduct(data.product))
+    getProductById(id)
+      .then(setProduct)
       .catch((err) => {
         if (err.response?.status === 404) {
           setError('Producto no encontrado.');
