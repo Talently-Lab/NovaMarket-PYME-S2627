@@ -39,7 +39,7 @@ const NAV_LINKS = [
 ];
 
 export default function Header() {
-  const { itemCount } = useCart();
+  const { totalItems } = useCart();
   const { isAuthenticated, isAdmin, user, logout } = useAuth();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -97,13 +97,13 @@ export default function Header() {
             <Link
               to="/carrito"
               className="header__account-link header__cart-link"
-              aria-label={`Carrito${itemCount > 0 ? `, ${itemCount} productos` : ' vacío'}`}
+              aria-label={`Carrito${totalItems > 0 ? `, ${totalItems} productos` : ' vacío'}`}
             >
               <div className="header__cart-icon-wrapper">
                 <CartIcon />
-                {itemCount > 0 && (
+                {totalItems > 0 && (
                   <span className="header__cart-badge" aria-hidden="true">
-                    {itemCount > 99 ? '99+' : itemCount}
+                    {totalItems > 99 ? '99+' : totalItems}
                   </span>
                 )}
               </div>
@@ -173,13 +173,13 @@ export default function Header() {
         <Link to="/carrito" className="header__mobile-cart-link" onClick={closeMenu}>
           <div className="header__cart-icon-wrapper">
             <CartIcon />
-            {itemCount > 0 && (
+            {totalItems > 0 && (
               <span className="header__cart-badge" aria-hidden="true">
-                {itemCount > 99 ? '99+' : itemCount}
+                {totalItems > 99 ? '99+' : totalItems}
               </span>
             )}
           </div>
-          Carrito {itemCount > 0 ? `(${itemCount})` : ''}
+          Carrito {totalItems > 0 ? `(${totalItems})` : ''}
         </Link>
 
         {isAuthenticated ? (

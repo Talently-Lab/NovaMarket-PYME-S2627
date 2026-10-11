@@ -78,7 +78,7 @@ const PAYMENT_METHODS = [
 
 // ── Componente principal ──────────────────────────────────────────────────────
 export default function CheckoutPage() {
-  const { items, total: cartTotal, clearCart } = useCart();
+  const { items, totalAmount: cartTotal, clearCart } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
 

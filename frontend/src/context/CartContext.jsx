@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 
 const CartContext = createContext(null);
 
@@ -108,11 +108,18 @@ export function CartProvider({ children, userId }) {
     localStorage.removeItem(storageKey(userId));
   };
 
-  const total     = items.reduce((acc, i) => acc + Number(i.price) * i.quantity, 0);
-  const itemCount = items.reduce((acc, i) => acc + i.quantity, 0);
+  // useMemo: la suma solo se recalcula cuando cambia el array de items
+  const totalItems = useMemo(
+    () => items.reduce((acc, i) => acc + i.quantity, 0),
+    [items]
+  );
+  const totalAmount = useMemo(
+    () => items.reduce((acc, i) => acc + Number(i.price) * i.quantity, 0),
+    [items]
+  );
 
   return (
-    <CartContext.Provider value={{ items, addItem, removeItem, updateQuantity, clearCart, total, itemCount, lastAdded }}>
+    <CartContext.Provider value={{ items, addItem, removeItem, updateQuantity, clearCart, totalAmount, totalItems, lastAdded }}>
       {children}
     </CartContext.Provider>
   );

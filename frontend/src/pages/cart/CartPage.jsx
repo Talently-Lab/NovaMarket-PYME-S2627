@@ -23,7 +23,7 @@ function TrashIcon() {
 }
 
 export default function CartPage() {
-  const { items, removeItem, updateQuantity, clearCart, total, itemCount } = useCart();
+  const { items, removeItem, updateQuantity, clearCart, totalAmount, totalItems } = useCart();
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
@@ -66,7 +66,7 @@ export default function CartPage() {
         <h1 className="cart-page-title">
           Tu carrito
           <span className="cart-page-title__count">
-            {itemCount} {itemCount === 1 ? 'producto' : 'productos'}
+            {totalItems} {totalItems === 1 ? 'producto' : 'productos'}
           </span>
         </h1>
         <button
@@ -191,14 +191,14 @@ export default function CartPage() {
 
           <div className="cart-summary__total">
             <span>Total</span>
-            <span>${Number(total).toLocaleString('es-AR')}</span>
+            <span>${Number(totalAmount).toLocaleString('es-AR')}</span>
           </div>
 
           <button
             className="btn btn--primary btn--full btn--lg cart-summary__cta"
             onClick={handleCheckout}
           >
-            {isAuthenticated ? 'Confirmar pedido →' : 'Ingresar para comprar'}
+            {isAuthenticated ? 'Ir al Checkout →' : 'Ingresar para comprar'}
           </button>
 
           <Link
