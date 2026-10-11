@@ -2,7 +2,7 @@
 
 > Este archivo es para uso interno de Christian Santibáñez (QA).
 > Sirve como punto de partida para sesiones nuevas de Kiro.
-> Última actualización: 9/oct/2026 (sesión 34 — parte 2)
+> Última actualización: 11/oct/2026 (sesión 35)
 
 ---
 
@@ -1023,6 +1023,41 @@ El repo viejo sigue en `/home/christian/Escritorio/NovaMarket-PYME` como referen
    - SCRUM-15 no existe (número salteado desde el inicio, probablemente borrado por Florencia Sombra). No se crea placeholder.
    - Sprints 1, 2 y 3 vencidos con tickets incompletos — decisión pendiente de Gisele (PM). Mensaje enviado por Discord con 3 opciones: cerrar y mover pendientes / dejar abiertos / cancelar los que no aplican (ej: SCRUM-37 MongoDB).
    - El +1 que aparece en los tickets del Sprint 4 es historial del Sprint 0 cerrado — comportamiento normal de Jira, no afecta el tablero activo.
+
+---
+
+**Sesión 35 — 11/oct/2026:**
+
+111. **PRs #7, #8 y #9 de Carina Luna revisados, aprobados y mergeados:**
+
+   **PR #7 — `feat(ui): componente Button reutilizable` (SCRUM-48)**
+   - `components/ui/Button.jsx` nuevo. Genera clases `.btn` existentes de `index.css` — sin CSS nuevo.
+   - Props: `variant` (primary/secondary/ghost/outline/gradient), `size` (sm/lg/hero), `full`, `icon`, `loading`, `to` (renderiza `<Link>`).
+   - `disabled || loading` como guard doble. `aria-busy` en estado loading. Spread `{...rest}` para atributos nativos.
+   - Usado en `LoginPage`, `RegisterPage`, `ForgotPasswordPage`, `ResetPasswordPage`.
+
+   **PR #9 — `feat(cart): totalItems y totalAmount con useMemo` (SCRUM-84, 85)**
+   - `CartContext`: `total → totalAmount`, `itemCount → totalItems`, ambos con `useMemo([items])`.
+   - Renombramiento consistente en `Header.jsx`, `CartToast.jsx`, `CartPage.jsx`, `CheckoutPage.jsx`.
+   - Botón CTA del carrito: `'Confirmar pedido →' → 'Ir al Checkout →'`.
+
+   **PR #8 — `feat(catalog): productService, ProductCard y CRUD admin` (SCRUM-48, 63, 65, 67)**
+   - `services/productService.js` nuevo: wrapper de `productsAPI` que devuelve arrays planos en lugar del shape Axios.
+   - `components/ui/ProductCard.jsx` extraído de `CatalogPage` — animaciones Framer Motion, stock, aria-label preservados.
+   - `CatalogPage`: usa `productService` + `ProductCard` + botones de filtro rápido por categoría (`aria-pressed`).
+   - `ProductDetailPage`: usa `productService.getProductById`.
+   - `HomePage`: usa `getProducts` en lugar de `productsAPI.getAll`.
+   - `ProductsAdminPage`: + `ProductFormModal` (crear/editar con foco automático, cierre Escape, click fuera), + botón eliminar con `window.confirm()`, + `colSpan` corregido a 7.
+   - `index.css`: +56 líneas (`.catalog-quick-filters`, `.catalog-card__category`, `.catalog-card__detail-link`, `.admin-modal`, `.admin-row-actions`).
+   - **Observación documentada:** `window.confirm()` en delete funciona para MVP pero bloquea el hilo — reemplazar por modal propio al extraer `AdminTable`.
+
+   **Nuevos archivos en develop:**
+   - `frontend/src/components/ui/Button.jsx`
+   - `frontend/src/components/ui/ProductCard.jsx`
+   - `frontend/src/pages/admin/ProductFormModal.jsx`
+   - `frontend/src/services/productService.js`
+
+112. **`gh` CLI instalado y autenticado** — `christian-santibanez` con scopes `repo`, `workflow`, `read:org`. PRs ahora se pueden revisar, aprobar y mergear directamente desde la terminal sin abrir el navegador.
 
 ---
 
