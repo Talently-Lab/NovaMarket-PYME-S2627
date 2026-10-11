@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { useEffect, useState, lazy, Suspense } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
-import { productsAPI } from '../services/api';
+import { getProducts } from '../services/productService';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import audifonosImg from '../assets/audifonos.png';
@@ -129,8 +129,8 @@ export default function HomePage() {
   }, [flashMessage]);
 
   useEffect(() => {
-    productsAPI.getAll({ order: 'newest' })
-      .then(({ data }) => setProducts(data.products.slice(0, 4)))
+    getProducts(undefined, { order: 'newest' })
+      .then((list) => setProducts(list.slice(0, 4)))
       .catch(() => setProducts([]))
       .finally(() => setLoading(false));
   }, []);
