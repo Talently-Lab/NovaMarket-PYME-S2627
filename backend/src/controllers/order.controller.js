@@ -89,8 +89,8 @@ async function createOrder(req, res) {
     discountAmount = +(discountAmount + subtotal * 0.05).toFixed(2);
   }
 
-  // Calcular IVA sobre (subtotal - descuento)
-  const baseForTax  = subtotal - discountAmount;
+  // Calcular IVA sobre (subtotal - descuento) — base nunca puede ser negativa
+  const baseForTax  = Math.max(subtotal - discountAmount, 0);
   const taxAmount   = +(baseForTax * TAX_RATE).toFixed(2);
   const totalWithTax = +(baseForTax + taxAmount).toFixed(2);
 
@@ -229,8 +229,8 @@ function createCoupon(req, res) {
   }
 
   const pct = Number(discount_percent);
-  if (isNaN(pct) || pct <= 0 || pct > 100) {
-    return res.status(400).json({ error: 'El porcentaje debe ser un número entre 1 y 100.' });
+  if (isNaN(pct) || pct <= 0 || pct >= 100) {
+    return res.status(400).json({ error: 'El porcentaje debe ser un número entre 1 y 99.' });
   }
 
   if (VALID_COUPONS[normalized]) {

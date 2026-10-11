@@ -120,7 +120,7 @@ export default function CheckoutPage() {
     : 0;
 
   const totalDiscount = walletDiscount + couponDiscount;
-  const baseForTax    = subtotal - totalDiscount;
+  const baseForTax    = Math.max(subtotal - totalDiscount, 0);
   const taxAmount     = +(baseForTax * TAX_RATE).toFixed(2);
   const totalWithTax  = +(baseForTax + taxAmount).toFixed(2);
 
