@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { authAPI } from '../../services/api';
+import Button from '../../components/ui/Button';
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -121,13 +122,9 @@ export default function LoginPage() {
               </p>
             )}
 
-            <button
-              type="submit"
-              className="btn btn--primary btn--full"
-              disabled={loading}
-            >
+            <Button type="submit" full disabled={loading}>
               {loading ? 'Ingresando...' : 'Iniciar sesión'}
-            </button>
+            </Button>
           </form>
         </div>
 

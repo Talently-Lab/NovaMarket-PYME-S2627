@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { authAPI } from '../../services/api';
+import Button from '../../components/ui/Button';
 
 export default function ResetPasswordPage() {
   const [searchParams]  = useSearchParams();
@@ -116,14 +117,14 @@ export default function ResetPasswordPage() {
                   />
                 </div>
 
-                <button
+                <Button
                   type="submit"
-                  className="btn btn--primary btn--full"
+                  full
                   disabled={loading}
                   style={{ marginTop: 'var(--sp-4)' }}
                 >
                   {loading ? 'Guardando…' : 'Restablecer contraseña'}
-                </button>
+                </Button>
               </form>
 
               <p className="auth-card__footer-link">
