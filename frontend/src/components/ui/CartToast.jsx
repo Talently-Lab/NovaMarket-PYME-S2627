@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 
 export default function CartToast() {
-  const { lastAdded, itemCount } = useCart();
+  const { lastAdded, totalItems } = useCart();
 
   return (
     <AnimatePresence>
@@ -22,7 +22,7 @@ export default function CartToast() {
             <strong>{lastAdded.name}</strong> agregado al carrito
           </span>
           <Link to="/carrito" className="cart-toast__btn">
-            Ver carrito ({itemCount})
+            Ver carrito ({totalItems})
           </Link>
         </motion.div>
       )}
