@@ -28,10 +28,12 @@ export default function CartPage() {
   const { items, removeItem, updateQuantity, clearCart, totalAmount, totalItems, updateItemStock } = useCart();
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const [stockLoading, setStockLoading] = useState(true);
 
   // Refrescar stock desde la API al montar el carrito
   useEffect(() => {
-    if (items.length === 0) return;
+    if (items.length === 0) { setStockLoading(false); return; }
+    setStockLoading(true);
     Promise.all(
       items.map(item =>
         productsAPI.getById(item.id)
@@ -39,10 +41,8 @@ export default function CartPage() {
           .catch(() => null)
       )
     ).then(results => {
-      results.forEach(r => {
-        if (r) updateItemStock(r.id, r.stock);
-      });
-    });
+      results.forEach(r => { if (r) updateItemStock(r.id, r.stock); });
+    }).finally(() => setStockLoading(false));
   }, []); // solo al montar
 
   const handleCheckout = () => {
@@ -62,8 +62,8 @@ export default function CartPage() {
     navigate('/checkout');
   };
 
-  // Items con stock insuficiente (stock=0 o cantidad > stock)
-  const itemsSinStock = items.some(i => i.stock != null && (i.stock === 0 || i.quantity > i.stock));
+  // Items con stock agotado en BD (stock === 0 después de refrescar)
+  const itemsSinStock = !stockLoading && items.some(i => i.stock != null && i.stock === 0);
 
   // Carrito vacío
   if (items.length === 0) {
@@ -236,9 +236,12 @@ export default function CartPage() {
           <button
             className="btn btn--primary btn--full btn--lg cart-summary__cta"
             onClick={handleCheckout}
-            disabled={itemsSinStock}
+            disabled={stockLoading || itemsSinStock}
           >
-            {isAuthenticated ? 'Ir al Checkout →' : 'Ingresar para comprar'}
+            {stockLoading
+              ? 'Verificando stock...'
+              : isAuthenticated ? 'Ir al Checkout →' : 'Ingresar para comprar'
+            }
           </button>
 
           <Link
