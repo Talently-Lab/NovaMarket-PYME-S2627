@@ -131,6 +131,13 @@ export function CartProvider({ children, userId }) {
     localStorage.removeItem(storageKey(userId));
   };
 
+  // Actualiza el stock de un item sin cambiar la cantidad
+  const updateItemStock = useCallback((productId, stock) => {
+    setItems(prev =>
+      prev.map(i => i.id === productId ? { ...i, stock } : i)
+    );
+  }, []);
+
   // useMemo: la suma solo se recalcula cuando cambia el array de items
   const totalItems = useMemo(
     () => items.reduce((acc, i) => acc + i.quantity, 0),
@@ -142,7 +149,7 @@ export function CartProvider({ children, userId }) {
   );
 
   return (
-    <CartContext.Provider value={{ items, addItem, removeItem, updateQuantity, clearCart, totalAmount, totalItems, lastAdded }}>
+    <CartContext.Provider value={{ items, addItem, removeItem, updateQuantity, clearCart, updateItemStock, totalAmount, totalItems, lastAdded }}>
       {children}
     </CartContext.Provider>
   );

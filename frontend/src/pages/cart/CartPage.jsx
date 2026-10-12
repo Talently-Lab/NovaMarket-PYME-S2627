@@ -1,7 +1,9 @@
 import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
+import { productsAPI } from '../../services/api';
 
 const itemVariants = {
   hidden:  { opacity: 0, height: 0, marginBottom: 0 },
@@ -23,9 +25,25 @@ function TrashIcon() {
 }
 
 export default function CartPage() {
-  const { items, removeItem, updateQuantity, clearCart, totalAmount, totalItems } = useCart();
+  const { items, removeItem, updateQuantity, clearCart, totalAmount, totalItems, updateItemStock } = useCart();
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+
+  // Refrescar stock desde la API al montar el carrito
+  useEffect(() => {
+    if (items.length === 0) return;
+    Promise.all(
+      items.map(item =>
+        productsAPI.getById(item.id)
+          .then(({ data }) => ({ id: item.id, stock: data.product.stock }))
+          .catch(() => null)
+      )
+    ).then(results => {
+      results.forEach(r => {
+        if (r) updateItemStock(r.id, r.stock);
+      });
+    });
+  }, []); // solo al montar
 
   const handleCheckout = () => {
     if (!isAuthenticated) {
