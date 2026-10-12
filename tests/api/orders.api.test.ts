@@ -578,7 +578,7 @@ describe('POST /api/orders/admin/coupons', () => {
     expect(res.status).toBe(400);
     // El controller evalúa !discount_percent → 0 es falsy → "requeridos"
     // antes de llegar a la validación de rango 1-100
-    expect(res.body.error).toMatch(/requerido|entre 1 y 100/);
+    expect(res.body.error).toMatch(/requerido|entre 1 y 99/);
   });
 
   it('TC-CP06 admin + porcentaje > 100 → 400', async () => {
@@ -587,7 +587,7 @@ describe('POST /api/orders/admin/coupons', () => {
       .set('Authorization', `Bearer ${adminToken}`)
       .send({ code: 'TESTOVER', discount_percent: 150 });
     expect(res.status).toBe(400);
-    expect(res.body.error).toBe('El porcentaje debe ser un número entre 1 y 100.');
+    expect(res.body.error).toBe('El porcentaje debe ser un número entre 1 y 99.');
   });
 
   it('TC-CP07 admin + porcentaje negativo → 400', async () => {
@@ -596,7 +596,7 @@ describe('POST /api/orders/admin/coupons', () => {
       .set('Authorization', `Bearer ${adminToken}`)
       .send({ code: 'TESTNEG', discount_percent: -10 });
     expect(res.status).toBe(400);
-    expect(res.body.error).toBe('El porcentaje debe ser un número entre 1 y 100.');
+    expect(res.body.error).toBe('El porcentaje debe ser un número entre 1 y 99.');
   });
 
   it('TC-CP08 admin + código duplicado → 409', async () => {
