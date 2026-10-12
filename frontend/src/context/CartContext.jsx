@@ -12,8 +12,31 @@ export function CartProvider({ children, userId }) {
 
   const [items, setItems] = useState(() => {
     try {
-      const saved = localStorage.getItem(key);
-      return saved ? JSON.parse(saved) : [];
+      const newKey   = storageKey(userId);
+      const userCart = localStorage.getItem(newKey);
+
+      // Si hay un carrito guest con items, fusionarlo inmediatamente al montar
+      if (userId) {
+        const guestKey  = storageKey(null);
+        const guestCart = localStorage.getItem(guestKey);
+        if (guestCart) {
+          const guestItems = JSON.parse(guestCart);
+          if (guestItems.length > 0) {
+            const userItems = userCart ? JSON.parse(userCart) : [];
+            const merged = [...userItems];
+            for (const guestItem of guestItems) {
+              if (!merged.find(i => i.id === guestItem.id)) {
+                merged.push(guestItem);
+              }
+            }
+            localStorage.setItem(newKey, JSON.stringify(merged));
+            localStorage.removeItem(guestKey);
+            return merged;
+          }
+        }
+      }
+
+      return userCart ? JSON.parse(userCart) : [];
     } catch {
       return [];
     }
