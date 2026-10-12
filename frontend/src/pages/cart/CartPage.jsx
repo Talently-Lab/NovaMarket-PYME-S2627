@@ -32,15 +32,20 @@ export default function CartPage() {
       navigate('/login', { state: { from: '/carrito' } });
       return;
     }
-    // Verificar que ningún producto tenga stock agotado
+    // Verificar que ningún producto supere el stock disponible
     const sinStock = items.filter(i => i.stock != null && i.stock === 0);
-    if (sinStock.length > 0) {
-      const nombres = sinStock.map(i => `"${i.name}"`).join(', ');
-      alert(`${sinStock.length === 1 ? 'El producto' : 'Los productos'} ${nombres} ${sinStock.length === 1 ? 'se agotó' : 'se agotaron'}. Eliminalo${sinStock.length === 1 ? '' : 's'} del carrito para continuar.`);
+    const sobreStock = items.filter(i => i.stock != null && i.quantity > i.stock);
+    const problemas = [...sinStock, ...sobreStock];
+    if (problemas.length > 0) {
+      const nombres = problemas.map(i => `"${i.name}"`).join(', ');
+      alert(`${problemas.length === 1 ? 'El producto' : 'Los productos'} ${nombres} ${problemas.length === 1 ? 'no tiene stock suficiente' : 'no tienen stock suficiente'}. Revisá las cantidades para continuar.`);
       return;
     }
     navigate('/checkout');
   };
+
+  // Items con stock insuficiente (stock=0 o cantidad > stock)
+  const itemsSinStock = items.some(i => i.stock != null && (i.stock === 0 || i.quantity > i.stock));
 
   // Carrito vacío
   if (items.length === 0) {
@@ -154,6 +159,9 @@ export default function CartPage() {
                   {item.stock != null && item.quantity >= item.stock && (
                     <span className="cart-item__stock-limit">Máx. disponible</span>
                   )}
+                  {item.stock != null && item.stock === 0 && (
+                    <span className="cart-item__no-stock">Sin stock</span>
+                  )}
                 </div>
 
                 {/* Subtotal */}
@@ -201,16 +209,16 @@ export default function CartPage() {
             <span>${Number(totalAmount).toLocaleString('es-AR')}</span>
           </div>
 
-          {items.some(i => i.stock != null && i.stock === 0) && (
+          {itemsSinStock && (
             <p className="cart-summary__stock-warning">
-              Hay productos sin stock. Eliminanos del carrito para continuar.
+              Hay productos sin stock suficiente. Revisá las cantidades para continuar.
             </p>
           )}
 
           <button
             className="btn btn--primary btn--full btn--lg cart-summary__cta"
             onClick={handleCheckout}
-            disabled={items.some(i => i.stock != null && i.stock === 0)}
+            disabled={itemsSinStock}
           >
             {isAuthenticated ? 'Ir al Checkout →' : 'Ingresar para comprar'}
           </button>
