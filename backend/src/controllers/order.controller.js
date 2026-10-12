@@ -1,16 +1,9 @@
-const OrderModel = require('../models/order.model');
+const OrderModel   = require('../models/order.model');
 const ProductModel = require('../models/product.model');
+const CouponModel  = require('../models/coupon.model');
 
-const VALID_STATUSES = ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'];
+const VALID_STATUSES        = ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'];
 const VALID_PAYMENT_METHODS = ['tarjeta', 'billetera', 'transferencia'];
-
-// Cupones válidos: { code: descuento % } — gestionable via /api/admin/coupons
-let VALID_COUPONS = {
-  'NOVA10':   10,
-  'NOVA20':   20,
-  'GAMING15': 15,
-  'PROMO5':    5,
-};
 
 const TAX_RATE = 0.21; // IVA 21%
 
@@ -72,14 +65,14 @@ async function createOrder(req, res) {
   // Calcular subtotal
   const subtotal = items.reduce((sum, i) => sum + i.quantity * i.unit_price, 0);
 
-  // Aplicar cupón
+  // Aplicar cupón desde BD
   let discountAmount = 0;
   let couponCode     = null;
   if (payment?.coupon_code) {
-    const code = payment.coupon_code.toUpperCase().trim();
-    if (VALID_COUPONS[code]) {
-      discountAmount = +(subtotal * (VALID_COUPONS[code] / 100)).toFixed(2);
-      couponCode     = code;
+    const coupon = await CouponModel.findByCode(payment.coupon_code);
+    if (coupon) {
+      discountAmount = +(subtotal * (coupon.discount_percent / 100)).toFixed(2);
+      couponCode     = coupon.code;
     }
     // Cupón inválido no es error fatal — simplemente no aplica descuento
   }
@@ -133,14 +126,13 @@ async function validateCoupon(req, res) {
   const { code } = req.body;
   if (!code) return res.status(400).json({ error: 'Código requerido.' });
 
-  const normalized = code.toUpperCase().trim();
-  const discount   = VALID_COUPONS[normalized];
+  const coupon = await CouponModel.findByCode(code);
 
-  if (!discount) {
+  if (!coupon) {
     return res.status(404).json({ error: 'Cupón inválido o expirado.' });
   }
 
-  return res.status(200).json({ code: normalized, discount_percent: discount });
+  return res.status(200).json({ code: coupon.code, discount_percent: coupon.discount_percent });
 }
 
 /**
@@ -205,18 +197,15 @@ async function updateOrderStatus(req, res) {
 /**
  * GET /api/orders/admin/coupons — lista cupones activos — solo admin
  */
-function getCoupons(req, res) {
-  const list = Object.entries(VALID_COUPONS).map(([code, discount_percent]) => ({
-    code,
-    discount_percent,
-  }));
-  return res.status(200).json({ coupons: list, total: list.length });
+async function getCoupons(req, res) {
+  const coupons = await CouponModel.findAll();
+  return res.status(200).json({ coupons, total: coupons.length });
 }
 
 /**
  * POST /api/orders/admin/coupons — crea un cupón — solo admin
  */
-function createCoupon(req, res) {
+async function createCoupon(req, res) {
   const { code, discount_percent } = req.body;
 
   if (!code || !discount_percent) {
@@ -233,25 +222,30 @@ function createCoupon(req, res) {
     return res.status(400).json({ error: 'El porcentaje debe ser un número entre 1 y 99.' });
   }
 
-  if (VALID_COUPONS[normalized]) {
+  const exists = await CouponModel.existsByCode(normalized);
+  if (exists) {
     return res.status(409).json({ error: `El cupón ${normalized} ya existe.` });
   }
 
-  VALID_COUPONS[normalized] = pct;
-  return res.status(201).json({ message: 'Cupón creado.', coupon: { code: normalized, discount_percent: pct } });
+  const coupon = await CouponModel.create(normalized, pct);
+  return res.status(201).json({ message: 'Cupón creado.', coupon });
 }
 
 /**
- * DELETE /api/orders/admin/coupons/:code — elimina un cupón — solo admin
+ * DELETE /api/orders/admin/coupons/:code — desactiva un cupón — solo admin
  */
-function deleteCoupon(req, res) {
+async function deleteCoupon(req, res) {
   const code = (req.params.code ?? '').toUpperCase().trim();
 
-  if (!VALID_COUPONS[code]) {
+  if (!code) {
+    return res.status(400).json({ error: 'Código requerido.' });
+  }
+
+  const coupon = await CouponModel.deactivate(code);
+  if (!coupon) {
     return res.status(404).json({ error: `Cupón ${code} no encontrado.` });
   }
 
-  delete VALID_COUPONS[code];
   return res.status(200).json({ message: `Cupón ${code} eliminado.` });
 }
 
