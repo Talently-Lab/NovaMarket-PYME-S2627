@@ -36,7 +36,8 @@ export default function CartPage() {
     setStockLoading(true);
     Promise.all(
       items.map(item =>
-        productsAPI.getById(item.id)
+        // _t fuerza bypass de caché del browser (evita 304 Not Modified)
+        productsAPI.getById(item.id, Date.now())
           .then(({ data }) => ({ id: item.id, stock: data.product.stock }))
           .catch(() => null)
       )
