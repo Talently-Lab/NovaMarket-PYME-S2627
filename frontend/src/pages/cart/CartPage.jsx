@@ -30,9 +30,16 @@ export default function CartPage() {
   const handleCheckout = () => {
     if (!isAuthenticated) {
       navigate('/login', { state: { from: '/carrito' } });
-    } else {
-      navigate('/checkout');
+      return;
     }
+    // Verificar que ningún producto tenga stock agotado
+    const sinStock = items.filter(i => i.stock != null && i.stock === 0);
+    if (sinStock.length > 0) {
+      const nombres = sinStock.map(i => `"${i.name}"`).join(', ');
+      alert(`${sinStock.length === 1 ? 'El producto' : 'Los productos'} ${nombres} ${sinStock.length === 1 ? 'se agotó' : 'se agotaron'}. Eliminalo${sinStock.length === 1 ? '' : 's'} del carrito para continuar.`);
+      return;
+    }
+    navigate('/checkout');
   };
 
   // Carrito vacío
@@ -194,9 +201,16 @@ export default function CartPage() {
             <span>${Number(totalAmount).toLocaleString('es-AR')}</span>
           </div>
 
+          {items.some(i => i.stock != null && i.stock === 0) && (
+            <p className="cart-summary__stock-warning">
+              Hay productos sin stock. Eliminanos del carrito para continuar.
+            </p>
+          )}
+
           <button
             className="btn btn--primary btn--full btn--lg cart-summary__cta"
             onClick={handleCheckout}
+            disabled={items.some(i => i.stock != null && i.stock === 0)}
           >
             {isAuthenticated ? 'Ir al Checkout →' : 'Ingresar para comprar'}
           </button>

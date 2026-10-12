@@ -2426,6 +2426,17 @@ ul, ol { list-style: none; }
   margin-top: var(--sp-5);
 }
 
+.cart-summary__stock-warning {
+  margin-top: var(--sp-3);
+  padding: var(--sp-3);
+  background: #fff0f0;
+  border: 1px solid var(--color-error);
+  border-radius: 8px;
+  font-size: var(--text-sm);
+  color: var(--color-error);
+  text-align: center;
+}
+
 .cart-summary__back {
   margin-top: var(--sp-2);
   color: var(--color-text-secondary);
