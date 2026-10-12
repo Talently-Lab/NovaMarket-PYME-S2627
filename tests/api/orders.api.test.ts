@@ -8,7 +8,7 @@
  * Estrategia: sin DB real.
  * - Auth y autorización: testean middleware sin DB.
  * - Validaciones del controller: inputs inválidos que el controller rechaza antes de tocar DB.
- * - Cupones: en memoria — no requieren DB.
+ * - Cupones: mockeados via jest.mock — no requieren DB.
  * - Tests que requieren DB o usuario real: marcados como .todo
  */
 
@@ -17,6 +17,37 @@ import jwt from 'jsonwebtoken';
 
 process.env.JWT_SECRET = process.env.JWT_SECRET || 'test_secret_para_jest_minimo_32_chars_ok';
 process.env.NODE_ENV   = 'test';
+
+// ── Mock de CouponModel — simula la BD sin conexión real ──────────────────────
+const MOCK_COUPONS: Record<string, number> = {
+  NOVA10: 10, NOVA20: 20, GAMING15: 15, PROMO5: 5,
+};
+
+jest.mock('../../backend/src/models/coupon.model', () => ({
+  findByCode: jest.fn(async (code: string) => {
+    const normalized = code.toUpperCase().trim();
+    const pct = MOCK_COUPONS[normalized];
+    return pct ? { id: 1, code: normalized, discount_percent: pct } : null;
+  }),
+  findAll: jest.fn(async () =>
+    Object.entries(MOCK_COUPONS).map(([code, discount_percent], i) => ({
+      id: i + 1, code, discount_percent, is_active: true,
+    }))
+  ),
+  existsByCode: jest.fn(async (code: string) => {
+    return code.toUpperCase().trim() in MOCK_COUPONS;
+  }),
+  create: jest.fn(async (code: string, discount_percent: number) => {
+    MOCK_COUPONS[code] = discount_percent;
+    return { id: 99, code, discount_percent };
+  }),
+  deactivate: jest.fn(async (code: string) => {
+    const normalized = code.toUpperCase().trim();
+    if (!(normalized in MOCK_COUPONS)) return null;
+    delete MOCK_COUPONS[normalized];
+    return { id: 1, code: normalized, discount_percent: 10 };
+  }),
+}));
 
 const app = require('../../backend/src/index');
 

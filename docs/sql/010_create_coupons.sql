@@ -16,11 +16,6 @@ CREATE TABLE IF NOT EXISTS coupons (
 -- Índice para búsqueda por código (se usa en cada checkout)
 CREATE INDEX IF NOT EXISTS idx_coupons_code ON coupons (code);
 
--- Trigger para updated_at automático
-CREATE TRIGGER update_coupons_updated_at
-  BEFORE UPDATE ON coupons
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
 -- Seed: cupones iniciales (equivalentes a los hardcodeados)
 INSERT INTO coupons (code, discount_percent) VALUES
   ('NOVA10',   10),
