@@ -63,8 +63,9 @@ export default function CartPage() {
     navigate('/checkout');
   };
 
-  // Items con stock agotado en BD (stock === 0 después de refrescar)
-  const itemsSinStock = !stockLoading && items.some(i => i.stock != null && (i.stock === 0 || i.quantity > i.stock));
+  // Bloquear checkout si algún item supera el stock conocido (local o desde API)
+  // Se evalúa siempre, no solo después del refresh, para bloquear inmediatamente
+  const itemsSinStock = items.some(i => i.stock != null && (i.stock === 0 || i.quantity > i.stock));
 
   // Carrito vacío
   if (items.length === 0) {
