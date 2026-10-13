@@ -3,16 +3,27 @@
  * Cubre: POST /register, POST /login, GET /me,
  *        POST /forgot-password, POST /reset-password
  *
- * Estrategia: sin DB real — los tests de validación no requieren conexión.
- * Los que necesitarían DB están marcados con .todo o usan stubs.
+ * Estrategia: tests de validación sin DB + tests de integración con pg-mem.
  */
 
 import request from 'supertest';
+import jwt     from 'jsonwebtoken';
 
 process.env.JWT_SECRET = process.env.JWT_SECRET || 'test_secret_para_jest_minimo_32_chars_ok';
 process.env.NODE_ENV   = 'test';
 
+// ── pg-mem — reemplaza el pool de Supabase ────────────────────────────────────
+jest.mock('../../backend/src/config/db', () => require('../helpers/pgmem.helper'));
+
+// ── Mock del email service — forgot-password no envía emails en tests ─────────
+jest.mock('../../backend/src/services/email.service', () => ({
+  sendPasswordResetEmail: jest.fn(async () => true),
+}));
+
+const { resetDB, seedUser } = require('../helpers/pgmem.helper');
 const app = require('../../backend/src/index');
+
+beforeEach(async () => { await resetDB(); });
 
 // ── POST /api/auth/register ──────────────────────────────────────────────────
 
@@ -105,12 +116,44 @@ describe('POST /api/auth/register', () => {
     expect(res.headers['content-type']).toMatch(/application\/json/);
   });
 
-  // ── Tests que requieren DB (anotados como .todo) ──
+  // ── Tests de integración con pg-mem ──────────────────────────────────────────
 
-  it.todo('TC-R12 registro exitoso → 201 con token JWT y datos del usuario');
-  it.todo('TC-R13 email duplicado → 409 con mensaje "Ya existe una cuenta con ese email."');
-  it.todo('TC-R14 registro exitoso → token JWT tiene 3 partes (header.payload.signature)');
-  it.todo('TC-R15 registro exitoso → body contiene user.id, user.name, user.email, user.role');
+  it('TC-R12 registro exitoso → 201 con token JWT y datos del usuario', async () => {
+    const res = await request(app).post('/api/auth/register').send({
+      name: 'Agustina QA', email: 'agustina@qa.test', password: 'TestPass123!',
+    });
+    expect(res.status).toBe(201);
+    expect(res.body).toHaveProperty('token');
+    expect(res.body.user.email).toBe('agustina@qa.test');
+  });
+
+  it('TC-R13 email duplicado → 409', async () => {
+    await seedUser({ email: 'duplicado@test.com' });
+    const res = await request(app).post('/api/auth/register').send({
+      name: 'Otro', email: 'duplicado@test.com', password: 'TestPass123!',
+    });
+    expect(res.status).toBe(409);
+    expect(res.body.error).toBe('Ya existe una cuenta con ese email.');
+  });
+
+  it('TC-R14 registro exitoso → token JWT tiene 3 partes', async () => {
+    const res = await request(app).post('/api/auth/register').send({
+      name: 'JWT Test', email: 'jwt@test.com', password: 'TestPass123!',
+    });
+    expect(res.body.token?.split('.')).toHaveLength(3);
+  });
+
+  it('TC-R15 registro exitoso → body contiene user.id, name, email, role', async () => {
+    const res = await request(app).post('/api/auth/register').send({
+      name: 'Full User', email: 'full@test.com', password: 'TestPass123!',
+    });
+    expect(res.body.user).toMatchObject({
+      id:    expect.any(Number),
+      name:  'Full User',
+      email: 'full@test.com',
+      role:  'customer',
+    });
+  });
 });
 
 // ── POST /api/auth/login ─────────────────────────────────────────────────────
@@ -165,10 +208,40 @@ describe('POST /api/auth/login', () => {
     expect(res.headers['content-type']).toMatch(/application\/json/);
   });
 
-  it.todo('TC-L07 credenciales correctas → 200 con token JWT');
-  it.todo('TC-L08 credenciales correctas → body tiene user.id, user.name, user.email, user.role');
-  it.todo('TC-L09 contraseña incorrecta para usuario existente → 401 "Credenciales inválidas."');
-  it.todo('TC-L10 token devuelto es un JWT válido de 3 partes');
+  it('TC-L07 credenciales correctas → 200 con token JWT', async () => {
+    await seedUser({ email: 'login@test.com', password: 'TestPass123!' });
+    const res = await request(app).post('/api/auth/login')
+      .send({ email: 'login@test.com', password: 'TestPass123!' });
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty('token');
+  });
+
+  it('TC-L08 credenciales correctas → body tiene user.id, name, email, role', async () => {
+    await seedUser({ email: 'fields@test.com', password: 'TestPass123!', name: 'Campo Test' });
+    const res = await request(app).post('/api/auth/login')
+      .send({ email: 'fields@test.com', password: 'TestPass123!' });
+    expect(res.body.user).toMatchObject({
+      id:    expect.any(Number),
+      name:  'Campo Test',
+      email: 'fields@test.com',
+      role:  'customer',
+    });
+  });
+
+  it('TC-L09 contraseña incorrecta para usuario existente → 401', async () => {
+    await seedUser({ email: 'wrong@test.com', password: 'Correcta123!' });
+    const res = await request(app).post('/api/auth/login')
+      .send({ email: 'wrong@test.com', password: 'Incorrecta999!' });
+    expect(res.status).toBe(401);
+    expect(res.body.error).toBe('Credenciales inválidas.');
+  });
+
+  it('TC-L10 token devuelto es un JWT válido de 3 partes', async () => {
+    await seedUser({ email: 'jwtlogin@test.com', password: 'TestPass123!' });
+    const res = await request(app).post('/api/auth/login')
+      .send({ email: 'jwtlogin@test.com', password: 'TestPass123!' });
+    expect(res.body.token?.split('.')).toHaveLength(3);
+  });
 });
 
 // ── GET /api/auth/me ─────────────────────────────────────────────────────────
@@ -210,8 +283,31 @@ describe('GET /api/auth/me', () => {
     expect(res.headers['content-type']).toMatch(/application\/json/);
   });
 
-  it.todo('TC-M06 token válido → 200 con datos del usuario autenticado');
-  it.todo('TC-M07 token expirado → 401 "La sesión expiró. Iniciá sesión nuevamente."');
+  it('TC-M06 token válido → 200 con datos del usuario autenticado', async () => {
+    const user = await seedUser({ email: 'me@test.com', name: 'Yo Mismo' });
+    const token = jwt.sign(
+      { id: user.id, email: user.email, role: user.role },
+      process.env.JWT_SECRET as string,
+      { expiresIn: '1h' }
+    );
+    const res = await request(app).get('/api/auth/me')
+      .set('Authorization', `Bearer ${token}`);
+    expect(res.status).toBe(200);
+    expect(res.body.user.email).toBe('me@test.com');
+  });
+
+  it('TC-M07 token expirado → 401 "La sesión expiró."', async () => {
+    const user = await seedUser({ email: 'expired@test.com' });
+    const token = jwt.sign(
+      { id: user.id, email: user.email, role: user.role },
+      process.env.JWT_SECRET as string,
+      { expiresIn: '-1s' }
+    );
+    const res = await request(app).get('/api/auth/me')
+      .set('Authorization', `Bearer ${token}`);
+    expect(res.status).toBe(401);
+    expect(res.body.error).toBe('La sesión expiró. Iniciá sesión nuevamente.');
+  });
 });
 
 // ── POST /api/auth/forgot-password ──────────────────────────────────────────
@@ -260,9 +356,33 @@ describe('POST /api/auth/forgot-password', () => {
     expect(res.headers['content-type']).toMatch(/application\/json/);
   });
 
-  it.todo('TC-F06 email existente → 200 con reset_token de 6 dígitos');
-  it.todo('TC-F07 email existente → reset_token es un string numérico de 6 caracteres');
-  it.todo('TC-F08 email existente → response incluye expires_in: "15 minutos"');
+  it('TC-F06 email existente → 200 con mensaje neutro', async () => {
+    await seedUser({ email: 'forgot@test.com' });
+    const res = await request(app).post('/api/auth/forgot-password')
+      .send({ email: 'forgot@test.com' });
+    expect(res.status).toBe(200);
+    expect(res.body.message).toContain('Si el email existe');
+  });
+
+  it('TC-F07 email existente → guarda reset_token de 6 dígitos en BD', async () => {
+    const { pool } = require('../helpers/pgmem.helper');
+    await seedUser({ email: 'token6@test.com' });
+    await request(app).post('/api/auth/forgot-password')
+      .send({ email: 'token6@test.com' });
+    const row = await pool.query(
+      `SELECT reset_token FROM users WHERE email = $1`, ['token6@test.com']
+    );
+    const token = row.rows[0]?.reset_token;
+    expect(token).toBeDefined();
+    expect(/^\d{6}$/.test(token)).toBe(true);
+  });
+
+  it('TC-F08 email inexistente → 200 igual (anti-enumeración)', async () => {
+    const res = await request(app).post('/api/auth/forgot-password')
+      .send({ email: 'noexiste@test.com' });
+    expect(res.status).toBe(200);
+    expect(res.body.message).toContain('Si el email existe');
+  });
 });
 
 // ── POST /api/auth/reset-password ───────────────────────────────────────────
@@ -315,9 +435,52 @@ describe('POST /api/auth/reset-password', () => {
     expect(res.headers['content-type']).toMatch(/application\/json/);
   });
 
-  it.todo('TC-RP07 token válido + nueva contraseña → 200 "Contraseña actualizada correctamente."');
-  it.todo('TC-RP08 token ya utilizado (segundo uso) → 400');
-  it.todo('TC-RP09 token expirado → 400 "El código expiró. Solicitá uno nuevo."');
+  it('TC-RP07 token válido + nueva contraseña → 200', async () => {
+    const { pool } = require('../helpers/pgmem.helper');
+    await seedUser({ email: 'reset@test.com' });
+    // Simular que el backend guardó el token
+    const expires = new Date(Date.now() + 15 * 60 * 1000).toISOString();
+    await pool.query(
+      `UPDATE users SET reset_token = $1, reset_token_expires = $2 WHERE email = $3`,
+      ['123456', expires, 'reset@test.com']
+    );
+    const res = await request(app).post('/api/auth/reset-password')
+      .send({ token: '123456', newPassword: 'NuevoPass123!' });
+    expect(res.status).toBe(200);
+    expect(res.body.message).toContain('Contraseña actualizada');
+  });
+
+  it('TC-RP08 token ya utilizado (segundo uso) → 400', async () => {
+    const { pool } = require('../helpers/pgmem.helper');
+    await seedUser({ email: 'reset2@test.com' });
+    const expires = new Date(Date.now() + 15 * 60 * 1000).toISOString();
+    await pool.query(
+      `UPDATE users SET reset_token = $1, reset_token_expires = $2 WHERE email = $3`,
+      ['654321', expires, 'reset2@test.com']
+    );
+    // Primer uso — exitoso
+    await request(app).post('/api/auth/reset-password')
+      .send({ token: '654321', newPassword: 'NuevoPass123!' });
+    // Segundo uso — debe fallar
+    const res = await request(app).post('/api/auth/reset-password')
+      .send({ token: '654321', newPassword: 'OtroPass456!' });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe('El código es inválido o ya fue utilizado.');
+  });
+
+  it('TC-RP09 token expirado → 400 "El código expiró."', async () => {
+    const { pool } = require('../helpers/pgmem.helper');
+    await seedUser({ email: 'expired2@test.com' });
+    const expired = new Date(Date.now() - 1000).toISOString(); // ya expiró
+    await pool.query(
+      `UPDATE users SET reset_token = $1, reset_token_expires = $2 WHERE email = $3`,
+      ['999999', expired, 'expired2@test.com']
+    );
+    const res = await request(app).post('/api/auth/reset-password')
+      .send({ token: '999999', newPassword: 'NuevoPass123!' });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe('El código expiró. Solicitá uno nuevo.');
+  });
 });
 
 // ── Seguridad y headers generales ───────────────────────────────────────────
