@@ -1160,3 +1160,71 @@ npm test
 
 # 4. Leer este archivo y el TEST_PLAN.md para contexto
 ```
+
+---
+
+**Sesión 37 — 13/oct/2026:**
+
+115. **MCP Jira + Confluence reconfigurado** — `~/.kiro/settings/mcp.json` recreado (el archivo no existía). Token Atlassian actualizado. Figma configurado como `disabled: true` hasta renovar el token. Hook `update-context-on-stop.json` creado (estaba documentado pero faltaba el archivo).
+
+   **Estado MCPs:**
+   - `jira` (mcp-atlassian) — `disabled: false` ✅ Jira + Confluence con mismo token
+   - `figma` (figma-mcp) — `disabled: true` ⏳ pendiente token
+
+116. **Fix deploy Render — `express-rate-limit` no encontrado:**
+
+   **Causa raíz:** `express-rate-limit` se había instalado en `backend/node_modules/` pero **nunca se agregó a `backend/package.json`** (faltó el `--save`). Render instala desde `package.json`, no desde el lockfile si la dependencia no está declarada.
+
+   **Fixes aplicados:**
+   - `backend/package.json`: `express-rate-limit@^7.5.0` agregado a `dependencies`. Commit `0a080b7`.
+   - `backend/package-lock.json`: regenerado limpio con `npm install`. Commit `9776e29`.
+   - Render Settings: Root Directory confirmado como `backend/`. Build Command: `npm install`. Start Command: `node src/index.js`.
+   - Deploy verde ✅ después de commit `0a080b7`.
+
+   **Nota técnica:** Render con Root Directory `backend/` corre `npm install` dentro de `backend/` y usa `backend/package-lock.json`. El `package-lock.json` raíz no se usa para el servidor.
+
+117. **Fix catálogo — `y.map is not a function`:**
+
+   **Causa raíz (regresión sesión 36):** `productService.js` fue modificado para retornar `{ products, total, page, totalPages }` pero `CatalogPage.jsx` y `HomePage.jsx` seguían esperando un array directo.
+
+   - `CatalogPage.jsx`: `setAllProducts(await getProducts(...))` → `const { products } = await getProducts(...); setAllProducts(products)`. Commit `acc0087`.
+   - `HomePage.jsx`: `.then((list) => ...)` → `.then(({ products }) => ...)`. Commit `acc0087`.
+
+118. **Fix carrito — botón checkout no se bloqueaba con stock máximo:**
+
+   **Causa raíz:** `itemsSinStock` solo evaluaba `stock === 0`, no `quantity > stock`. Además dependía de `!stockLoading`, por lo que durante el refresh de la API el botón quedaba habilitado.
+
+   **Fixes (2 commits):**
+   - Commit `a6b54da`: agregar `|| i.quantity > i.stock` a la condición.
+   - Commit `221dd89`: eliminar `!stockLoading &&` — ahora evalúa el stock local inmediatamente desde el primer render sin esperar la API. El botón se bloquea en cuanto el CartContext detecta `quantity >= stock`.
+
+119. **Fix fuente Geist — error MIME CDN jsdelivr:**
+
+   **Causa raíz:** jsdelivr servía `geist-sans/style.css` con `Content-Type: text/plain`. Netlify tiene `X-Content-Type-Options: nosniff` → browser bloqueaba la fuente.
+
+   **Solución:** fuente servida localmente.
+   - `npm install geist@1.3.0 --legacy-peer-deps` en `frontend/`.
+   - Archivos `Geist-{Regular,Medium,SemiBold,Bold}.woff2` copiados a `frontend/public/fonts/`.
+   - `@font-face` declarados al inicio de `index.css` apuntando a `/fonts/*.woff2`.
+   - `<link>` del CDN eliminado de `index.html`. Commit `a448e0b`.
+
+   **⚠️ Incidente:** el `sed` usado para eliminar el link del CDN eliminó también `</head>`, `<body>`, `<div id="root">` y `<script src="/src/main.jsx">` — la app quedó en blanco en producción. `index.html` restaurado manualmente. Commit `fd13368`.
+
+   **Regla aprendida:** nunca usar `sed` con rangos de líneas en archivos HTML — usar Python o edición directa.
+
+---
+
+## Pendientes Técnicos (actualizados 13/oct/2026)
+
+- [x] ~~MCP Jira/Confluence reconfigurado~~ ✅ sesión 37
+- [ ] Token Figma — renovar y activar MCP (`disabled: true` → `false` en `~/.kiro/settings/mcp.json`)
+- [ ] Verificar CI verde con coverage 80% después de los últimos cambios
+- [ ] Actualizar Confluence — página QA & Testing
+- [ ] Cerrar tickets Jira pendientes (SCRUM-26, 29, 37)
+- [ ] Esperar respuesta de Gisele sobre sprints 1-3 vencidos
+- [ ] Coordinar con Carina próximos componentes a extraer
+- [ ] Correr tests E2E Playwright contra Netlify (actualizar selectores si cambiaron)
+- [ ] Subir imágenes propias a Supabase Storage
+- [ ] Configurar headers seguridad en Netlify (X-Frame-Options, X-Content-Type-Options)
+- [ ] PR develop → main cuando el equipo valide la demo
+- [ ] SCRUM-26, 29 (Gastón salió) — reasignar en Jira
