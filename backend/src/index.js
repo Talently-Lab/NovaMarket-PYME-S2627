@@ -1,9 +1,10 @@
 require('dotenv').config();
 const express = require('express');
-const cors = require('cors');
+const cors    = require('cors');
 const { connectDB } = require('./config/db');
+const { authLimiter, apiLimiter, checkoutLimiter } = require('./middlewares/rate-limit.middleware');
 
-const app = express();
+const app  = express();
 const PORT = process.env.PORT || 3000;
 
 // Seguridad: no exponer la versión de Express en los headers
@@ -19,7 +20,14 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Health check — QA smoke test
+// Rate limiting — solo en producción/staging (no en tests)
+if (process.env.NODE_ENV !== 'test') {
+  app.use('/api/', apiLimiter);                         // General: 200 req / 15min
+  app.use('/api/auth', authLimiter);                    // Auth estricto: 10 req / 15min
+  app.use('/api/orders', checkoutLimiter);              // Checkout: 20 req / hora
+}
+
+// Health check — QA smoke test (fuera del rate limit de auth)
 app.get('/api/health', (req, res) => {
   res.status(200).json({
     status: 'ok',
