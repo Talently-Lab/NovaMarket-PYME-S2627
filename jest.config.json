@@ -19,7 +19,7 @@
   ],
   "coverageThreshold": {
     "global": {
-      "lines": 40
+      "lines": 80
     }
   },
   "coverageReporters": ["html", "lcov", "text-summary"],

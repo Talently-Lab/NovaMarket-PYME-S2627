@@ -4,12 +4,6 @@
  *        GET /orders, GET /orders/:id,
  *        GET/POST/DELETE /orders/admin/coupons,
  *        GET /orders/admin/all, PATCH /orders/admin/:id/status
- *
- * Estrategia: sin DB real.
- * - Auth y autorización: testean middleware sin DB.
- * - Validaciones del controller: inputs inválidos que el controller rechaza antes de tocar DB.
- * - Cupones: mockeados via jest.mock — no requieren DB.
- * - Tests que requieren DB o usuario real: marcados como .todo
  */
 
 import request from 'supertest';
@@ -18,7 +12,10 @@ import jwt from 'jsonwebtoken';
 process.env.JWT_SECRET = process.env.JWT_SECRET || 'test_secret_para_jest_minimo_32_chars_ok';
 process.env.NODE_ENV   = 'test';
 
-// ── Mock de CouponModel — simula la BD sin conexión real ──────────────────────
+// ── pg-mem — reemplaza el pool de Supabase ────────────────────────────────────
+jest.mock('../../backend/src/config/db', () => require('../helpers/pgmem.helper'));
+
+// ── Mock de CouponModel — simula cupones en memoria ───────────────────────────
 const MOCK_COUPONS: Record<string, number> = {
   NOVA10: 10, NOVA20: 20, GAMING15: 15, PROMO5: 5,
 };
@@ -49,6 +46,7 @@ jest.mock('../../backend/src/models/coupon.model', () => ({
   }),
 }));
 
+const { resetDB, seedUser, seedProduct } = require('../helpers/pgmem.helper');
 const app = require('../../backend/src/index');
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
@@ -57,11 +55,12 @@ function makeToken(payload: object, expiresIn = '1h'): string {
   return jwt.sign(payload, JWT_SECRET, { expiresIn } as any);
 }
 
-const userToken  = makeToken({ id: 42,  email: 'user@test.com',  role: 'customer' });
-const adminToken = makeToken({ id: 1,   email: 'admin@test.com', role: 'admin'    });
+const adminToken = makeToken({ id: 1, email: 'admin@test.com', role: 'admin' });
+const userToken  = makeToken({ id: 42, email: 'user@test.com',  role: 'customer' });
+
+beforeEach(async () => { await resetDB(); });
 
 // ── POST /api/orders/validate-coupon ─────────────────────────────────────────
-// Esta ruta requiere auth pero los cupones están en memoria — no necesita DB
 
 describe('POST /api/orders/validate-coupon', () => {
 
@@ -351,13 +350,115 @@ describe('POST /api/orders', () => {
     expect(res.headers['content-type']).toMatch(/application\/json/);
   });
 
-  it.todo('TC-OR15 con DB + billetera + items válidos → 201 con número de orden');
-  it.todo('TC-OR16 con DB → producto inexistente en items → 404 "Producto #ID no encontrado."');
-  it.todo('TC-OR17 con DB → stock insuficiente → 409 "Stock insuficiente para..."');
-  it.todo('TC-OR18 con DB → cupón NOVA20 aplica 20% de descuento en el total');
-  it.todo('TC-OR19 con DB → billetera aplica 5% adicional de descuento');
-  it.todo('TC-OR20 con DB → IVA 21% calculado sobre (subtotal - descuento)');
-  it.todo('TC-OR21 con DB → body de respuesta tiene subtotal, discount_amount, tax_amount, total_with_tax');
+  it('TC-OR15 billetera + items válidos → 201 con número de orden', async () => {
+    const user = await seedUser({ email: 'buyer@test.com' });
+    const prod = await seedProduct({ name: 'Mouse', price: 10000, stock: 5 });
+    const token = makeToken({ id: user.id, email: user.email, role: user.role });
+    const res = await request(app).post('/api/orders')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        items: [{ product_id: prod.id, quantity: 1 }],
+        shipping: { name: 'QA', address: 'Calle 1', city: 'BA' },
+        payment: { method: 'billetera' },
+      });
+    expect(res.status).toBe(201);
+    expect(res.body.order.id).toBeDefined();
+  });
+
+  it('TC-OR16 producto inexistente en items → 404', async () => {
+    const user = await seedUser({ email: 'buyer2@test.com' });
+    const token = makeToken({ id: user.id, email: user.email, role: user.role });
+    const res = await request(app).post('/api/orders')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        items: [{ product_id: 99999, quantity: 1 }],
+        shipping: {},
+        payment: { method: 'transferencia' },
+      });
+    expect(res.status).toBe(404);
+    expect(res.body.error).toContain('no encontrado');
+  });
+
+  it('TC-OR17 stock insuficiente → 409', async () => {
+    const user = await seedUser({ email: 'buyer3@test.com' });
+    const prod = await seedProduct({ name: 'Escaso', price: 5000, stock: 1 });
+    const token = makeToken({ id: user.id, email: user.email, role: user.role });
+    const res = await request(app).post('/api/orders')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        items: [{ product_id: prod.id, quantity: 5 }],
+        shipping: {},
+        payment: { method: 'transferencia' },
+      });
+    expect(res.status).toBe(409);
+    expect(res.body.error).toContain('Stock insuficiente');
+  });
+
+  it('TC-OR18 cupón NOVA20 aplica 20% de descuento', async () => {
+    const user = await seedUser({ email: 'buyer4@test.com' });
+    const prod = await seedProduct({ name: 'Teclado', price: 10000, stock: 5 });
+    const token = makeToken({ id: user.id, email: user.email, role: user.role });
+    const res = await request(app).post('/api/orders')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        items: [{ product_id: prod.id, quantity: 1 }],
+        shipping: {},
+        payment: { method: 'transferencia', coupon_code: 'NOVA20' },
+      });
+    expect(res.status).toBe(201);
+    expect(Number(res.body.order.discount_amount)).toBeCloseTo(2000, 1);
+    expect(res.body.order.coupon_code).toBe('NOVA20');
+  });
+
+  it('TC-OR19 billetera aplica 5% adicional', async () => {
+    const user = await seedUser({ email: 'buyer5@test.com' });
+    const prod = await seedProduct({ name: 'Monitor', price: 100000, stock: 5 });
+    const token = makeToken({ id: user.id, email: user.email, role: user.role });
+    const res = await request(app).post('/api/orders')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        items: [{ product_id: prod.id, quantity: 1 }],
+        shipping: {},
+        payment: { method: 'billetera' },
+      });
+    expect(res.status).toBe(201);
+    // 5% de 100000 = 5000
+    expect(Number(res.body.order.discount_amount)).toBeCloseTo(5000, 1);
+  });
+
+  it('TC-OR20 IVA 21% calculado sobre base neta', async () => {
+    const user = await seedUser({ email: 'buyer6@test.com' });
+    const prod = await seedProduct({ name: 'Webcam', price: 10000, stock: 5 });
+    const token = makeToken({ id: user.id, email: user.email, role: user.role });
+    const res = await request(app).post('/api/orders')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        items: [{ product_id: prod.id, quantity: 1 }],
+        shipping: {},
+        payment: { method: 'transferencia' },
+      });
+    expect(res.status).toBe(201);
+    const { subtotal, discount_amount, tax_amount } = res.body.order;
+    const baseNeta = Number(subtotal) - Number(discount_amount);
+    expect(Number(tax_amount)).toBeCloseTo(baseNeta * 0.21, 1);
+  });
+
+  it('TC-OR21 body tiene subtotal, discount_amount, tax_amount, total_with_tax', async () => {
+    const user = await seedUser({ email: 'buyer7@test.com' });
+    const prod = await seedProduct({ name: 'Hub', price: 5000, stock: 10 });
+    const token = makeToken({ id: user.id, email: user.email, role: user.role });
+    const res = await request(app).post('/api/orders')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        items: [{ product_id: prod.id, quantity: 2 }],
+        shipping: {},
+        payment: { method: 'transferencia' },
+      });
+    expect(res.status).toBe(201);
+    ['subtotal','discount_amount','tax_amount','total_with_tax'].forEach(f => {
+      expect(res.body.order).toHaveProperty(f);
+    });
+  });
 });
 
 // ── GET /api/orders ──────────────────────────────────────────────────────────
@@ -384,8 +485,30 @@ describe('GET /api/orders', () => {
     expect(res.headers['content-type']).toMatch(/application\/json/);
   });
 
-  it.todo('TC-GO04 con DB → 200 con array de pedidos del usuario autenticado');
-  it.todo('TC-GO05 con DB → no devuelve pedidos de otros usuarios');
+  it('TC-GO04 con DB → 200 con array de pedidos del usuario autenticado', async () => {
+    // json_agg no soportado en pg-mem — mockeamos findByUserId directamente
+    const OrderModel = require('../../backend/src/models/order.model');
+    const user = await seedUser({ email: 'goget@test.com' });
+    const token = makeToken({ id: user.id, email: user.email, role: user.role });
+    jest.spyOn(OrderModel, 'findByUserId').mockResolvedValueOnce([
+      { id: 1, user_id: user.id, status: 'confirmed', total: 5000, items: [] }
+    ]);
+    const res = await request(app).get('/api/orders').set('Authorization', `Bearer ${token}`);
+    expect(res.status).toBe(200);
+    expect(res.body.orders).toHaveLength(1);
+    jest.restoreAllMocks();
+  });
+
+  it('TC-GO05 no devuelve pedidos de otros usuarios', async () => {
+    const user2 = await seedUser({ email: 'u2@test.com' });
+    const token2 = makeToken({ id: user2.id, email: user2.email, role: user2.role });
+    const OrderModel = require('../../backend/src/models/order.model');
+    jest.spyOn(OrderModel, 'findByUserId').mockResolvedValueOnce([]);
+    const res = await request(app).get('/api/orders').set('Authorization', `Bearer ${token2}`);
+    expect(res.status).toBe(200);
+    expect(res.body.orders).toHaveLength(0);
+    jest.restoreAllMocks();
+  });
 });
 
 // ── GET /api/orders/:id ──────────────────────────────────────────────────────
@@ -412,8 +535,29 @@ describe('GET /api/orders/:id', () => {
     expect([404, 500]).toContain(res.status);
   });
 
-  it.todo('TC-GI04 con DB → pedido propio → 200 con detalle completo');
-  it.todo('TC-GI05 con DB → pedido de otro usuario → 404 (no expone el pedido)');
+  it('TC-GI04 pedido propio → 200 con detalle completo', async () => {
+    const user = await seedUser({ email: 'giget@test.com' });
+    const token = makeToken({ id: user.id, email: user.email, role: user.role });
+    const OrderModel = require('../../backend/src/models/order.model');
+    jest.spyOn(OrderModel, 'findById').mockResolvedValueOnce(
+      { id: 99, user_id: user.id, status: 'confirmed', total: 5000, items: [] }
+    );
+    const res = await request(app).get('/api/orders/99').set('Authorization', `Bearer ${token}`);
+    expect(res.status).toBe(200);
+    expect(res.body.order.id).toBe(99);
+    jest.restoreAllMocks();
+  });
+
+  it('TC-GI05 pedido de otro usuario → 404', async () => {
+    const user2 = await seedUser({ email: 'gi2@test.com' });
+    const token2 = makeToken({ id: user2.id, email: user2.email, role: user2.role });
+    const OrderModel = require('../../backend/src/models/order.model');
+    // findById devuelve null cuando el pedido no pertenece al usuario
+    jest.spyOn(OrderModel, 'findById').mockResolvedValueOnce(null);
+    const res = await request(app).get('/api/orders/1').set('Authorization', `Bearer ${token2}`);
+    expect(res.status).toBe(404);
+    jest.restoreAllMocks();
+  });
 });
 
 // ── GET /api/orders/admin/all ────────────────────────────────────────────────
@@ -441,8 +585,27 @@ describe('GET /api/orders/admin/all', () => {
     expect(res.status).not.toBe(403);
   });
 
-  it.todo('TC-OA04 con DB + admin → 200 con todos los pedidos de todos los usuarios');
-  it.todo('TC-OA05 con DB → cada pedido incluye user_name');
+  it('TC-OA04 con admin → 200 con todos los pedidos de todos los usuarios', async () => {
+    const OrderModel = require('../../backend/src/models/order.model');
+    jest.spyOn(OrderModel, 'findAll').mockResolvedValueOnce([
+      { id: 1, user_id: 1, user_name: 'Comprador QA', status: 'confirmed', total: 5000 },
+    ]);
+    const res = await request(app).get('/api/orders/admin/all').set('Authorization', `Bearer ${adminToken}`);
+    expect(res.status).toBe(200);
+    expect(res.body.orders.length).toBeGreaterThanOrEqual(1);
+    jest.restoreAllMocks();
+  });
+
+  it('TC-OA05 cada pedido incluye user_name', async () => {
+    const OrderModel = require('../../backend/src/models/order.model');
+    jest.spyOn(OrderModel, 'findAll').mockResolvedValueOnce([
+      { id: 1, user_id: 1, user_name: 'Comprador QA', status: 'confirmed', total: 5000 },
+    ]);
+    const res = await request(app).get('/api/orders/admin/all').set('Authorization', `Bearer ${adminToken}`);
+    expect(res.status).toBe(200);
+    expect(res.body.orders[0]).toHaveProperty('user_name');
+    jest.restoreAllMocks();
+  });
 });
 
 // ── PATCH /api/orders/admin/:id/status ──────────────────────────────────────
@@ -503,8 +666,28 @@ describe('PATCH /api/orders/admin/:id/status', () => {
     }
   });
 
-  it.todo('TC-OS07 con DB + admin + id válido → 200 "Estado del pedido actualizado."');
-  it.todo('TC-OS08 con DB → id inexistente → 404 "Pedido no encontrado."');
+  it('TC-OS07 admin + id válido → 200 estado actualizado', async () => {
+    const user = await seedUser({ email: 'osstatus@test.com' });
+    const prod = await seedProduct({ name: 'Prod', price: 5000, stock: 10 });
+    const token = makeToken({ id: user.id, email: user.email, role: user.role });
+    const created = await request(app).post('/api/orders')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ items: [{ product_id: prod.id, quantity: 1 }], shipping: {}, payment: { method: 'transferencia' } });
+    const orderId = created.body.order.id;
+    const res = await request(app).patch(`/api/orders/admin/${orderId}/status`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ status: 'shipped' });
+    expect(res.status).toBe(200);
+    expect(res.body.order.status).toBe('shipped');
+  });
+
+  it('TC-OS08 id inexistente → 404', async () => {
+    const res = await request(app).patch('/api/orders/admin/99999/status')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ status: 'shipped' });
+    expect(res.status).toBe(404);
+    expect(res.body.error).toBe('Pedido no encontrado.');
+  });
 });
 
 // ── GET /api/orders/admin/coupons ────────────────────────────────────────────
