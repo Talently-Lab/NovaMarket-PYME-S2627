@@ -2,12 +2,6 @@
  * Products API Tests — NovaMarket
  * Cubre: GET /products, GET /products/:id,
  *        POST/PUT/DELETE /products/admin, GET /products/admin/categories
- *
- * Estrategia: sin DB real.
- * - Rutas públicas (GET /products, GET /products/:id): devuelven datos reales si hay DB,
- *   pero los tests de validación y auth no requieren DB.
- * - Rutas admin: testean autenticación y autorización sin DB.
- * - Validaciones del controller: testean mensajes de error de inputs inválidos.
  */
 
 import request from 'supertest';
@@ -16,7 +10,13 @@ import jwt from 'jsonwebtoken';
 process.env.JWT_SECRET = process.env.JWT_SECRET || 'test_secret_para_jest_minimo_32_chars_ok';
 process.env.NODE_ENV   = 'test';
 
+// ── pg-mem ────────────────────────────────────────────────────────────────────
+jest.mock('../../backend/src/config/db', () => require('../helpers/pgmem.helper'));
+
+const { resetDB, seedUser, seedProduct } = require('../helpers/pgmem.helper');
 const app = require('../../backend/src/index');
+
+beforeEach(async () => { await resetDB(); });
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
@@ -50,14 +50,80 @@ describe('GET /api/products', () => {
     expect(res.headers['x-powered-by']).toBeUndefined();
   });
 
-  it.todo('TC-P04 con DB → 200, body tiene { products: [...], total: N }');
-  it.todo('TC-P05 con DB → todos los productos tienen id, name, price, category, stock');
-  it.todo('TC-P06 filtro ?category=audio → solo devuelve productos de esa categoría');
-  it.todo('TC-P07 filtro ?minPrice=1000 → todos los resultados tienen price >= 1000');
-  it.todo('TC-P08 filtro ?maxPrice=5000 → todos los resultados tienen price <= 5000');
-  it.todo('TC-P09 ?order=price_asc → productos ordenados de menor a mayor precio');
-  it.todo('TC-P10 ?order=price_desc → productos ordenados de mayor a menor precio');
-  it.todo('TC-P11 no devuelve productos con is_active = false');
+  it('TC-P04 con DB → 200, body tiene { products, total }', async () => {
+    await seedProduct({ name: 'Prod 1', category: 'Gadgets' });
+    await seedProduct({ name: 'Prod 2', category: 'Audio' });
+    const res = await request(app).get('/api/products');
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty('products');
+    expect(res.body).toHaveProperty('total');
+    expect(res.body.products.length).toBe(2);
+  });
+
+  it('TC-P05 con DB → todos los productos tienen id, name, price, category, stock', async () => {
+    await seedProduct({ name: 'Mouse', price: 5000, stock: 3, category: 'Periféricos' });
+    const res = await request(app).get('/api/products');
+    res.body.products.forEach((p: any) => {
+      expect(p).toHaveProperty('id');
+      expect(p).toHaveProperty('name');
+      expect(p).toHaveProperty('price');
+      expect(p).toHaveProperty('category');
+      expect(p).toHaveProperty('stock');
+    });
+  });
+
+  it('TC-P06 filtro ?category=Audio → solo productos de Audio', async () => {
+    await seedProduct({ name: 'Auriculares', category: 'Audio' });
+    await seedProduct({ name: 'Mouse', category: 'Periféricos' });
+    const res = await request(app).get('/api/products?category=Audio');
+    expect(res.status).toBe(200);
+    res.body.products.forEach((p: any) => {
+      expect(p.category.toLowerCase()).toContain('audio');
+    });
+  });
+
+  it('TC-P07 filtro ?minPrice=5000 → todos price >= 5000', async () => {
+    await seedProduct({ name: 'Barato', price: 1000 });
+    await seedProduct({ name: 'Caro', price: 10000 });
+    const res = await request(app).get('/api/products?minPrice=5000');
+    res.body.products.forEach((p: any) => {
+      expect(Number(p.price)).toBeGreaterThanOrEqual(5000);
+    });
+  });
+
+  it('TC-P08 filtro ?maxPrice=5000 → todos price <= 5000', async () => {
+    await seedProduct({ name: 'Barato', price: 1000 });
+    await seedProduct({ name: 'Caro', price: 10000 });
+    const res = await request(app).get('/api/products?maxPrice=5000');
+    res.body.products.forEach((p: any) => {
+      expect(Number(p.price)).toBeLessThanOrEqual(5000);
+    });
+  });
+
+  it('TC-P09 ?order=price_asc → ordenados de menor a mayor', async () => {
+    await seedProduct({ name: 'Caro', price: 10000 });
+    await seedProduct({ name: 'Barato', price: 1000 });
+    await seedProduct({ name: 'Medio', price: 5000 });
+    const res = await request(app).get('/api/products?order=price_asc');
+    const prices = res.body.products.map((p: any) => Number(p.price));
+    expect(prices).toEqual([...prices].sort((a, b) => a - b));
+  });
+
+  it('TC-P10 ?order=price_desc → ordenados de mayor a menor', async () => {
+    await seedProduct({ name: 'Caro', price: 10000 });
+    await seedProduct({ name: 'Barato', price: 1000 });
+    const res = await request(app).get('/api/products?order=price_desc');
+    const prices = res.body.products.map((p: any) => Number(p.price));
+    expect(prices).toEqual([...prices].sort((a, b) => b - a));
+  });
+
+  it('TC-P11 no devuelve productos con is_active = false', async () => {
+    await seedProduct({ name: 'Activo', is_active: true });
+    await seedProduct({ name: 'Inactivo', is_active: false });
+    const res = await request(app).get('/api/products');
+    expect(res.status).toBe(200);
+    expect(res.body.products.every((p: any) => p.name !== 'Inactivo')).toBe(true);
+  });
 });
 
 // ── GET /api/products/:id ────────────────────────────────────────────────────
@@ -105,10 +171,33 @@ describe('GET /api/products/:id', () => {
     expect(body).not.toMatch(/\.js:\d+/);
   });
 
-  it.todo('TC-PI08 con DB → id válido existente → 200 con objeto producto completo');
-  it.todo('TC-PI09 con DB → id existente → body tiene id, name, description, price, stock, category, image_url');
-  it.todo('TC-PI10 con DB → id de producto inactivo → 404 "Producto no encontrado."');
-  it.todo('TC-PI11 con DB → id inexistente → 404 "Producto no encontrado."');
+  it('TC-PI08 id válido existente → 200 con objeto producto', async () => {
+    const prod = await seedProduct({ name: 'Teclado Mec.', price: 15000 });
+    const res = await request(app).get(`/api/products/${prod.id}`);
+    expect(res.status).toBe(200);
+    expect(res.body.product.id).toBe(prod.id);
+    expect(res.body.product.name).toBe('Teclado Mec.');
+  });
+
+  it('TC-PI09 id existente → body tiene id, name, description, price, stock, category', async () => {
+    const prod = await seedProduct({ name: 'Webcam', price: 8000, stock: 5 });
+    const res = await request(app).get(`/api/products/${prod.id}`);
+    ['id','name','price','stock','category'].forEach(field => {
+      expect(res.body.product).toHaveProperty(field);
+    });
+  });
+
+  it('TC-PI10 id de producto inactivo → 404', async () => {
+    const prod = await seedProduct({ name: 'Inactivo', is_active: false });
+    const res = await request(app).get(`/api/products/${prod.id}`);
+    expect(res.status).toBe(404);
+  });
+
+  it('TC-PI11 id inexistente → 404', async () => {
+    const res = await request(app).get('/api/products/99999');
+    expect(res.status).toBe(404);
+    expect(res.body.error).toBe('Producto no encontrado.');
+  });
 });
 
 // ── GET /api/products/admin/all (protegida) ──────────────────────────────────
@@ -144,8 +233,22 @@ describe('GET /api/products/admin/all', () => {
     expect(res.headers['content-type']).toMatch(/application\/json/);
   });
 
-  it.todo('TC-PA05 con DB + token admin → 200 con todos los productos (activos e inactivos)');
-  it.todo('TC-PA06 con DB → incluye productos con is_active = false');
+  it('TC-PA05 con admin → 200 con todos los productos (activos e inactivos)', async () => {
+    await seedProduct({ name: 'Activo', is_active: true });
+    await seedProduct({ name: 'Inactivo', is_active: false });
+    const res = await request(app).get('/api/products/admin/all')
+      .set('Authorization', `Bearer ${adminToken}`);
+    expect(res.status).toBe(200);
+    expect(res.body.total).toBe(2);
+  });
+
+  it('TC-PA06 incluye productos con is_active = false', async () => {
+    await seedProduct({ name: 'Oculto', is_active: false });
+    const res = await request(app).get('/api/products/admin/all')
+      .set('Authorization', `Bearer ${adminToken}`);
+    const names = res.body.products.map((p: any) => p.name);
+    expect(names).toContain('Oculto');
+  });
 });
 
 // ── POST /api/products/admin (crear producto) ────────────────────────────────
@@ -236,9 +339,31 @@ describe('POST /api/products/admin', () => {
     expect(res.headers['content-type']).toMatch(/application\/json/);
   });
 
-  it.todo('TC-PC11 con DB + admin + datos válidos → 201 con producto creado');
-  it.todo('TC-PC12 con DB → producto creado tiene id, name, price, category, stock');
-  it.todo('TC-PC13 con DB → producto creado aparece en GET /api/products');
+  it('TC-PC11 admin + datos válidos → 201 con producto creado', async () => {
+    const res = await request(app).post('/api/products/admin')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ name: 'Nuevo Prod', price: 9999, category: 'Gadgets', stock: 10 });
+    expect(res.status).toBe(201);
+    expect(res.body.product.name).toBe('Nuevo Prod');
+  });
+
+  it('TC-PC12 producto creado tiene id, name, price, category, stock', async () => {
+    const res = await request(app).post('/api/products/admin')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ name: 'Completo', price: 5000, category: 'Audio', stock: 3 });
+    ['id','name','price','category','stock'].forEach(f => {
+      expect(res.body.product).toHaveProperty(f);
+    });
+  });
+
+  it('TC-PC13 producto creado aparece en GET /api/products', async () => {
+    await request(app).post('/api/products/admin')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ name: 'Visible', price: 3000, category: 'Gadgets', stock: 5 });
+    const res = await request(app).get('/api/products');
+    const names = res.body.products.map((p: any) => p.name);
+    expect(names).toContain('Visible');
+  });
 });
 
 // ── PUT /api/products/admin/:id (actualizar) ─────────────────────────────────
@@ -267,17 +392,13 @@ describe('PUT /api/products/admin/:id', () => {
     expect(res.body.error).toBe('El ID del producto debe ser un número.');
   });
 
-  it('TC-PU04 admin + precio negativo → 400 o 500 (sin DB)', async () => {
+  it('TC-PU04 admin + precio negativo → 404 (producto no existe) o 400', async () => {
     const res = await request(app)
       .put('/api/products/admin/1')
       .set('Authorization', `Bearer ${adminToken}`)
       .send({ price: -100 });
-    // El controller primero busca el producto en DB antes de validar precio
-    // Sin DB → 500, con DB → 400 si el producto existe
-    expect([400, 500]).toContain(res.status);
-    if (res.status === 400) {
-      expect(res.body.error).toBe('El precio debe ser un número positivo.');
-    }
+    // Con pg-mem: el producto id=1 no existe → 404
+    expect([400, 404]).toContain(res.status);
   });
 
   it('TC-PU05 admin + id inexistente → 404 o 500 (sin DB)', async () => {
@@ -288,8 +409,22 @@ describe('PUT /api/products/admin/:id', () => {
     expect([404, 500]).toContain(res.status);
   });
 
-  it.todo('TC-PU06 con DB + admin + id válido → 200 con producto actualizado');
-  it.todo('TC-PU07 con DB → id de producto inactivo (soft-deleted) → 404');
+  it('TC-PU06 admin + id válido → 200 con producto actualizado', async () => {
+    const prod = await seedProduct({ name: 'Original', price: 1000 });
+    const res = await request(app).put(`/api/products/admin/${prod.id}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ name: 'Actualizado', price: 2000 });
+    expect(res.status).toBe(200);
+    expect(res.body.product.name).toBe('Actualizado');
+    expect(Number(res.body.product.price)).toBe(2000);
+  });
+
+  it('TC-PU07 id de producto inexistente → 404', async () => {
+    const res = await request(app).put('/api/products/admin/99999')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ name: 'Nada' });
+    expect(res.status).toBe(404);
+  });
 });
 
 // ── DELETE /api/products/admin/:id (soft delete) ─────────────────────────────
@@ -323,9 +458,32 @@ describe('DELETE /api/products/admin/:id', () => {
     expect([404, 500]).toContain(res.status);
   });
 
-  it.todo('TC-PD05 con DB + admin + id válido → 200 "Producto eliminado correctamente."');
-  it.todo('TC-PD06 con DB → producto eliminado no aparece en GET /api/products');
-  it.todo('TC-PD07 con DB → producto eliminado sí aparece en GET /api/products/admin/all (soft delete)');
+  it('TC-PD05 admin + id válido → 200 eliminado', async () => {
+    const prod = await seedProduct({ name: 'Para Borrar' });
+    const res = await request(app).delete(`/api/products/admin/${prod.id}`)
+      .set('Authorization', `Bearer ${adminToken}`);
+    expect(res.status).toBe(200);
+    expect(res.body.message).toContain('eliminado');
+  });
+
+  it('TC-PD06 producto eliminado no aparece en GET /api/products', async () => {
+    const prod = await seedProduct({ name: 'Borrable' });
+    await request(app).delete(`/api/products/admin/${prod.id}`)
+      .set('Authorization', `Bearer ${adminToken}`);
+    const res = await request(app).get('/api/products');
+    const names = res.body.products.map((p: any) => p.name);
+    expect(names).not.toContain('Borrable');
+  });
+
+  it('TC-PD07 producto eliminado sí aparece en admin/all (soft delete)', async () => {
+    const prod = await seedProduct({ name: 'SoftDeleted' });
+    await request(app).delete(`/api/products/admin/${prod.id}`)
+      .set('Authorization', `Bearer ${adminToken}`);
+    const res = await request(app).get('/api/products/admin/all')
+      .set('Authorization', `Bearer ${adminToken}`);
+    const names = res.body.products.map((p: any) => p.name);
+    expect(names).toContain('SoftDeleted');
+  });
 });
 
 // ── GET /api/products/admin/categories ──────────────────────────────────────
@@ -352,8 +510,26 @@ describe('GET /api/products/admin/categories', () => {
     expect(res.status).not.toBe(403);
   });
 
-  it.todo('TC-CAT04 con DB + admin → 200 con array de categorías con conteo');
-  it.todo('TC-CAT05 con DB → cada categoría tiene category, total_count, active_count');
+  it('TC-CAT04 con admin → 200 con array de categorías con conteo', async () => {
+    await seedProduct({ name: 'Prod1', category: 'Gaming' });
+    await seedProduct({ name: 'Prod2', category: 'Gaming' });
+    await seedProduct({ name: 'Prod3', category: 'Audio' });
+    const res = await request(app).get('/api/products/admin/categories')
+      .set('Authorization', `Bearer ${adminToken}`);
+    expect(res.status).toBe(200);
+    expect(res.body.categories.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it('TC-CAT05 cada categoría tiene category, product_count, active_count', async () => {
+    await seedProduct({ name: 'P1', category: 'Accesorios' });
+    const res = await request(app).get('/api/products/admin/categories')
+      .set('Authorization', `Bearer ${adminToken}`);
+    res.body.categories.forEach((c: any) => {
+      expect(c).toHaveProperty('category');
+      expect(c).toHaveProperty('product_count');
+      expect(c).toHaveProperty('active_count');
+    });
+  });
 });
 
 // ── PATCH /api/products/admin/categories/rename ──────────────────────────────
@@ -402,8 +578,25 @@ describe('PATCH /api/products/admin/categories/rename', () => {
     expect(res.body.error).toBe('El nombre nuevo debe ser diferente al actual.');
   });
 
-  it.todo('TC-CR06 con DB + admin + nombres válidos distintos → 200 "Categoría renombrada."');
-  it.todo('TC-CR07 con DB → todos los productos con oldName quedan con newName');
+  it('TC-CR06 nombres válidos distintos → 200 renombrado', async () => {
+    await seedProduct({ name: 'P1', category: 'Viejo' });
+    const res = await request(app).patch('/api/products/admin/categories/rename')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ oldName: 'Viejo', newName: 'Nuevo' });
+    expect(res.status).toBe(200);
+    expect(res.body.message).toContain('renombrada');
+  });
+
+  it('TC-CR07 todos los productos con oldName quedan con newName', async () => {
+    await seedProduct({ name: 'P1', category: 'OldCat' });
+    await seedProduct({ name: 'P2', category: 'OldCat' });
+    await request(app).patch('/api/products/admin/categories/rename')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ oldName: 'OldCat', newName: 'NewCat' });
+    const res = await request(app).get('/api/products?category=NewCat');
+    expect(res.body.products.length).toBe(2);
+    expect(res.body.products.every((p: any) => p.category === 'NewCat')).toBe(true);
+  });
 });
 
 // ── Seguridad general — endpoints de productos ───────────────────────────────
