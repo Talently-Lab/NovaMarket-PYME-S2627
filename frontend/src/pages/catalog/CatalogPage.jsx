@@ -47,6 +47,7 @@ export default function CatalogPage() {
   const [priceMax, setPriceMax]   = useState('');
   const [onlyStock, setOnlyStock] = useState(false);
   const [order, setOrder]         = useState('newest');
+  const [search, setSearch]       = useState('');
   const [page, setPage]           = useState(1);
 
   // ── Estado de datos ──
@@ -83,6 +84,15 @@ export default function CatalogPage() {
   const filtered = useMemo(() => {
     let list = [...allProducts];
 
+    if (search.trim()) {
+      const term = search.trim().toLowerCase();
+      list = list.filter(p =>
+        p.name?.toLowerCase().includes(term) ||
+        p.description?.toLowerCase().includes(term) ||
+        p.category?.toLowerCase().includes(term)
+      );
+    }
+
     if (selectedCategories.length > 0) {
       list = list.filter(p =>
         selectedCategories.some(cat => p.category?.toLowerCase() === cat.toLowerCase())
@@ -112,7 +122,7 @@ export default function CatalogPage() {
   const pageProducts = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
 
   // Resetear a página 1 cuando cambian los filtros
-  useEffect(() => { setPage(1); }, [selectedCategories, selectedBrands, priceMin, priceMax, onlyStock]);
+  useEffect(() => { setPage(1); }, [selectedCategories, selectedBrands, priceMin, priceMax, onlyStock, search]);
 
   // ── Handlers ──
   const toggleCategory = useCallback((cat) => {
@@ -251,6 +261,30 @@ export default function CatalogPage() {
 
         {/* ── Área de resultados ── */}
         <section className="catalog-results" aria-label="Resultados del catálogo">
+
+          {/* Buscador por texto */}
+          <div className="catalog-search">
+            <svg className="catalog-search__icon" width="16" height="16" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+              aria-hidden="true">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input
+              className="catalog-search__input"
+              type="search"
+              placeholder="Buscar productos..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              aria-label="Buscar productos"
+            />
+            {search && (
+              <button
+                className="catalog-search__clear"
+                onClick={() => setSearch('')}
+                aria-label="Limpiar búsqueda"
+              >✕</button>
+            )}
+          </div>
 
           {/* Filtro rápido por categoría (botones): Todos | Accesorios | Periféricos | ... */}
           <div className="catalog-quick-filters" role="group" aria-label="Filtrar por categoría">

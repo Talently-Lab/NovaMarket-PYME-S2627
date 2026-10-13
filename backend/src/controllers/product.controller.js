@@ -6,16 +6,28 @@ const ProductModel = require('../models/product.model');
  * Público — no requiere autenticación
  */
 async function getProducts(req, res) {
-  const { category, minPrice, maxPrice, order } = req.query;
+  const { category, minPrice, maxPrice, order, page, limit, search } = req.query;
 
-  const products = await ProductModel.findAll({
+  const { rows: products, total } = await ProductModel.findAll({
     category,
     minPrice: minPrice ? parseFloat(minPrice) : undefined,
     maxPrice: maxPrice ? parseFloat(maxPrice) : undefined,
     order,
+    page,
+    limit,
+    search,
   });
 
-  return res.status(200).json({ products, total: products.length });
+  const limitNum = parseInt(limit) || null;
+  const pageNum  = parseInt(page)  || null;
+
+  return res.status(200).json({
+    products,
+    total,
+    page:       pageNum || 1,
+    limit:      limitNum || total,
+    totalPages: limitNum ? Math.ceil(total / limitNum) : 1,
+  });
 }
 
 /**

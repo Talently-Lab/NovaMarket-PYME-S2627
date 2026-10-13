@@ -3935,8 +3935,59 @@ ul, ol { list-style: none; }
 }
 
 /* ── Barra de ordenamiento ── */
-.catalog-quick-filters {
+.catalog-search {
+  position: relative;
   display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.catalog-search__icon {
+  position: absolute;
+  left: 14px;
+  color: var(--color-text-secondary);
+  pointer-events: none;
+}
+
+.catalog-search__input {
+  width: 100%;
+  padding: 10px 40px 10px 40px;
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-family: var(--font-ui);
+  font-size: var(--text-sm);
+  color: var(--color-text);
+  transition: border-color var(--duration-fast) var(--ease);
+}
+
+.catalog-search__input:focus {
+  outline: none;
+  border-color: var(--nova-violet);
+  box-shadow: 0 0 0 3px rgba(125, 28, 226, 0.12);
+}
+
+.catalog-search__input::placeholder {
+  color: var(--color-text-disabled);
+}
+
+.catalog-search__clear {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  padding: 4px;
+  line-height: 1;
+}
+
+.catalog-search__clear:hover {
+  color: var(--color-text);
+}
+
+.catalog-quick-filters {  display: flex;
   flex-wrap: wrap;
   gap: 8px;
   margin-bottom: 12px;
