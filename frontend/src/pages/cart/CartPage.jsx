@@ -64,7 +64,7 @@ export default function CartPage() {
   };
 
   // Items con stock agotado en BD (stock === 0 después de refrescar)
-  const itemsSinStock = !stockLoading && items.some(i => i.stock != null && i.stock === 0);
+  const itemsSinStock = !stockLoading && items.some(i => i.stock != null && (i.stock === 0 || i.quantity > i.stock));
 
   // Carrito vacío
   if (items.length === 0) {
