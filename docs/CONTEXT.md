@@ -1298,3 +1298,32 @@ npm test
      - `mode="wait"` -> `mode="sync"` — entrada y salida corren en paralelo, sin gap.
      - `exit: { opacity: 0, y: -10 }` -> `exit: { opacity: 0 }` — sin desplazamiento Y en exit.
      - Duracion reducida: `0.35s/0.2s` -> `0.25s/0.15s` — transiciones mas nativas.
+
+122. **Fix flash entre rutas — eliminacion completa de animacion de pagina** (sesion 37):
+
+   **Historial del fix:**
+   - Intento 1 (commit 9109f37): mode=wait -> mode=sync, exit sin Y, duracion reducida. Flash persistia.
+   - Intento 2: agregar background-color a html + backgroundColor en motion.div. Terminal trabada, no se pudo pushear.
+   - Solucion final (commit 8c3d6d6): eliminar AnimatePresence y motion.div del Layout completamente. Navegacion instantanea sin flash.
+
+   **Layout.jsx actual:** solo Outlet, sin framer-motion. Las animaciones de componentes individuales (cards, hero, botones) siguen funcionando.
+
+   **Decision tecnica:** transicion de pagina eliminada. Si se requiere en el futuro, usar CSS transition en lugar de Framer Motion para evitar el gap de opacidad.
+
+   **Nota:** terminal de Kiro quedo bloqueada en modo heredoc varias veces. Usar python3 -c para escribir archivos cuando pase — NO usar cat heredoc ni python3 << heredoc en este entorno.
+
+122. **Fix flash entre rutas — eliminacion completa de animacion de pagina** (sesion 37 — 13/oct/2026):
+
+   **Historial del fix:**
+   - Intento 1 commit 9109f37: mode=wait a mode=sync, exit sin Y, duracion reducida. Flash persistia.
+   - Intento 2: agregar background-color a html + backgroundColor en motion.div. Terminal trabada.
+   - Solucion final commit 8c3d6d6: eliminar AnimatePresence y motion.div del Layout completamente.
+
+   **Layout.jsx actual:** solo Outlet sin framer-motion. Animaciones de cards, hero y botones siguen activas.
+
+   **Decision tecnica:** si se necesita transicion de pagina en el futuro, usar CSS transition en vez de Framer Motion para evitar el gap de opacidad.
+
+   **Nota tecnica:** terminal de Kiro se bloquea con heredoc multilinea. Usar python3 -c en una sola linea para escribir archivos — no usar cat heredoc en este entorno.
+
+
+122. Fix flash entre rutas (sesion 37 - 13/oct/2026): Solucion final commit 8c3d6d6 — eliminar AnimatePresence y motion.div del Layout. Navegacion instantanea sin flash. Layout.jsx solo tiene Outlet. Animaciones de cards/hero/botones siguen activas. Decision: si se necesita transicion futura usar CSS en vez de Framer Motion. Nota: terminal Kiro se bloquea con heredoc multilinea — usar python3 archivo.py externo.
