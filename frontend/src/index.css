@@ -192,6 +192,7 @@ html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
   tab-size: 4;
+  background-color: #F6F8FD;
   overflow-x: hidden;
 }
 
