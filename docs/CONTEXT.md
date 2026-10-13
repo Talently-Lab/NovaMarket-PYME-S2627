@@ -1228,3 +1228,66 @@ npm test
 - [ ] Configurar headers seguridad en Netlify (X-Frame-Options, X-Content-Type-Options)
 - [ ] PR develop → main cuando el equipo valide la demo
 - [ ] SCRUM-26, 29 (Gastón salió) — reasignar en Jira
+
+---
+
+**Sesión 37 — continuación (13/oct/2026):**
+
+120. **Aclaración estructura Jira — SCRUM-92 y SCRUM-96:**
+
+   Gisele consultó por Discord porque veía SCRUM-92 y SCRUM-96 como "Por hacer (0/X subtareas)".
+   
+   **Estructura real:**
+   - SCRUM-92 (padre) → Finalizado ✅ — deploy operativo
+     - SCRUM-93 (subtarea) → **En curso** — bugs/responsivos en progreso
+     - SCRUM-94 (subtarea) → Por hacer — README, sesión de cierre
+   - SCRUM-96 (padre) → Finalizado ✅ — deploy operativo  
+     - SCRUM-97 (subtarea) → Por hacer — Documentación técnica final, sesión de cierre
+
+   **Acciones tomadas:**
+   - SCRUM-93 movido a "En curso"
+   - Comentario aclaratorio en SCRUM-92 para Gisele con URL de producción, stack real (PostgreSQL no MongoDB) y estado de subtareas
+
+121. **Pendientes para sesiones siguientes identificados:**
+
+   | Ticket | Tarea | Prioridad |
+   |--------|-------|-----------|
+   | SCRUM-93 | Terminar bugs/responsivos + tests E2E Playwright | Alta |
+   | SCRUM-94 | README / Limpieza final | Media |
+   | SCRUM-97 | Documentación técnica final | Media |
+   | — | CI verde con coverage 80% | Alta |
+   | — | Token Figma renovar + activar MCP | Baja |
+   | — | Headers seguridad Netlify | Baja |
+   | — | PR develop → main (demo validada) | Esperando PM |
+
+
+---
+
+**Sesión 37 — continuación (13/oct/2026):**
+
+120. **Aclaración estructura Jira — SCRUM-92 y SCRUM-96:**
+
+   Gisele consultó por Discord porque veía SCRUM-92 y SCRUM-96 como "Por hacer (0/X subtareas)".
+
+   **Estructura real:**
+   - SCRUM-92 (padre) → Finalizado — deploy operativo
+     - SCRUM-93 (subtarea) → En curso — bugs/responsivos en progreso
+     - SCRUM-94 (subtarea) → Por hacer — README, sesión de cierre
+   - SCRUM-96 (padre) → Finalizado — deploy operativo
+     - SCRUM-97 (subtarea) → Por hacer — Documentación técnica final, sesión de cierre
+
+   **Acciones tomadas:**
+   - SCRUM-93 movido a "En curso"
+   - Comentario aclaratorio en SCRUM-92 para Gisele con URL producción, stack real (PostgreSQL no MongoDB) y estado de subtareas
+
+121. **Pendientes identificados para sesiones siguientes:**
+
+   | Ticket | Tarea | Prioridad |
+   |--------|-------|-----------|
+   | SCRUM-93 | Terminar bugs/responsivos + tests E2E Playwright | Alta |
+   | SCRUM-94 | README / Limpieza final | Media |
+   | SCRUM-97 | Documentacion tecnica final | Media |
+   | — | CI verde con coverage 80% | Alta |
+   | — | Token Figma renovar + activar MCP | Baja |
+   | — | Headers seguridad Netlify | Baja |
+   | — | PR develop a main (demo validada por PM) | Esperando PM |
