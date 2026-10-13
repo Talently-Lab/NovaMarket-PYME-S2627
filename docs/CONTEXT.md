@@ -1291,3 +1291,10 @@ npm test
    | — | Token Figma renovar + activar MCP | Baja |
    | — | Headers seguridad Netlify | Baja |
    | — | PR develop a main (demo validada por PM) | Esperando PM |
+
+122. **Fix flash entre rutas — transiciones Framer Motion** — commit `9109f37`:
+   - **Causa raiz:** `mode="wait"` en AnimatePresence esperaba que el exit terminara antes de montar el enter — la pantalla quedaba vacia (flash) durante ese gap.
+   - **Fix en `Layout.jsx`:**
+     - `mode="wait"` -> `mode="sync"` — entrada y salida corren en paralelo, sin gap.
+     - `exit: { opacity: 0, y: -10 }` -> `exit: { opacity: 0 }` — sin desplazamiento Y en exit.
+     - Duracion reducida: `0.35s/0.2s` -> `0.25s/0.15s` — transiciones mas nativas.
