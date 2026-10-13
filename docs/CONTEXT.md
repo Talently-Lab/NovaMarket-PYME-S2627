@@ -2,7 +2,7 @@
 
 > Este archivo es para uso interno de Christian Santibáñez (QA).
 > Sirve como punto de partida para sesiones nuevas de Kiro.
-> Última actualización: 11/oct/2026 (sesión 35)
+> Última actualización: 12/oct/2026 (sesión 36)
 
 ---
 
@@ -744,8 +744,8 @@ Tests:       72 passed · 23 todo · 0 failed
 **Pendientes técnicos:**
 - [x] ~~Ejecutar `docs/sql/009_add_reset_token.sql` en Supabase SQL Editor~~ ✅ ejecutado 9/oct/2026
 - [x] ~~Redeploy Render para activar cambios de backend (forgot/reset-password, cupones CRUD, config admin)~~ ✅
-- [ ] Subir `coverageThreshold` 40% → 80% con tests de integración con DB real
-- [ ] Implementar 80 `.todo` de los tests (requieren pg-mem o schema separado Supabase)
+- [x] ~~Subir `coverageThreshold` 40% → 80% con tests de integración con DB real~~ ✅ 87% coverage, threshold 80% (sesión 36)
+- [x] ~~Implementar 80 `.todo` de los tests (requieren pg-mem)~~ ✅ 57 implementados, 23 restantes (sesión 36)
 - [x] ~~Cerrar en Jira: SCRUM-36, 28, 45, 54, 38~~ → comentarios de avance agregados
 - [x] ~~SCRUM-3 y SCRUM-4 (basura)~~ → ✅ Cerrados como Finalizado (9/oct/2026)
 - [ ] SCRUM-26, 29 (Gastón salió) — reasignar en Jira
@@ -1058,6 +1058,91 @@ El repo viejo sigue en `/home/christian/Escritorio/NovaMarket-PYME` como referen
    - `frontend/src/services/productService.js`
 
 112. **`gh` CLI instalado y autenticado** — `christian-santibanez` con scopes `repo`, `workflow`, `read:org`. PRs ahora se pueden revisar, aprobar y mergear directamente desde la terminal sin abrir el navegador.
+
+---
+
+**Sesión 36 — 12/oct/2026:**
+
+113. **Semana 1 completada — Bugs, cupones en BD y búsqueda:**
+
+   **Bugs resueltos:**
+   - **BR19** (total negativo cupón 100% + billetera): `createCoupon` limitado a máx 99%. `Math.max(baseForTax, 0)` en backend y frontend. Commit `34d82a3`.
+   - **BR20** (carrito se vacía al login — regresión): causa raíz en `CartProvider` re-montado — fusión movida al `useState` lazy initializer. Commit `4586297`.
+   - **BR21** (checkout no bloquea stock agotado): `stockLoading` state, `useEffect` refresca stock con `_t=Date.now()` para bypass caché 304, botón bloqueado mientras verifica. Commits `ef04de8`, `682a700`, `ca0cbe3`, `d1e7858`.
+
+   **Cupones en BD:**
+   - `docs/sql/010_create_coupons.sql` — tabla `coupons` (sin trigger, seed con 4 cupones iniciales). Ejecutada en Supabase ✅.
+   - `backend/src/models/coupon.model.js` — `findByCode`, `findAll`, `create`, `deactivate`, `existsByCode`.
+   - `order.controller.js` migrado de objeto in-memory `VALID_COUPONS` a `CouponModel`. Commit `dc85bd1`.
+   - `orders.api.test.ts` — `jest.mock` de `CouponModel` actualizado. Commit `33ea514`.
+   - Redeploy Render verificado ✅ — cupones persisten entre reinicios.
+
+   **Búsqueda por texto:**
+   - Backend: `product.model.js` `findAll` agrega param `search` → `ILIKE` en `name` y `description`. `product.controller.js` pasa `search` y devuelve `totalPages`. Commit `f79cd92`.
+   - Frontend: `productService.js` retorna `{ products, total, page, totalPages }`. `CatalogPage` agrega input de búsqueda con ícono lupa, filtrado en cliente en tiempo real. CSS `.catalog-search`. Commit `f79cd92`.
+
+   **Bug report actualizado:** BR21 agregado a `docs/bug-report.md`. Commit `2d23ea9`.
+
+114. **Semana 2 completada — Rate limiting + tests de integración con pg-mem:**
+
+   **Rate limiting:**
+   - `express-rate-limit@7.5.0` instalado en `backend/` y `package.json` raíz.
+   - `backend/src/middlewares/rate-limit.middleware.js`: `authLimiter` (10/15min), `apiLimiter` (200/15min), `checkoutLimiter` (20/hora). Deshabilitado en `NODE_ENV=test`.
+   - Commit `116df95`.
+
+   **Tests de integración con pg-mem:**
+   - `tests/helpers/pgmem.helper.ts` — schema completo (users, products, orders, order_items, coupons), `resetDB()`, `seedUser()`, `seedProduct()`, `seedCoupon()`. Adaptaciones: sin triggers, sin `GENERATED ALWAYS`, sin `TIMESTAMP WITH TIME ZONE`.
+   - `tests/api/pgmem.smoke.test.ts` — 6 tests smoke del helper.
+   - **auth.api.test.ts** — 16 todos implementados: register (4), login (4), me (2), forgot-password (3), reset-password (3). Mock de `email.service` para no enviar emails en tests.
+   - **products.api.test.ts** — 24 todos implementados: GET con filtros/orden/is_active, CRUD admin, categorías, renombrar.
+   - **orders.api.test.ts** — 14 todos implementados: POST checkout (7), GET mis pedidos (2), GET/:id (2), admin/all (2), PATCH status (2). `json_agg` no soportado en pg-mem → `jest.spyOn` para los endpoints GET de orders.
+   - Commits `dfefca2`, `bd3cb58`, `09bf426`.
+
+   **Resultado final de tests:**
+   ```
+   Test Suites: 12 passed
+   Tests:       321 passed · 23 todo · 0 failed
+   Coverage:    87% lines (subió de 57.88%)
+   Threshold:   40% → 80%
+   ```
+
+   **PRs de Carina Luna mergeados en esta sesión:**
+   - PR #7 — `Button` reutilizable (SCRUM-48)
+   - PR #8 — `productService`, `ProductCard`, CRUD admin productos (SCRUM-48, 63, 65, 67)
+   - PR #9 — `totalItems`/`totalAmount` con `useMemo`, botón "Ir al Checkout" (SCRUM-84, 85)
+   - `gh` CLI instalado y autenticado en Fedora — `sudo dnf install gh && gh auth login`
+
+   **Nuevos archivos en `develop`:**
+   - `frontend/src/components/ui/Button.jsx`
+   - `frontend/src/components/ui/ProductCard.jsx`
+   - `frontend/src/pages/admin/ProductFormModal.jsx`
+   - `frontend/src/services/productService.js`
+   - `tests/helpers/pgmem.helper.ts`
+   - `tests/api/pgmem.smoke.test.ts`
+   - `backend/src/middlewares/rate-limit.middleware.js`
+   - `backend/src/models/coupon.model.js`
+   - `docs/sql/010_create_coupons.sql`
+   - `docs/bug-report.md` (BR01–BR21)
+   - `docs/qa-guides/` (5 guías Postman para Agustina)
+
+---
+
+## Plan Semana 3 (13–18/oct/2026) — Entrega final 5/nov
+
+**Objetivo:** dejar el proyecto en estado entregable.
+
+| Tarea | Prioridad | Estado |
+|-------|-----------|--------|
+| Verificar CI verde con nuevo coverage 80% | Alta | ⏳ Pendiente |
+| Actualizar Confluence — página QA & Testing | Media | ⏳ Pendiente |
+| Cerrar tickets Jira pendientes (SCRUM-26, 29, 37) | Media | ⏳ Pendiente |
+| Esperar respuesta de Gisele sobre sprints 1-3 vencidos | Media | ⏳ Esperando |
+| Coordinar con Carina próximos componentes a extraer | Media | ⏳ Pendiente |
+| Correr tests E2E Playwright contra Netlify | Media | ⏳ Pendiente |
+| Paginación servidor (opcional — 20 productos alcanza) | Baja | ⏳ Pendiente |
+| Subir imágenes propias a Supabase Storage | Baja | ⏳ Pendiente |
+| Configurar headers seguridad en Netlify (X-Frame-Options) | Baja | ⏳ Pendiente |
+| PR develop → main cuando el equipo valide la demo | Baja | ⏳ Esperando PM |
 
 ---
 
