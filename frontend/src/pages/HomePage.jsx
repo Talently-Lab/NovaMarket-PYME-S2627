@@ -130,7 +130,7 @@ export default function HomePage() {
 
   useEffect(() => {
     getProducts(undefined, { order: 'newest' })
-      .then((list) => setProducts(list.slice(0, 4)))
+      .then(({ products }) => setProducts(products.slice(0, 4)))
       .catch(() => setProducts([]))
       .finally(() => setLoading(false));
   }, []);

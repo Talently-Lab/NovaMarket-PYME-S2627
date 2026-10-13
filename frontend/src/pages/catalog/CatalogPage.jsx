@@ -70,7 +70,7 @@ export default function CatalogPage() {
       setLoading(true);
       setError('');
       try {
-        setAllProducts(await getProducts(undefined, { order }));
+        const { products } = await getProducts(undefined, { order }); setAllProducts(products);
       } catch {
         setError('No se pudieron cargar los productos. Intentá de nuevo.');
       } finally {
