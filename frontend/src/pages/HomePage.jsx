@@ -13,21 +13,6 @@ const HeroParticles = lazy(() => import('../components/ui/HeroParticles'));
 
 // ── Variantes Framer Motion ───────────────────────────────────────────────────
 
-const fadeUp = {
-  hidden:  { opacity: 0, y: 32 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] } },
-};
-
-const staggerContainer = {
-  hidden:  {},
-  visible: { transition: { staggerChildren: 0.1, delayChildren: 0.1 } },
-};
-
-const staggerItem = {
-  hidden:  { opacity: 0, y: 24 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } },
-};
-
 const heroTitle = {
   hidden:  {},
   visible: { transition: { staggerChildren: 0.07 } },
@@ -249,22 +234,15 @@ export default function HomePage() {
           <motion.h2
             className="categories-section__title"
             ref={catRef}
-            variants={fadeUp}
-            initial="hidden"
-            animate={catInView ? 'visible' : 'hidden'}
           >
             Categorías Principales
           </motion.h2>
           <motion.div
             className="categories-grid"
-            variants={staggerContainer}
-            initial="hidden"
-            animate={catInView ? 'visible' : 'hidden'}
           >
             {CATEGORIES.map(({ icon, name, slug }) => (
               <motion.div
                 key={name}
-                variants={staggerItem}
                 whileHover={{ y: -6, boxShadow: '0 12px 32px rgba(125,28,226,0.18)' }}
                 whileTap={{ scale: 0.97 }}
                 className="category-card-wrapper"
@@ -290,9 +268,6 @@ export default function HomePage() {
         <div className="featured-section__inner">
           <motion.div
             className="featured-section__header"
-            variants={fadeUp}
-            initial="hidden"
-            animate={featInView ? 'visible' : 'hidden'}
           >
             <h2 className="featured-section__title">Productos Destacados</h2>
             <Link to="/catalogo" className="featured-section__link">
@@ -308,15 +283,11 @@ export default function HomePage() {
           {!loading && products.length > 0 && (
             <motion.div
               className="featured-grid"
-              variants={staggerContainer}
-              initial="hidden"
-              animate={featInView ? 'visible' : 'hidden'}
             >
               {products.map((product) => (
                 <motion.div
                   key={product.id}
                   className="featured-card"
-                  variants={staggerItem}
                   whileHover={{ y: -8, boxShadow: '0 16px 40px rgba(0,0,0,0.18)' }}
                   whileTap={{ scale: 0.98 }}
                 >
@@ -375,9 +346,6 @@ export default function HomePage() {
       <motion.section
         className="promo-banner"
         ref={promoRef}
-        variants={fadeUp}
-        initial="hidden"
-        animate={promoInView ? 'visible' : 'hidden'}
       >
         <div className="promo-banner__card">
           <p className="promo-banner__title">¡Oferta especial de lanzamiento!</p>

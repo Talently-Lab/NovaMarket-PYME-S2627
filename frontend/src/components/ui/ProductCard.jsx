@@ -2,12 +2,6 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { getProductImage } from '../../utils/productImage';
 
-const cardVariants = {
-  hidden:  { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] } },
-  exit:    { opacity: 0, scale: 0.95, transition: { duration: 0.2 } },
-};
-
 // ── Icono carrito (inline SVG) ────────────────────────────────
 function CartIcon() {
   return (
@@ -36,11 +30,6 @@ export function ProductCard({ product, onAdd, added, cartQty = 0 }) {
   return (
     <motion.article
       className="catalog-card"
-      variants={cardVariants}
-      initial="hidden"
-      animate="visible"
-      exit="exit"
-      layout
       whileHover={{ y: -6, boxShadow: '0 16px 40px rgba(0,0,0,0.12)' }}
       transition={{ type: 'tween', duration: 0.25 }}
     >
