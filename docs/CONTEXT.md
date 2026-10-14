@@ -1377,3 +1377,9 @@ Pendientes sesion siguiente:
    - Token actualizado en ~/.kiro/settings/mcp.json — disabled: false
    - Pendiente: reiniciar Kiro para que tome el nuevo MCP
    - Pendiente: pasar URL del archivo Figma para implementar diseno final
+
+126. **Fix MCP Figma — paquete incorrecto** (sesion 37 — 13/oct/2026):
+   - Problema: figma-mcp@latest no existe como paquete uvx/pypi.
+   - Fix: cambiado a npx -y figma-developer-mcp --stdio (paquete oficial npm de Figma).
+   - ~/.kiro/settings/mcp.json actualizado. Reinicio de Kiro pendiente para conectar.
+   - Pendiente sesion siguiente: verificar conexion Figma MCP y leer archivo 9omHqTuHqeD8WWoukz2v5k node 35-2.
