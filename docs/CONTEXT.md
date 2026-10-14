@@ -1429,3 +1429,24 @@ Pendientes sesion siguiente:
    - Ajustar padding-top si el header con promo bar tiene altura diferente a 130px
    - Agregar productos Notebooks y Celulares en Supabase (categorias nuevas)
    - Continuar con diseno Figma del catalogo (CatalogPage)
+
+129. **Diseño Figma v2 — correcciones fidelidad (sesion 38 cont.):**
+
+   Cambios aplicados SIN push (pendiente revision local):
+
+   - Header.jsx: nav integrada en header negro (no barra verde separada), promo bar lima #D2EE42 con texto oscuro.
+   - HomePage.jsx: hero dos columnas (texto izq, imagen der), titulo mayusculas blanco 38px, subtitulo lima D2EE42, CTA fucsia #E247FD. Categorias: label row con barra lima + CATEGORIAS PRINCIPALES gris, titulo TODO LO QUE NECESITAS negro 25px, Notebooks con fondo violeta #5412A3 (featured=true).
+   - index.css: clases hero-figma (dos columnas, fondo #050506), header__promo-bar lima, header__nav-center integrada, categories-section__label-row, fix padding-top 108px (promo 36px + header 70px).
+
+   Diferencias corregidas vs captura Figma:
+   - Banner promo: negro -> lima
+   - Nav: barra verde separada -> integrada en header negro centrada
+   - Hero: imagen fondo -> dos columnas texto+imagen
+   - Titulo hero: normal -> MAYUSCULAS blanco Space Grotesk 38px
+   - Subtitulo: gris -> lima, texto Encontra tu proximo setup
+   - CTA secundario: gris -> fucsia E247FD
+   - Categorias fondo: gris claro -> blanco FEFEFE
+   - Titulo categorias: Categorias Principales -> TODO LO QUE NECESITAS negro 25px
+   - Notebooks: sin destacar -> fondo violeta 5412A3
+
+   Estado: build OK, SIN push — esperando revision visual local con npm run preview en frontend/
