@@ -1383,3 +1383,30 @@ Pendientes sesion siguiente:
    - Fix: cambiado a npx -y figma-developer-mcp --stdio (paquete oficial npm de Figma).
    - ~/.kiro/settings/mcp.json actualizado. Reinicio de Kiro pendiente para conectar.
    - Pendiente sesion siguiente: verificar conexion Figma MCP y leer archivo 9omHqTuHqeD8WWoukz2v5k node 35-2.
+
+127. **Figma MCP conectado y archivo leido** (sesion 37 — 13/oct/2026):
+
+   Archivo: 9omHqTuHqeD8WWoukz2v5k | Node: 35-2
+
+   Pantallas encontradas:
+   - Home (fondo #EAEEF7)
+   - Home | Fondo alternativo (gradiente violeta/negro)
+   - Catalogo (fondo #EAEEF7)
+
+   Plan de implementacion acordado (pendiente ejecutar):
+   - Header: logo SVG real (logotipo-light.png), banner promo barra superior
+   - Hero: imagen de fondo completa (Estacion gamer futurista en neon.png), texto superpuesto, 2 CTAs
+   - Categorias: iconos SVG reales de /public/images/iconos/, nuevas categorias Notebooks y Celulares
+   - ProductCard: ajuste visual al diseno Figma
+   - productImage.js: apuntar a /images/Productos/categoria/N.webp
+   - CatalogPage: ajuste menor de grid
+
+   Archivos a modificar: index.css, Header.jsx, HomePage.jsx, ProductCard.jsx, productImage.js, CatalogPage.jsx
+   NO se toca: logica de negocio, tests, backend
+
+   Diferencias clave vs diseno actual:
+   1. Hero con imagen de fondo (no imagen al lado del texto)
+   2. Categorias incluyen Notebooks y Celulares (nuevas)
+   3. Iconos SVG reales del diseno
+   4. Banner promo barra delgada encima del header
+   5. Hero con dos botones (principal + secundario)
