@@ -1370,3 +1370,10 @@ Pendientes sesion siguiente:
 - Agregar productos cel y notebooks en Supabase (categorias nuevas)
 - Activar token Figma en ~/.kiro/settings/mcp.json (disabled:true->false)
 - Implementar diseno final desde Figma con assets reales
+
+125. **MCP Figma activado** (sesion 37 — 13/oct/2026):
+   - Token generado en Figma con scopes de lectura completos (file_content, file_metadata, library_assets, etc.)
+   - Vence el 20/oct/2026 — renovar antes de esa fecha
+   - Token actualizado en ~/.kiro/settings/mcp.json — disabled: false
+   - Pendiente: reiniciar Kiro para que tome el nuevo MCP
+   - Pendiente: pasar URL del archivo Figma para implementar diseno final
