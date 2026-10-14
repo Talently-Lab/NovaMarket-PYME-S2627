@@ -1327,3 +1327,10 @@ npm test
 
 
 122. Fix flash entre rutas (sesion 37 - 13/oct/2026): Solucion final commit 8c3d6d6 — eliminar AnimatePresence y motion.div del Layout. Navegacion instantanea sin flash. Layout.jsx solo tiene Outlet. Animaciones de cards/hero/botones siguen activas. Decision: si se necesita transicion futura usar CSS en vez de Framer Motion. Nota: terminal Kiro se bloquea con heredoc multilinea — usar python3 archivo.py externo.
+
+123. **Fix animaciones cards — Opcion A** (sesion 37 — 13/oct/2026) commit 43bb464:
+   - ProductCard.jsx: eliminados initial/animate/exit/layout/cardVariants. Solo conserva whileHover (lift + sombra) y whileTap en boton carrito.
+   - HomePage.jsx: eliminados variants/initial/animate de categorias, featured y promo-banner. Hero conserva todas sus animaciones (solo corre en primera carga).
+   - CatalogPage: AnimatePresence en grilla se conserva para cambios de filtro.
+   - Decision: animaciones de entrada de pagina eliminadas, interacciones hover/tap conservadas.
+   - Nota: terminal Kiro sigue bloqueandose con multilinea — usar python3 -c en una linea o node -e para scripts.
