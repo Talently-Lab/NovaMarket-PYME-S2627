@@ -4514,10 +4514,17 @@ ul, ol { list-style: none; }
 .product-detail__add-btn {
   width: 100%;
   gap: var(--sp-2);
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 2px solid var(--color-text);
+}
+.product-detail__add-btn:hover:not(:disabled) {
+  background: var(--color-surface-2);
 }
 .product-detail__add-btn--added {
   background: #16a34a !important;
   border-color: #16a34a !important;
+  color: #ffffff !important;
 }
 
 .product-detail__no-stock {
@@ -4535,12 +4542,151 @@ ul, ol { list-style: none; }
 }
 .product-detail__catalog-link:hover { color: var(--color-text); }
 
+/* Compra: cantidad + botones */
+.product-detail__purchase {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  padding: var(--sp-5);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.product-detail__qty {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.product-detail__qty-label {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+}
+
+.product-detail__qty-control {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.product-detail__qty-btn {
+  width: 36px;
+  height: 36px;
+  background: var(--color-surface-2);
+  border: none;
+  font-size: var(--text-lg);
+  line-height: 1;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease);
+}
+.product-detail__qty-btn:hover:not(:disabled) { background: var(--color-surface-3); }
+.product-detail__qty-btn:disabled { color: var(--color-text-disabled); cursor: not-allowed; }
+.product-detail__qty-btn:focus-visible { outline: 2px solid var(--color-accent); outline-offset: -2px; }
+
+.product-detail__qty-value {
+  min-width: 44px;
+  text-align: center;
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+}
+
+.product-detail__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-3);
+}
+
+.product-detail__buy-btn {
+  width: 100%;
+}
+
+/* Pestañas */
+.product-detail__tabs {
+  margin-top: var(--sp-12);
+}
+
+.product-detail__tablist {
+  display: flex;
+  gap: var(--sp-6);
+  border-bottom: 1px solid var(--color-border);
+  overflow-x: auto;
+}
+
+.product-detail__tab {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: var(--sp-3) 0;
+  margin-bottom: -1px;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color var(--duration-fast) var(--ease), border-color var(--duration-fast) var(--ease);
+}
+.product-detail__tab:hover { color: var(--color-text); }
+.product-detail__tab:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+.product-detail__tab--active {
+  color: var(--color-text);
+  border-bottom-color: var(--color-accent);
+}
+
+.product-detail__tabpanel {
+  padding-block: var(--sp-6);
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+  max-width: 72ch;
+}
+
+.product-detail__specs {
+  display: grid;
+  gap: var(--sp-2);
+  margin: 0;
+}
+.product-detail__specs > div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  padding-block: var(--sp-2);
+  border-bottom: 1px solid var(--color-border);
+}
+.product-detail__specs dt { color: var(--color-text-secondary); }
+.product-detail__specs dd { margin: 0; font-weight: var(--weight-semibold); color: var(--color-text); text-align: right; }
+
+/* Productos relacionados */
+.product-detail__related {
+  margin-top: var(--sp-8);
+}
+
+.product-detail__related-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-extrabold);
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+  margin-bottom: var(--sp-6);
+}
+
+.product-detail__related-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--sp-6);
+}
+
 /* Responsive product detail */
 @media (max-width: 768px) {
   .product-detail__layout {
     grid-template-columns: 1fr;
     gap: var(--sp-6);
   }
+  .product-detail__actions { grid-template-columns: 1fr; }
   .product-detail__name { font-size: var(--text-2xl); }
   .product-detail__price { font-size: var(--text-3xl); }
 }
