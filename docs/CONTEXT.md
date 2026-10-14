@@ -1334,3 +1334,39 @@ npm test
    - CatalogPage: AnimatePresence en grilla se conserva para cambios de filtro.
    - Decision: animaciones de entrada de pagina eliminadas, interacciones hover/tap conservadas.
    - Nota: terminal Kiro sigue bloqueandose con multilinea — usar python3 -c en una linea o node -e para scripts.
+
+124. **Relevamiento de assets — imagenes reales disponibles** (sesion 37 — 13/oct/2026):
+
+   Todas las imagenes originales subidas a frontend/public/images/ con esta estructura:
+
+   - logotipo-light.png / logotipo-dark.png / isotipo.png / logo-brand L.png / logo-brand M.png / logo_L.png
+   - Estacion gamer futurista en neon.png (hero)
+   - Banner/Banner-Triptico_1/2/3.png (promo banner)
+   - iconos/ico_audio.svg, ico_celulares.svg, ico_gadgets.svg, ico_gaming.svg, ico_notebooks.svg
+   - Productos/gaming/ 1-7.webp
+   - Productos/audio/ 1-6.webp
+   - Productos/perifericos/ 1-6.webp
+   - Productos/Gadgets/ 1-6.webp
+   - Productos/cel/ 1-5.webp (categoria NUEVA)
+   - Productos/notebooks/ 1-5.webp (categoria NUEVA)
+
+   **Pendientes antes del diseno final:**
+   - Actualizar productImage.js para apuntar a /images/Productos/categoria/N.webp
+   - Actualizar Header y Footer para usar logotipo-light.png / logotipo-dark.png
+   - Agregar productos de cel y notebooks en Supabase (categorias nuevas)
+   - Activar token Figma en MCP (disabled: true -> false en ~/.kiro/settings/mcp.json)
+   - Implementar diseno final desde Figma con assets reales
+
+124. Assets reales disponibles en frontend/public/images/ (sesion 37):
+- Logos: logotipo-light.png, logotipo-dark.png, isotipo.png, logo-brand L/M.png, logo_L.png
+- Hero: Estacion gamer futurista en neon.png
+- Banners: Banner/Banner-Triptico_1/2/3.png
+- Iconos SVG: ico_audio/celulares/gadgets/gaming/notebooks.svg
+- Productos webp: gaming(7), audio(6), perifericos(6), Gadgets(6), cel(5-NUEVA), notebooks(5-NUEVA)
+
+Pendientes sesion siguiente:
+- Actualizar productImage.js apuntando a /images/Productos/categoria/N.webp
+- Actualizar Header/Footer con logotipo-light.png
+- Agregar productos cel y notebooks en Supabase (categorias nuevas)
+- Activar token Figma en ~/.kiro/settings/mcp.json (disabled:true->false)
+- Implementar diseno final desde Figma con assets reales
