@@ -1450,3 +1450,20 @@ Pendientes sesion siguiente:
    - Notebooks: sin destacar -> fondo violeta 5412A3
 
    Estado: build OK, SIN push — esperando revision visual local con npm run preview en frontend/
+
+130. **Diseño Figma — header-top valores exactos (sesion 38 cont.):**
+
+   banner-bar: fondo #D2EE42, padding 12px 64px, height 42px, gap 32px. Corregido en CSS.
+   layout padding-top: 108px -> 112px (promo 42px + header 70px exactos del Figma).
+
+   header-top (pendiente aplicar):
+   - Flujo: horizontal, ancho: fill 1440px, altura: fija 70px
+   - Padding: 16px 64px (top/bottom 16px, left/right 64px)
+   - Justificar: space-between
+   - Fondo: #050506 (Nova/Back)
+   - Borde inferior: 1px #6B7280
+   - Estructura: LOGO | NAV (Frame 26 vertical 595px, gap 10px) | Frame controls
+   - NAV Frame 26: flujo vertical, 595px, altura adaptar 29px, espacio 10px
+   - NAV items: Frame 17 (activo) + Frame 11-16 (6 links)
+
+   Estado: cambios locales sin push, esperando mas capturas del Figma.
