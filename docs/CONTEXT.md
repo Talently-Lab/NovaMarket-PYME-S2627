@@ -1410,3 +1410,22 @@ Pendientes sesion siguiente:
    3. Iconos SVG reales del diseno
    4. Banner promo barra delgada encima del header
    5. Hero con dos botones (principal + secundario)
+
+128. **Implementacion diseno Figma — sesion 38 (14/oct/2026) commit 8aaf4cd:**
+
+   **Cambios aplicados:**
+   - productImage.js: imagenes locales desde /public/images/Productos/ — eliminado Unsplash. Prioridad: image_url BD > mapa nombre > fallback categoria > default.
+   - Header.jsx: logo real logotipo-light.png desde /public/images/, eliminado import de assets/logo.png. Banner promo bar negro/lima encima del header con cupon NOVA20.
+   - HomePage.jsx: hero reescrito con imagen de fondo completa + overlay gradiente + 2 CTAs (Explorar productos / Ver Gaming). Categorias con iconos SVG reales /public/images/iconos/ — nuevas categorias Gaming, Notebooks, Celulares, Audio, Gadgets. Banner triptico con Banner-Triptico_1/2/3.png. Eliminado HeroParticles (Three.js), staggerContainer, fadeUp, refs inView — codigo mas limpio.
+   - index.css: nuevas clases .hero-full, .hero-full__bg, .hero-full__overlay, .hero-full__content, .hero-full__title, .hero-full__subtitle, .hero-full__ctas, .btn--secondary, .header__promo-bar, .categories-section__header, .categories-section__link, .category-card__icon-svg, .promo-banner__images, .promo-banner__img. padding-top layout: 94px -> 130px (suma promo bar ~36px).
+
+   **Decisiones tecnicas:**
+   - HeroParticles (Three.js) eliminado de HomePage — era pesado (226kb gzip) y el nuevo hero con imagen real lo reemplaza.
+   - Categorias: 5 categorias del Figma (Gaming, Notebooks, Celulares, Audio, Gadgets) reemplazan las anteriores (Accesorios, Perifericos, Gadgets, Audio, Gaming).
+   - Banner promo: triptico de imagenes reales reemplaza al card de texto anterior.
+
+   **Pendientes:**
+   - Verificar deploy Netlify y revisar visualmente el resultado
+   - Ajustar padding-top si el header con promo bar tiene altura diferente a 130px
+   - Agregar productos Notebooks y Celulares en Supabase (categorias nuevas)
+   - Continuar con diseno Figma del catalogo (CatalogPage)
