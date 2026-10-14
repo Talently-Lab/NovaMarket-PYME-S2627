@@ -2,9 +2,7 @@ import { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
-import logoImg from '../../assets/logo.png';
 
-// Icono carrito SVG inline — carrito de compras (ShoppingCart)
 function CartIcon() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -17,7 +15,6 @@ function CartIcon() {
   );
 }
 
-// Icono usuario SVG inline
 function UserIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
@@ -30,8 +27,8 @@ function UserIcon() {
 }
 
 const NAV_LINKS = [
-  { to: '/',         label: 'Inicio',     end: true  },
-  { to: '/catalogo', label: 'Catálogo',   end: false },
+  { to: '/',                               label: 'Inicio',      end: true  },
+  { to: '/catalogo',                       label: 'Catálogo',    end: false },
   { to: '/catalogo?categoria=periféricos', label: 'Periféricos', end: false },
   { to: '/catalogo?categoria=gadgets',     label: 'Gadgets',     end: false },
   { to: '/catalogo?categoria=audio',       label: 'Audio',       end: false },
@@ -45,15 +42,15 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const closeMenu = () => setMenuOpen(false);
-
-  const handleLogout = () => {
-    logout();
-    navigate('/');
-    closeMenu();
-  };
+  const handleLogout = () => { logout(); navigate('/'); closeMenu(); };
 
   return (
     <header className="header">
+
+      {/* ── BANNER PROMO ── */}
+      <div className="header__promo-bar">
+        <span>🔥 Envío gratis en compras mayores a $50.000 — Usá el cupón <strong>NOVA20</strong> y obtené 20% OFF</span>
+      </div>
 
       {/* ── TOP BAR ── */}
       <div className="header__top">
@@ -61,13 +58,15 @@ export default function Header() {
 
           {/* Logo */}
           <Link to="/" className="header__logo" onClick={closeMenu}>
-            <img src={logoImg} alt="Nova Market" className="header__logo-img" />
+            <img
+              src="/images/logotipo-light.png"
+              alt="Nova Market"
+              className="header__logo-img"
+            />
           </Link>
 
           {/* Acciones desktop */}
           <div className="header__actions">
-
-            {/* Chip Admin */}
             {isAdmin && (
               <Link to="/admin" className="header__admin-chip">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
@@ -80,7 +79,6 @@ export default function Header() {
               </Link>
             )}
 
-            {/* Mi cuenta */}
             {isAuthenticated ? (
               <Link to="/mis-pedidos" className="header__account-link">
                 <UserIcon />
@@ -93,7 +91,6 @@ export default function Header() {
               </Link>
             )}
 
-            {/* Carrito */}
             <Link
               to="/carrito"
               className="header__account-link header__cart-link"
@@ -110,14 +107,10 @@ export default function Header() {
               <span>Carrito</span>
             </Link>
 
-            {/* Salir */}
             {isAuthenticated && (
-              <button onClick={handleLogout} className="header__logout-btn">
-                Salir
-              </button>
+              <button onClick={handleLogout} className="header__logout-btn">Salir</button>
             )}
 
-            {/* Hamburger */}
             <button
               className={`header__hamburger${menuOpen ? ' open' : ''}`}
               onClick={() => setMenuOpen(o => !o)}
@@ -127,22 +120,16 @@ export default function Header() {
             >
               <span /><span /><span />
             </button>
-
           </div>
         </div>
       </div>
 
-      {/* ── NAV BAR SECUNDARIA (verde lima) ── */}
+      {/* ── NAV BAR ── */}
       <nav className="header__nav-bar" aria-label="Navegación principal">
         <div className="header__nav-inner">
           {NAV_LINKS.map(({ to, label, end }) => (
-            <NavLink
-              key={label}
-              to={to}
-              end={end}
-              className={({ isActive }) =>
-                `header__nav-link${isActive ? ' active' : ''}`
-              }
+            <NavLink key={label} to={to} end={end}
+              className={({ isActive }) => `header__nav-link${isActive ? ' active' : ''}`}
             >
               {label}
             </NavLink>
@@ -158,10 +145,7 @@ export default function Header() {
         aria-hidden={!menuOpen}
       >
         {NAV_LINKS.map(({ to, label, end }) => (
-          <NavLink
-            key={label}
-            to={to}
-            end={end}
+          <NavLink key={label} to={to} end={end}
             className={({ isActive }) => isActive ? 'active' : ''}
             onClick={closeMenu}
           >
@@ -169,7 +153,6 @@ export default function Header() {
           </NavLink>
         ))}
 
-        {/* Carrito en drawer */}
         <Link to="/carrito" className="header__mobile-cart-link" onClick={closeMenu}>
           <div className="header__cart-icon-wrapper">
             <CartIcon />
@@ -184,13 +167,9 @@ export default function Header() {
 
         {isAuthenticated ? (
           <>
-            <Link to="/mis-pedidos" className="header__mobile-nav-link" onClick={closeMenu}>
-              Mis pedidos
-            </Link>
+            <Link to="/mis-pedidos" className="header__mobile-nav-link" onClick={closeMenu}>Mis pedidos</Link>
             {isAdmin && (
-              <Link to="/admin" className="header__mobile-nav-link" onClick={closeMenu}>
-                Panel Admin
-              </Link>
+              <Link to="/admin" className="header__mobile-nav-link" onClick={closeMenu}>Panel Admin</Link>
             )}
             <button onClick={handleLogout} className="header__mobile-btn header__mobile-btn--secondary">
               Cerrar sesión

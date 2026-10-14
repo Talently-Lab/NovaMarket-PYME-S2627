@@ -253,7 +253,7 @@ ul, ol { list-style: none; }
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  padding-top: 94px; /* top bar ~52px + nav bar ~42px */
+  padding-top: 130px; /* promo bar ~36px + top bar ~52px + nav bar ~42px */
 }
 
 .main {
@@ -6020,4 +6020,150 @@ tr:hover .stock-display__edit {
   justify-content: flex-end;
   gap: 8px;
   margin-top: 8px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   DISEÑO FIGMA — SECCIÓN NUEVA (sesion 38)
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── HEADER PROMO BAR ── */
+.header__promo-bar {
+  background: #050506;
+  color: #D2EE42;
+  text-align: center;
+  font-size: 13px;
+  font-family: var(--font-ui);
+  padding: 8px 16px;
+  line-height: 1.4;
+}
+.header__promo-bar strong { color: #ffffff; }
+
+/* ── HERO FULL (imagen de fondo) ── */
+.hero-full {
+  position: relative;
+  width: 100%;
+  min-height: 560px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+.hero-full__bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+  z-index: 0;
+}
+.hero-full__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(5,5,6,0.82) 0%, rgba(5,5,6,0.45) 60%, rgba(5,5,6,0.1) 100%);
+  z-index: 1;
+}
+.hero-full__content {
+  position: relative;
+  z-index: 2;
+  padding-block: 80px;
+  max-width: 600px;
+}
+.hero-full__title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  color: #ffffff;
+  margin-bottom: 20px;
+}
+.hero-full__subtitle {
+  font-size: 16px;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.8);
+  margin-bottom: 32px;
+  max-width: 480px;
+}
+.hero-full__ctas {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* btn--secondary para hero */
+.btn--secondary {
+  background: transparent;
+  color: #ffffff;
+  border: 2px solid rgba(255,255,255,0.6);
+  font-weight: 600;
+}
+.btn--secondary:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: #ffffff;
+}
+
+/* ── CATEGORIES SECTION — header con link ── */
+.categories-section__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+.categories-section__link {
+  font-size: 14px;
+  font-weight: 600;
+  color: #7D1CE2;
+  text-decoration: none;
+}
+.categories-section__link:hover { color: #b06aff; }
+
+/* Icono SVG en category card */
+.category-card__icon-svg {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  display: block;
+}
+
+/* ── PROMO BANNER — imagenes triptico ── */
+.promo-banner__inner {
+  padding-block: 48px;
+}
+.promo-banner__images {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  border-radius: 16px;
+  overflow: hidden;
+}
+.promo-banner__img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+  border-radius: 12px;
+}
+
+/* ── LOGO HEADER ── */
+.header__logo-img {
+  height: 36px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .hero-full { min-height: 420px; }
+  .hero-full__content { padding-block: 56px; max-width: 100%; }
+  .hero-full__overlay {
+    background: linear-gradient(180deg, rgba(5,5,6,0.7) 0%, rgba(5,5,6,0.5) 100%);
+  }
+  .promo-banner__images { grid-template-columns: 1fr; }
+  .promo-banner__img { height: 160px; }
+  .hero-full__ctas { flex-direction: column; }
+  .hero-full__ctas .btn { text-align: center; }
+}
+@media (max-width: 480px) {
+  .hero-full { min-height: 360px; }
+  .hero-full__title { font-size: 1.75rem; }
 }
