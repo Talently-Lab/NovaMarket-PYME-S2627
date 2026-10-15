@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 
@@ -8,8 +8,7 @@ function CartIcon() {
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
       stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
       aria-hidden="true">
-      <circle cx="9" cy="21" r="1"/>
-      <circle cx="20" cy="21" r="1"/>
+      <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
       <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
     </svg>
   );
@@ -27,12 +26,12 @@ function UserIcon() {
 }
 
 const NAV_LINKS = [
-  { to: '/',                               label: 'Inicio',      end: true  },
-  { to: '/catalogo',                       label: 'Catálogo',    end: false },
-  { to: '/catalogo?categoria=periféricos', label: 'Periféricos', end: false },
-  { to: '/catalogo?categoria=gadgets',     label: 'Gadgets',     end: false },
-  { to: '/catalogo?categoria=audio',       label: 'Audio',       end: false },
-  { to: '/catalogo',                       label: 'Ofertas',     end: false },
+  { to: '/',                               label: 'Home',        test: (p, s) => p === '/' },
+  { to: '/catalogo',                       label: 'Catálogo',    test: (p, s) => p === '/catalogo' && !new URLSearchParams(s).get('categoria') },
+  { to: '/catalogo?categoria=periféricos', label: 'Periféricos', test: (p, s) => p === '/catalogo' && new URLSearchParams(s).get('categoria') === 'periféricos' },
+  { to: '/catalogo?categoria=gadgets',     label: 'Gadgets',     test: (p, s) => p === '/catalogo' && new URLSearchParams(s).get('categoria') === 'gadgets' },
+  { to: '/catalogo?categoria=audio',       label: 'Audio',       test: (p, s) => p === '/catalogo' && new URLSearchParams(s).get('categoria') === 'audio' },
+  { to: '/catalogo',                       label: 'Ofertas',     test: () => false },
 ];
 
 export default function Header() {
@@ -40,32 +39,39 @@ export default function Header() {
   const { isAuthenticated, isAdmin, user, logout } = useAuth();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
-
+  const location = useLocation();
   const closeMenu = () => setMenuOpen(false);
   const handleLogout = () => { logout(); navigate('/'); closeMenu(); };
 
   return (
     <header className="header">
 
-      {/* ── BANNER PROMO ── */}
+      {/* ── BANNER PROMO — fondo lima #D2EE42 ── */}
       <div className="header__promo-bar">
-        <span>🔥 Envío gratis en compras mayores a $50.000 — Usá el cupón <strong>NOVA20</strong> y obtené 20% OFF</span>
+        <span> Envío gratis en compras mayores a $50.000 — Usá el cupón <strong>NOVA20</strong> y obtené 20% OFF</span>
       </div>
 
-      {/* ── TOP BAR ── */}
+      {/* ── HEADER TOP — logo | nav centrado | controles ── */}
       <div className="header__top">
         <div className="header__top-inner">
 
           {/* Logo */}
           <Link to="/" className="header__logo" onClick={closeMenu}>
-            <img
-              src="/images/logotipo-light.png"
-              alt="Nova Market"
-              className="header__logo-img"
-            />
+            <img src="/images/logotipo-dark.png" alt="Nova Market" className="header__logo-img" />
           </Link>
 
-          {/* Acciones desktop */}
+          {/* Nav centrada */}
+          <nav className="header__nav-center" aria-label="Navegación principal">
+            {NAV_LINKS.map(({ to, label, test }) => (
+              <Link key={label} to={to}
+                className={`header__nav-link${test(location.pathname, location.search) ? ' active' : ''}`}
+              >
+                {label}
+              </Link>
+            ))}
+          </nav>
+
+          {/* Controles */}
           <div className="header__actions">
             {isAdmin && (
               <Link to="/admin" className="header__admin-chip">
@@ -78,21 +84,16 @@ export default function Header() {
                 Admin
               </Link>
             )}
-
             {isAuthenticated ? (
               <Link to="/mis-pedidos" className="header__account-link">
-                <UserIcon />
-                <span>{user?.name?.split(' ')[0]}</span>
+                <UserIcon /><span>{user?.name?.split(' ')[0]}</span>
               </Link>
             ) : (
               <Link to="/login" className="header__account-link">
-                <UserIcon />
-                <span>Mi Cuenta</span>
+                <UserIcon /><span>Mi Cuenta</span>
               </Link>
             )}
-
-            <Link
-              to="/carrito"
+            <Link to="/carrito"
               className="header__account-link header__cart-link"
               aria-label={`Carrito${totalItems > 0 ? `, ${totalItems} productos` : ' vacío'}`}
             >
@@ -106,11 +107,9 @@ export default function Header() {
               </div>
               <span>Carrito</span>
             </Link>
-
             {isAuthenticated && (
               <button onClick={handleLogout} className="header__logout-btn">Salir</button>
             )}
-
             <button
               className={`header__hamburger${menuOpen ? ' open' : ''}`}
               onClick={() => setMenuOpen(o => !o)}
@@ -124,35 +123,18 @@ export default function Header() {
         </div>
       </div>
 
-      {/* ── NAV BAR ── */}
-      <nav className="header__nav-bar" aria-label="Navegación principal">
-        <div className="header__nav-inner">
-          {NAV_LINKS.map(({ to, label, end }) => (
-            <NavLink key={label} to={to} end={end}
-              className={({ isActive }) => `header__nav-link${isActive ? ' active' : ''}`}
-            >
-              {label}
-            </NavLink>
-          ))}
-        </div>
-      </nav>
-
       {/* ── DRAWER MOBILE ── */}
-      <nav
-        id="mobile-nav"
+      <nav id="mobile-nav"
         className={`header__mobile-nav${menuOpen ? ' open' : ''}`}
         aria-label="Navegación móvil"
         aria-hidden={!menuOpen}
       >
-        {NAV_LINKS.map(({ to, label, end }) => (
-          <NavLink key={label} to={to} end={end}
-            className={({ isActive }) => isActive ? 'active' : ''}
+        {NAV_LINKS.map(({ to, label, test }) => (
+          <Link key={label} to={to}
+            className={test(location.pathname, location.search) ? 'active' : ''}
             onClick={closeMenu}
-          >
-            {label}
-          </NavLink>
+          >{label}</Link>
         ))}
-
         <Link to="/carrito" className="header__mobile-cart-link" onClick={closeMenu}>
           <div className="header__cart-icon-wrapper">
             <CartIcon />
@@ -164,21 +146,14 @@ export default function Header() {
           </div>
           Carrito {totalItems > 0 ? `(${totalItems})` : ''}
         </Link>
-
         {isAuthenticated ? (
           <>
             <Link to="/mis-pedidos" className="header__mobile-nav-link" onClick={closeMenu}>Mis pedidos</Link>
-            {isAdmin && (
-              <Link to="/admin" className="header__mobile-nav-link" onClick={closeMenu}>Panel Admin</Link>
-            )}
-            <button onClick={handleLogout} className="header__mobile-btn header__mobile-btn--secondary">
-              Cerrar sesión
-            </button>
+            {isAdmin && <Link to="/admin" className="header__mobile-nav-link" onClick={closeMenu}>Panel Admin</Link>}
+            <button onClick={handleLogout} className="header__mobile-btn header__mobile-btn--secondary">Cerrar sesión</button>
           </>
         ) : (
-          <Link to="/login" className="header__mobile-btn header__mobile-btn--primary" onClick={closeMenu}>
-            Ingresar
-          </Link>
+          <Link to="/login" className="header__mobile-btn header__mobile-btn--primary" onClick={closeMenu}>Ingresar</Link>
         )}
       </nav>
     </header>

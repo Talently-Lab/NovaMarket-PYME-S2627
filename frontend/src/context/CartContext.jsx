@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
+import { createContext, useRef, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 
 const CartContext = createContext(null);
 
@@ -9,6 +9,8 @@ const storageKey = (userId) =>
 export function CartProvider({ children, userId }) {
   const key = storageKey(userId);
   const [lastAdded, setLastAdded] = useState(null); // { name, id } del último producto agregado
+
+  const isFirstMount = useRef(true);
 
   const [items, setItems] = useState(() => {
     try {
@@ -43,8 +45,9 @@ export function CartProvider({ children, userId }) {
   });
 
   // Cuando cambia el usuario (login / logout) — carga el carrito del nuevo usuario
-  // Si el usuario era guest y tenía productos, los transfiere al carrito del usuario
+  // Skip primer render — el useState lazy initializer ya cargó el carrito correcto
   useEffect(() => {
+    if (isFirstMount.current) { isFirstMount.current = false; return; }
     try {
       const newKey   = storageKey(userId);
       const userCart = localStorage.getItem(newKey);

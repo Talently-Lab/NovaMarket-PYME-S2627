@@ -23,6 +23,18 @@ const PRODUCT_IMAGES = {
   'SSD Externo Samsung T7 1TB':           '/images/Productos/Gadgets/2.webp',
   'Switch KVM HDMI 4K 2 Puertos':         '/images/Productos/Gadgets/3.webp',
   'Luz LED de Escritorio RGB':            '/images/Productos/Gadgets/4.webp',
+  // Celulares
+  'Samsung Galaxy A55 5G':               '/images/Productos/cel/1.webp',
+  'iPhone 15 128GB':                     '/images/Productos/cel/2.webp',
+  'Motorola Edge 40 Neo':                '/images/Productos/cel/3.webp',
+  'Xiaomi Redmi Note 13 Pro':            '/images/Productos/cel/4.webp',
+  'Samsung Galaxy S24 FE':               '/images/Productos/cel/5.webp',
+  // Notebooks
+  'MacBook Air M3 13"':                  '/images/Productos/notebooks/1.webp',
+  'ASUS VivoBook 15 OLED':               '/images/Productos/notebooks/2.webp',
+  'Lenovo IdeaPad Slim 5':               '/images/Productos/notebooks/3.webp',
+  'HP Pavilion 15 Gaming':               '/images/Productos/notebooks/4.webp',
+  'Dell Inspiron 14 Plus':               '/images/Productos/notebooks/5.webp',
 };
 
 const CATEGORY_IMAGES = {

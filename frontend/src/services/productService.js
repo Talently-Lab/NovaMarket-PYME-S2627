@@ -21,6 +21,6 @@ export async function getProducts(category, options = {}) {
  * Un producto por id. Devuelve el producto.
  */
 export async function getProductById(id) {
-  const { data } = await productsAPI.getById(id);
-  return data.product;
+  const { data } = await productsAPI.getById(id, Date.now()); // _t bypass cache 304
+  return data?.product ?? null;
 }

@@ -10,9 +10,9 @@ export default function CartToast() {
       {lastAdded && (
         <motion.div
           className="cart-toast"
-          initial={{ y: 80, opacity: 0 }}
+          initial={{ y: -40, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          exit={{ y: 80, opacity: 0 }}
+          exit={{ y: -40, opacity: 0 }}
           transition={{ type: 'spring', stiffness: 300, damping: 28 }}
           role="status"
           aria-live="polite"

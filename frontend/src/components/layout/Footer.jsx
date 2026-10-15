@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import logo2 from '../../assets/logo2.jpg';
+
 
 function InstagramIcon() {
   return (
@@ -64,7 +64,7 @@ export default function Footer() {
           {/* Columna Brand */}
           <div className="footer__brand-col">
             <Link to="/" className="footer__logo" aria-label="NovaMarket inicio">
-              <img src={logo2} alt="Nova Market" className="footer__logo-img" />
+              <img src="/images/logotipo-dark.png" alt="Nova Market" className="footer__logo-img" />
             </Link>
             <p className="footer__tagline">
               Plataforma líder en distribución de accesorios tecnológicos, periféricos de alto rendimiento y gadgets de vanguardia.

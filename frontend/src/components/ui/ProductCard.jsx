@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { getProductImage } from '../../utils/productImage';
 
 // ── Icono carrito (inline SVG) ────────────────────────────────
@@ -28,11 +28,7 @@ export function ProductCard({ product, onAdd, added, cartQty = 0 }) {
   const stockAgotado = !inStock || cartQty >= product.stock;
 
   return (
-    <motion.article
-      className="catalog-card"
-      whileHover={{ y: -6, boxShadow: '0 16px 40px rgba(0,0,0,0.12)' }}
-      transition={{ type: 'tween', duration: 0.25 }}
-    >
+    <article className="catalog-card">
       <Link to={`/catalogo/${product.id}`} className="catalog-card__image-link" tabIndex={-1}>
         <div className="catalog-card__image">
           <img
@@ -62,13 +58,11 @@ export function ProductCard({ product, onAdd, added, cartQty = 0 }) {
         {stockAgotado ? (
           <span className="catalog-card__no-stock">Sin stock</span>
         ) : (
-          <motion.button
+          <button
             className={`catalog-card__add-btn${added ? ' catalog-card__add-btn--added' : ''}`}
-            onClick={() => onAdd(product)}
+            onClick={(e) => { e.stopPropagation(); e.preventDefault(); onAdd(product); }}
             disabled={added}
             aria-label={`Agregar ${product.name} al carrito`}
-            whileHover={!added ? { scale: 1.12 } : {}}
-            whileTap={!added ? { scale: 0.92 } : {}}
           >
             {added ? (
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none"
@@ -79,10 +73,10 @@ export function ProductCard({ product, onAdd, added, cartQty = 0 }) {
             ) : (
               <CartIcon />
             )}
-          </motion.button>
+          </button>
         )}
       </div>
-    </motion.article>
+    </article>
   );
 }
 

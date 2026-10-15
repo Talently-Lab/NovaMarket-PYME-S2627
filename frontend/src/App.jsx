@@ -30,10 +30,12 @@ import ConfigAdminPage from './pages/admin/ConfigAdminPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 // Puente entre AuthContext y CartContext — pasa el userId al carrito
+// useMemo estabiliza userId para evitar re-montajes del CartProvider
 function CartWrapper({ children }) {
   const { user } = useAuth();
+  const userId = user?.id ?? null;
   return (
-    <CartProvider userId={user?.id ?? null}>
+    <CartProvider userId={userId}>
       {children}
     </CartProvider>
   );

@@ -426,6 +426,13 @@ export default function CatalogPage() {
 
         </section>
       </div>
+
+      {/* ── Banner triptico — solo imagenes sin texto ── */}
+      <div className="banner-triptico banner-triptico--images-only">
+        <div className="banner-card" style={{ backgroundImage: "url('/images/Banner/Banner-Triptico_1.png')", backgroundSize: '100% 100%' }} role="img" aria-label="Gaming" />
+        <div className="banner-card" style={{ backgroundImage: "url('/images/Banner/Banner-Triptico_2.png')", backgroundSize: '100% 100%' }} role="img" aria-label="Smartphones" />
+        <div className="banner-card" style={{ backgroundImage: "url('/images/Banner/Banner-Triptico_3.png')", backgroundSize: '100% 100%' }} role="img" aria-label="Next Level Tech" />
+      </div>
     </div>
   );
 }
