@@ -1467,3 +1467,55 @@ Pendientes sesion siguiente:
    - NAV items: Frame 17 (activo) + Frame 11-16 (6 links)
 
    Estado: cambios locales sin push, esperando mas capturas del Figma.
+
+---
+
+**Sesion 38 — 14-15/oct/2026:**
+
+129. **Diseno final Figma implementado (commit fb14a2e):**
+   - Homepage: hero imagen fondo, categorias SVG reales, banners triptico con botones, productos destacados
+   - Catalogo: grid 4 columnas, responsive 3/2/1
+   - Product Detail: lupa separada (zoom al costado), opiniones con estrellas, specs enriquecidas, relacionados con boton carrito
+   - Footer: logo 52px, 4 columnas, borde #7D1CE2
+   - Header: logo logotipo-dark.png, nav centrada 595px, promo bar lima #D2EE42 42px
+   - Nuevas categorias: Celulares (5 productos) y Notebooks (5 productos) — seed SQL 011
+   - productImage.js: imagenes locales /images/Productos/ sin Unsplash
+   - useReveal hook: animaciones scroll reveal en todas las secciones
+
+130. **Responsive mobile/tablet completo:**
+   - Breakpoints: <=1024px (tablet), <=768px (mobile), <=480px (small)
+   - Paginas cubiertas: HomePage, CatalogPage, ProductDetailPage, CartPage, CheckoutPage, Auth, Admin, MyOrdersPage, OrderConfirmedPage, Footer, Header
+   - Fix Pixel 5 (393px): hamburguesa blanca visible, categorias grid 3 cols, productos 1 col horizontal, footer compacto
+
+131. **Bugs corregidos sesion 38:**
+   - CartContext isFirstMount fix — badge y toast no se mostraban en mobile (commit fb14a2e)
+   - motion.button -> button nativo en ProductCard — tap no funcionaba en touch
+   - Toast reposicionado a top:100px en mobile — no quedaba visible
+   - geist dep eliminada — conflicto peer next en Netlify (commit 087272a)
+   - ProductCard motion.article -> article nativo
+
+132. **Jira — tickets cerrados (15/oct/2026):**
+   - SCRUM-93 Correccion de Bugs y Ajustes Responsivos -> Finalizado
+   - SCRUM-94 Limpieza Final README -> Finalizado
+   - SCRUM-97 Documentacion Tecnica Final README -> Finalizado
+   Todos los tickets de christian santibanez en estado Finalizado.
+
+133. **README.md creado (commit 81a1776):**
+   - 201 lineas — stack, endpoints, migraciones, variables de entorno, equipo
+   - READme.md viejo eliminado (commit 31d8a5a)
+   - backend/.env.example actualizado con BREVO_API_KEY y BREVO_SENDER_EMAIL
+
+**Commits sesion 38:**
+| Commit | Descripcion |
+|--------|-------------|
+| fb14a2e | feat(design): diseno final Figma + responsive + cart fixes |
+| 087272a | fix(deps): eliminar geist — conflicto peer next |
+| 81a1776 | docs: README completo SCRUM-94 SCRUM-97 |
+| 31d8a5a | docs: eliminar READme.md duplicado |
+
+**Estado final del proyecto:**
+- Frontend: https://novamarket-pyme-s2627.netlify.app/ (Netlify, develop) 
+- Backend: https://novamarket-api-ikcm.onrender.com (Render, develop)
+- Tests: 321 passed, 87% coverage
+- Jira: todos los tickets de Christian en Finalizado
+- README.md completo y actualizado
