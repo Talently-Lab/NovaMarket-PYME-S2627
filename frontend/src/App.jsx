@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { ThemeProvider } from './context/ThemeContext';
@@ -52,6 +52,7 @@ export default function App() {
             <Route element={<Layout />}>
               <Route path="/" element={<HomePage />} />
               <Route path="/catalogo" element={<CatalogPage />} />
+              <Route path="/ofertas" element={<Navigate to="/catalogo" replace />} />
               <Route path="/catalogo/:id" element={<ProductDetailPage />} />
               <Route path="/carrito" element={<CartPage />} />
               <Route path="/login" element={<LoginPage />} />
