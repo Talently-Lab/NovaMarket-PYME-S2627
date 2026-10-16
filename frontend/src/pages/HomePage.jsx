@@ -157,39 +157,41 @@ export default function HomePage() {
                   whileHover={{ y: -6, boxShadow: '0 12px 32px rgba(0,0,0,0.25)' }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <div className="prod-card__image-wrap">
-                    <img src={getProductImage(product)} alt={product.name}
-                      loading="lazy" className="prod-card__img" />
-                  </div>
-                  <div className="prod-card__body">
-                    <div className="prod-card__meta">
-                      <p className="prod-card__name">{product.name}</p>
-                      <p className="prod-card__desc">{product.description}</p>
+                  <Link to={`/catalogo/${product.id}`} className="prod-card__link" aria-label={`Ver detalle de ${product.name}`}>
+                    <div className="prod-card__image-wrap">
+                      <img src={getProductImage(product)} alt={product.name}
+                        loading="lazy" className="prod-card__img" />
                     </div>
-                    <div className="prod-card__footer">
-                      <span className="prod-card__price">
-                        ${Number(product.price).toLocaleString('es-AR')}
-                      </span>
-                      {stockAgotado ? (
-                        <span className="prod-card__no-stock">Sin stock</span>
-                      ) : (
-                        <motion.button
-                          className={`prod-card__add${added === product.id ? ' prod-card__add--done' : ''}`}
-                          onClick={() => handleAdd(product)}
-                          disabled={added === product.id}
-                          aria-label={`Agregar ${product.name} al carrito`}
-                          whileHover={added !== product.id ? { scale: 1.1 } : {}}
-                          whileTap={added !== product.id ? { scale: 0.92 } : {}}
-                        >
-                          {added === product.id ? (
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                              <polyline points="20 6 9 17 4 12" stroke="#000000" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg>
-                          ) : <CartSVG />}
-                        </motion.button>
-                      )}
+                    <div className="prod-card__body">
+                      <div className="prod-card__meta">
+                        <p className="prod-card__name">{product.name}</p>
+                        <p className="prod-card__desc">{product.description}</p>
+                      </div>
+                      <div className="prod-card__footer">
+                        <span className="prod-card__price">
+                          ${Number(product.price).toLocaleString('es-AR')}
+                        </span>
+                        {stockAgotado ? (
+                          <span className="prod-card__no-stock">Sin stock</span>
+                        ) : (
+                          <motion.button
+                            className={`prod-card__add${added === product.id ? ' prod-card__add--done' : ''}`}
+                            onClick={(e) => { e.preventDefault(); handleAdd(product); }}
+                            disabled={added === product.id}
+                            aria-label={`Agregar ${product.name} al carrito`}
+                            whileHover={added !== product.id ? { scale: 1.1 } : {}}
+                            whileTap={added !== product.id ? { scale: 0.92 } : {}}
+                          >
+                            {added === product.id ? (
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <polyline points="20 6 9 17 4 12" stroke="#000000" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                            ) : <CartSVG />}
+                          </motion.button>
+                        )}
+                      </div>
                     </div>
-                  </div>
+                  </Link>
                 </motion.div>
               );
             })}

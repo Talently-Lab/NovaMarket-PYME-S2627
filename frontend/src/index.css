@@ -6598,6 +6598,14 @@ tr:hover .stock-display__edit {
   box-sizing: border-box;
   flex-shrink: 0;
 }
+.prod-card__link {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 11.45px;
+  text-decoration: none;
+  color: inherit;
+}
 .prod-card__image-wrap {
   width: 204.27px;           /* Figma: 204.27px */
   height: 204.27px;          /* Figma: 204.27px — imagen cuadrada */
