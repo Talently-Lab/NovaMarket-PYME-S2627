@@ -48,7 +48,7 @@ export default function Header() {
 
       {/* ── BANNER PROMO — fondo lima #D2EE42 ── */}
       <div className="header__promo-bar">
-        <span> Envío gratis en compras mayores a $50.000 — Usá el cupón <strong>NOVA20</strong> y obtené 20% OFF</span>
+        <span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque euismod.</span>
       </div>
 
       {/* ── HEADER TOP — logo | nav centrado | controles ── */}
