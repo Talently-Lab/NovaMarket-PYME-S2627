@@ -68,12 +68,12 @@ async function createProduct(req, res) {
   const { name, description, price, stock, category, image_url } = req.body;
 
   // Validaciones
-  if (!name || !price || !category) {
+  if (!name || price === undefined || price === null || price === '' || !category) {
     return res.status(400).json({ error: 'Nombre, precio y categoría son requeridos.' });
   }
 
-  if (isNaN(price) || price < 0) {
-    return res.status(400).json({ error: 'El precio debe ser un número positivo.' });
+  if (isNaN(price) || Number(price) < 0) {
+    return res.status(400).json({ error: 'El precio debe ser un número igual o mayor a 0.' });
   }
 
   if (stock !== undefined && (isNaN(stock) || stock < 0)) {
@@ -113,8 +113,8 @@ async function updateProduct(req, res) {
 
   const { name, description, price, stock, category, image_url, is_active } = req.body;
 
-  if (price !== undefined && (isNaN(price) || price < 0)) {
-    return res.status(400).json({ error: 'El precio debe ser un número positivo.' });
+  if (price !== undefined && (isNaN(price) || Number(price) < 0)) {
+    return res.status(400).json({ error: 'El precio debe ser un número igual o mayor a 0.' });
   }
 
   const updated = await ProductModel.update(Number(id), {

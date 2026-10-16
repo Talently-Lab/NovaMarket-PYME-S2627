@@ -120,14 +120,15 @@ export default function ProductsAdminPage() {
   };
 
   const handleDelete = async (product) => {
-    if (!window.confirm(`¿Eliminar «${product.name}»? Dejará de mostrarse en la tienda.`)) return;
+    if (!window.confirm(`¿Desactivar «${product.name}»? Dejará de mostrarse en la tienda pero podrás reactivarlo.`)) return;
     setDeletingId(product.id);
     setError('');
     try {
       await productsAPI.remove(product.id);
-      setProducts(prev => prev.filter(p => p.id !== product.id));
+      // Marca como inactivo en la lista local en lugar de eliminarlo
+      setProducts(prev => prev.map(p => p.id === product.id ? { ...p, is_active: false, stock: 0 } : p));
     } catch (err) {
-      setError(err.response?.data?.error || 'No se pudo eliminar el producto.');
+      setError(err.response?.data?.error || 'No se pudo desactivar el producto.');
     } finally {
       setDeletingId(null);
     }
@@ -151,7 +152,7 @@ export default function ProductsAdminPage() {
           + Nuevo producto
         </button>
         <button
-          className="btn btn--secondary btn--sm"
+          className="btn btn--primary btn--sm"
           onClick={load}
           disabled={loading}
           title="Actualizar lista"
@@ -206,28 +207,45 @@ export default function ProductsAdminPage() {
                   </td>
                   <td>
                     <span className="admin-badge" style={{
-                      '--badge-color': p.stock > 0 ? '#22c55e' : '#ef4444',
+                      '--badge-color': p.is_active === false ? '#6b7280' : p.stock > 0 ? '#22c55e' : '#ef4444',
                     }}>
-                      {p.stock > 0 ? 'Activo' : 'Sin stock'}
+                      {p.is_active === false ? 'Inactivo' : p.stock > 0 ? 'Activo' : 'Sin stock'}
                     </span>
                   </td>
                   <td>
                     <div className="admin-row-actions">
                       <button
-                        className="btn btn--secondary btn--sm"
+                        className="btn btn--primary btn--sm"
                         onClick={() => setModalProduct(p)}
                         aria-label={`Editar ${p.name}`}
                       >
                         Editar
                       </button>
-                      <button
-                        className="btn btn--ghost btn--sm admin-row-actions__delete"
-                        onClick={() => handleDelete(p)}
-                        disabled={deletingId === p.id}
-                        aria-label={`Eliminar ${p.name}`}
-                      >
-                        {deletingId === p.id ? 'Eliminando…' : 'Eliminar'}
-                      </button>
+                      {p.is_active === false ? (
+                        <button
+                          className="btn btn--primary btn--sm"
+                          onClick={async () => {
+                            try {
+                              await productsAPI.update(p.id, { is_active: true });
+                              setProducts(prev => prev.map(x => x.id === p.id ? { ...x, is_active: true } : x));
+                            } catch {
+                              setError('No se pudo reactivar el producto.');
+                            }
+                          }}
+                          aria-label={`Reactivar ${p.name}`}
+                        >
+                          Reactivar
+                        </button>
+                      ) : (
+                        <button
+                          className="btn btn--ghost btn--sm admin-row-actions__delete"
+                          onClick={() => handleDelete(p)}
+                          disabled={deletingId === p.id}
+                          aria-label={`Desactivar ${p.name}`}
+                        >
+                          {deletingId === p.id ? 'Desactivando…' : 'Eliminar'}
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>

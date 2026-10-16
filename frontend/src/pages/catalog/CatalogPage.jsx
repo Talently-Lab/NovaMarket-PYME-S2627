@@ -7,7 +7,6 @@ import BannerTriptico from '../../components/ui/BannerTriptico';
 import { useCart } from '../../context/CartContext';
 
 // ── Constantes ────────────────────────────────────────────────
-const CATEGORIES = ['Accesorios', 'Periféricos', 'Gadgets', 'Audio'];
 const PAGE_SIZE  = 12;
 
 const ORDER_OPTIONS = [
@@ -60,6 +59,12 @@ export default function CatalogPage() {
   // ── Marcas únicas derivadas de los productos ──
   const brands = useMemo(() => {
     const set = new Set(allProducts.map(p => p.brand).filter(Boolean));
+    return [...set].sort();
+  }, [allProducts]);
+
+  // ── Categorías únicas derivadas de los productos ──
+  const categories = useMemo(() => {
+    const set = new Set(allProducts.map(p => p.category).filter(Boolean));
     return [...set].sort();
   }, [allProducts]);
 
@@ -178,7 +183,7 @@ export default function CatalogPage() {
           {/* Categoría */}
           <div className="catalog-filter-group">
             <p className="catalog-filter-group__label">Categoría</p>
-            {CATEGORIES.map(cat => (
+            {categories.map(cat => (
               <label key={cat} className="catalog-filter-check">
                 <input
                   type="checkbox"
@@ -289,7 +294,7 @@ export default function CatalogPage() {
 
           {/* Filtro rápido por categoría (botones): Todos | Accesorios | Periféricos | ... */}
           <div className="catalog-quick-filters" role="group" aria-label="Filtrar por categoría">
-            {['Todos', ...CATEGORIES].map(cat => {
+            {['Todos', ...categories].map(cat => {
               const active = cat === 'Todos'
                 ? selectedCategories.length === 0
                 : selectedCategories.length === 1 && selectedCategories[0] === cat;
