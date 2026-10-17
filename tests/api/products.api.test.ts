@@ -310,7 +310,7 @@ describe('POST /api/products/admin', () => {
       .set('Authorization', `Bearer ${adminToken}`)
       .send({ name: 'Producto Test', price: -500, category: 'audio' });
     expect(res.status).toBe(400);
-    expect(res.body.error).toBe('El precio debe ser un número positivo.');
+    expect(res.body.error).toBe('El precio debe ser un número igual o mayor a 0.');
   });
 
   it('TC-PC08 admin + precio no numérico → 400', async () => {
@@ -319,7 +319,7 @@ describe('POST /api/products/admin', () => {
       .set('Authorization', `Bearer ${adminToken}`)
       .send({ name: 'Producto Test', price: 'abc', category: 'audio' });
     expect(res.status).toBe(400);
-    expect(res.body.error).toBe('El precio debe ser un número positivo.');
+    expect(res.body.error).toBe('El precio debe ser un número igual o mayor a 0.');
   });
 
   it('TC-PC09 admin + stock negativo → 400', async () => {
@@ -328,7 +328,7 @@ describe('POST /api/products/admin', () => {
       .set('Authorization', `Bearer ${adminToken}`)
       .send({ name: 'Producto Test', price: 1000, category: 'audio', stock: -5 });
     expect(res.status).toBe(400);
-    expect(res.body.error).toBe('El stock debe ser un número positivo.');
+    expect(res.body.error).toBe('El stock debe ser un número igual o mayor a 0.');
   });
 
   it('TC-PC10 responde JSON en todos los errores de admin', async () => {

@@ -77,7 +77,7 @@ async function createProduct(req, res) {
   }
 
   if (stock !== undefined && (isNaN(stock) || stock < 0)) {
-    return res.status(400).json({ error: 'El stock debe ser un número positivo.' });
+    return res.status(400).json({ error: 'El stock debe ser un número igual o mayor a 0.' });
   }
 
   const product = await ProductModel.create({
