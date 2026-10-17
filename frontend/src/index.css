@@ -8028,22 +8028,23 @@ tr:hover .stock-display__edit {
   .cat-card__icon { width: 36px; height: 36px; }
   .cat-card__name { font-size: 12px; text-align: center; }
 
-  /* ── 3. PRODUCTOS — 1 columna, imagen proporcional ── */
+  /* ── 3. PRODUCTOS — 2 columnas en mobile ── */
   .featured-figma__grid {
     display: flex !important;
-    flex-direction: column;
-    gap: 16px;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    gap: 12px;
   }
   .prod-card {
-    width: 100% !important;
+    width: calc(50% - 6px) !important;
     min-height: auto;
-    flex-direction: row;
+    flex-direction: column;
     align-items: flex-start;
-    gap: 12px;
+    gap: 8px;
     padding: 12px;
   }
   .prod-card__image-wrap {
-    width: 100px !important;
+    width: 100% !important;
     height: 100px !important;
     flex-shrink: 0;
     border-radius: 8px;
