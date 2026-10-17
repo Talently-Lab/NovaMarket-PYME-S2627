@@ -6536,6 +6536,12 @@ tr:hover .stock-display__edit {
   width: 48px;
   height: 40px;
   object-fit: contain;
+  transition: filter 0.2s;
+}
+/* Estado seleccionado / hover: ícono en blanco sobre fondo violeta (Figma, Corrección 4) */
+.cat-card:hover .cat-card__icon,
+.cat-card--featured .cat-card__icon {
+  filter: brightness(0) invert(1);
 }
 .cat-card__name {
   font-family: 'Geist', 'Inter', sans-serif;
