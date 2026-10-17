@@ -8069,8 +8069,8 @@ tr:hover .stock-display__edit {
   }
   .footer__brand-col { padding-bottom: 8px; }
   .footer__tagline { font-size: 12px; line-height: 1.4; }
-  .footer__nav-col { display: none; } /* ocultar columnas de links en mobile */
-  .footer__nav-col:first-of-type { display: flex; } /* mostrar solo Categorias */
+  /* Las tres columnas (Categorías, Ayuda y Soporte, Legal y Políticas) se apilan en vertical, según el Figma (Corrección 3) */
+  .footer__nav-col { display: flex; }
   .footer__nav-list li { margin-bottom: 2px; }
   .footer__nav-link { font-size: 12px; }
   .footer__bottom {
