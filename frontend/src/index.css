@@ -4182,10 +4182,10 @@ ul, ol { list-style: none; }
 
 .catalog-card__image {
   width: 100%;
-  aspect-ratio: 290 / 180;
+  aspect-ratio: 1 / 1; /* cuadrada (ref. 220 × 220), según Figma Corrección 2 */
   background: #F5F5F5;
   border: 1px solid var(--color-border);
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
   display: flex;
   align-items: center;
