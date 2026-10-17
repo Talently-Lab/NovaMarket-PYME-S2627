@@ -1519,3 +1519,65 @@ Pendientes sesion siguiente:
 - Tests: 321 passed, 87% coverage
 - Jira: todos los tickets de Christian en Finalizado
 - README.md completo y actualizado
+
+---
+
+**Sesión 39 — 16/oct/2026:**
+
+134. **PR #10 de Carina Luna cerrado:**
+   - Revisado en detalle: `ProductDetailPage.jsx` de Carina (356 líneas) vs versión en `develop` (497 líneas).
+   - Versión de `develop` es más completa: lupa con zoom, miniaturas, reviews mockeadas con seed, specs enriquecidas por categoría.
+   - Carina aportaba mejoras de accesibilidad ARIA (tabs, `output aria-live`, cleanup de efecto, `addItem` con qty).
+   - Decisión: cerrar el PR — riesgo de regresión mayor que el beneficio. Las mejoras ARIA documentadas para futura pasada de accesibilidad.
+   - Comentario explicativo agregado en GitHub antes de cerrar. Mensaje a Carina enviado por Discord.
+
+135. **Branch protection activada en `develop`:**
+   - Regla configurada via GitHub API: 1 review aprobado requerido para mergear cualquier PR.
+   - `dismiss_stale_reviews: true` — si se pushean nuevos commits, la aprobación se descarta.
+   - `enforce_admins: false` — Christian (admin) puede pushear directo a `develop` sin PR.
+   - Objetivo: evitar que Gisele u otros puedan mergear sin aprobación de Christian.
+
+136. **Fix tarjetas "Productos Destacados" en Home — BR implícito:**
+   - Las cards no tenían interacción al hacer clic (reportado visualmente por QA).
+   - Fix: `motion.div` envuelto con `Link to={/catalogo/${product.id}}`.
+   - Botón carrito con `e.preventDefault()` para no disparar la navegación.
+   - CSS `.prod-card__link` agregado — mantiene el layout flex.
+   - Commit `2842717`. Build ✅.
+
+137. **Favicon actualizado al isotipo oficial:**
+   - `index.html`: `<link rel="icon" type="image/svg+xml" href="/favicon.svg">` → `<link rel="icon" type="image/png" href="/isotipo.png">`.
+   - `favicon.svg` antiguo eliminado por Christian manualmente.
+   - Commit `961298d`. Build ✅.
+
+138. **Header — texto promo reemplazado por placeholder:**
+   - Texto "Envío gratis en compras mayores a $50.000 — Usá el cupón NOVA20 y obtené 20% OFF" → Lorem ipsum.
+   - Pendiente: definición del texto real por parte de marketing.
+   - Commit `9f3f6fa`. Build ✅.
+
+139. **`/ofertas` redirige al catálogo:**
+   - Ruta `/ofertas` agregada en `App.jsx` con `<Navigate to="/catalogo" replace />`.
+   - `Navigate` importado de `react-router-dom`.
+   - Sección Ofertas fuera del MVP — pendiente decisión del equipo sobre implementación real.
+   - Commit `be124e6`. Build ✅.
+
+140. **Bugs BR21–BR30 corregidos (todos Altas y Medias):**
+
+   | Bug | Fix | Commit |
+   |-----|-----|--------|
+   | BR25 | Botón "Editar" admin: `btn--secondary` → `btn--primary` | `c61f1bf` |
+   | BR26 | Precio 0 válido: `!price` → `price === ''` en backend | `c61f1bf` |
+   | BR27 | Soft delete muestra "Inactivo" + botón "Reactivar" | `c61f1bf` |
+   | BR28 | Botón "Actualizar" admin: `btn--secondary` → `btn--primary` | `c61f1bf` |
+   | BR29 | Buscador catálogo: reactivo `onChange`, confirmado funcionando | `c61f1bf` |
+   | BR30 | `CATEGORIES` hardcodeado eliminado — categorías dinámicas desde BD | `c61f1bf` |
+   | BR23 | Mismo fix que BR30 — todas las categorías reales aparecen en filtros | `c61f1bf` |
+   | BR24 | `/ofertas` redirige a `/catalogo` (comportamiento esperado del MVP) | `be124e6` |
+   | BR21 | `productImage.js` reescrito — fallback categorías ampliado (Teclados, Iluminación, Monitores) | `e9476f0` |
+   | BR22 | `CartPage` usa `getProductImage()` en lugar de `item.image_url` directo | `e9476f0` |
+
+141. **`bug-report.md` unificado con Excel del equipo:**
+   - Archivo sincronizado exactamente con el Google Sheets del equipo — BR01–BR30.
+   - Todos los bugs BR21–BR30 marcados como Cerrado.
+   - Commit `fc8e421`.
+
+142. **`CONTEXT.md` actualizado — Última actualización: 16/oct/2026 (sesión 39).**
