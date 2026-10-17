@@ -6382,7 +6382,7 @@ tr:hover .stock-display__edit {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 10%;
+  object-position: right bottom; /* foco en los productos, según Figma Corrección 1 */
 }
 .hero-figma__text {
   position: absolute;
