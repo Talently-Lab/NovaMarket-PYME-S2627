@@ -15,6 +15,43 @@
 
 > Render free tier — puede tardar 30s si estuvo inactivo.
 
+El codigo del backend esta en la carpeta [`backend/`](backend/) de este mismo repositorio.
+
+---
+
+## Capturas
+
+### Home
+![Home en escritorio](docs/capturas/home-desktop.png)
+
+### Catalogo
+![Catalogo en escritorio](docs/capturas/catalogo-desktop.png)
+
+---
+
+## Frontend
+
+Aplicacion de pagina unica (SPA) hecha con React y Vite, con estilos en CSS plano (`frontend/src/index.css`) basados en variables de diseno y nombres BEM. La app es responsive y se probo en pantallas de hasta 375 px de ancho.
+
+### Estructura de `frontend/src`
+
+| Carpeta | Contenido |
+|---------|-----------|
+| `pages/` | Pantallas: home, catalogo y detalle, carrito, checkout, pedidos, autenticacion, legales y panel de administracion |
+| `components/layout/` | Header, footer y layout general |
+| `components/ui/` | Componentes reutilizables (Button, ProductCard, banners, toast del carrito, rutas protegidas) |
+| `context/` | Estado global: sesion (`AuthContext`), carrito (`CartContext`) y tema (`ThemeContext`) |
+| `services/` | Cliente Axios y llamadas a la API |
+| `hooks/` y `utils/` | Hooks y funciones auxiliares |
+
+### Scripts (dentro de `frontend/`)
+
+| Comando | Para que sirve |
+|---------|----------------|
+| `npm run dev` | Servidor de desarrollo en http://localhost:5173 |
+| `npm run build` | Compilacion de produccion en `dist/` |
+| `npm run lint` | Revision con ESLint |
+
 ---
 
 ## Stack tecnologico
