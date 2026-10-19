@@ -29,7 +29,7 @@ function ChevronIcon() {
 // ── Componente principal ──────────────────────────────────────
 export default function CatalogPage() {
   const { addItem, items: cartItems } = useCart();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
 
   // ── Estado de filtros (sincronizado con URL) ──
   const [selectedCategories, setSelectedCategories] = useState(() => {

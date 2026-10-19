@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 
@@ -26,7 +26,7 @@ function UserIcon() {
 }
 
 const NAV_LINKS = [
-  { to: '/',                               label: 'Home',        test: (p, s) => p === '/' },
+  { to: '/',                               label: 'Home',        test: (p) => p === '/' },
   { to: '/catalogo',                       label: 'Catálogo',    test: (p, s) => p === '/catalogo' && !new URLSearchParams(s).get('categoria') },
   { to: '/catalogo?categoria=periféricos', label: 'Periféricos', test: (p, s) => p === '/catalogo' && new URLSearchParams(s).get('categoria') === 'periféricos' },
   { to: '/catalogo?categoria=gadgets',     label: 'Gadgets',     test: (p, s) => p === '/catalogo' && new URLSearchParams(s).get('categoria') === 'gadgets' },
