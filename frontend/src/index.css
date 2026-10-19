@@ -3432,11 +3432,18 @@ ul, ol { list-style: none; }
     height: 64px;
   }
 
+  /* La info ocupa todo el ancho que deja la imagen: así el selector de
+     cantidad y el botón de eliminar bajan a una segunda fila y el nombre
+     y el precio ya no se cortan ni se pisan. */
   .cart-item__info {
-    flex: 1;
+    flex: 1 1 calc(100% - 64px - var(--sp-3));
   }
 
-  .cart-item__qty {
+  .cart-item__name {
+    white-space: normal;
+  }
+
+  .cart-item__qty-wrapper {
     order: 3;
   }
 
