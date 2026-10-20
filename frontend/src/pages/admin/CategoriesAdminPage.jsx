@@ -77,7 +77,7 @@ export default function CategoriesAdminPage() {
         c.category === oldName ? { ...c, category: newName } : c
       ));
       cancelEdit(oldName);
-    } catch (err) {
+    } catch {
       setEditing(prev => ({
         ...prev,
         [oldName]: { ...prev[oldName], saving: false, error: 'Error al renombrar.' },

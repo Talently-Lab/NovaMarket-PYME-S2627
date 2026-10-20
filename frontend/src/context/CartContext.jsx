@@ -7,7 +7,6 @@ const storageKey = (userId) =>
   userId ? `nm-cart-${userId}` : 'nm-cart-guest';
 
 export function CartProvider({ children, userId }) {
-  const key = storageKey(userId);
   const [lastAdded, setLastAdded] = useState(null); // { name, id } del último producto agregado
 
   const isFirstMount = useRef(true);

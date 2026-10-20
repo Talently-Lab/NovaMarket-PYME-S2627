@@ -40,9 +40,9 @@ export default function HomePage() {
   // Reveal refs
   const [heroRef,       heroVis]       = useReveal({ threshold: 0.1 });
   const [catHeaderRef,  catHeaderVis]  = useReveal({ threshold: 0.2 });
-  const [catGridRef,    catGridVis]    = useReveal({ threshold: 0.15 });
+  const [catGridRef] = useReveal({ threshold: 0.15 });
   const [featHeaderRef, featHeaderVis] = useReveal({ threshold: 0.2 });
-  const [featGridRef,   featGridVis]   = useReveal({ threshold: 0.1 });
+  const [featGridRef] = useReveal({ threshold: 0.1 });
   const [bannerRef,     bannerVis]     = useReveal({ threshold: 0.15 });
 
   useEffect(() => {

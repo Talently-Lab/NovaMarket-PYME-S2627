@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { getProductById, getProducts } from '../../services/productService';
 import { useCart } from '../../context/CartContext';
 import { getProductImage } from '../../utils/productImage';
