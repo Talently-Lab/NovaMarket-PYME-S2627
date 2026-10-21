@@ -21,6 +21,10 @@ import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
 import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 import TermsPage from './pages/legal/TermsPage';
 import PrivacyPage from './pages/legal/PrivacyPage';
+import SeguimientoPedidosPage from './pages/ayuda/SeguimientoPedidosPage';
+import FaqPage from './pages/ayuda/FaqPage';
+import GarantiasPage from './pages/ayuda/GarantiasPage';
+import ContactoPage from './pages/ayuda/ContactoPage';
 import DashboardPage from './pages/admin/DashboardPage';
 import ProductsAdminPage from './pages/admin/ProductsAdminPage';
 import OrdersAdminPage from './pages/admin/OrdersAdminPage';
@@ -61,6 +65,10 @@ export default function App() {
               <Route path="/restablecer-contrasena" element={<ResetPasswordPage />} />
               <Route path="/terminos" element={<TermsPage />} />
               <Route path="/privacidad" element={<PrivacyPage />} />
+              <Route path="/ayuda/seguimiento" element={<SeguimientoPedidosPage />} />
+              <Route path="/ayuda/faq" element={<FaqPage />} />
+              <Route path="/ayuda/garantias" element={<GarantiasPage />} />
+              <Route path="/ayuda/contacto" element={<ContactoPage />} />
 
               {/* Checkout y pedidos — requiere estar autenticado */}
               <Route element={<ProtectedRoute />}>
