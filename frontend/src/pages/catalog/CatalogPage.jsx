@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { getProducts } from '../../services/productService';
@@ -48,6 +48,9 @@ export default function CatalogPage() {
   const [onlyStock, setOnlyStock] = useState(false);
   const [order, setOrder]         = useState('newest');
   const [search, setSearch]       = useState('');
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [activeSuggestion, setActiveSuggestion] = useState(-1);
+  const searchRef = useRef(null);
   const [page, setPage]           = useState(1);
 
   // ── Estado de datos ──
@@ -69,6 +72,44 @@ export default function CatalogPage() {
   }, [allProducts]);
 
   const [selectedBrands, setSelectedBrands] = useState([]);
+
+  // ── Sugerencias de autocompletado ──
+  const suggestions = useMemo(() => {
+    const term = search.trim().toLowerCase();
+    if (term.length < 2) return [];
+    const matches = allProducts
+      .filter(p => p.name?.toLowerCase().includes(term))
+      .map(p => p.name)
+      .slice(0, 6);
+    return [...new Set(matches)];
+  }, [search, allProducts]);
+
+  const handleSuggestionSelect = useCallback((name) => {
+    setSearch(name);
+    setShowSuggestions(false);
+    setActiveSuggestion(-1);
+  }, []);
+
+  const handleSearchKeyDown = useCallback((e) => {
+    if (!showSuggestions || suggestions.length === 0) {
+      if (e.key === 'Enter') e.preventDefault();
+      return;
+    }
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setActiveSuggestion(i => Math.min(i + 1, suggestions.length - 1));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setActiveSuggestion(i => Math.max(i - 1, -1));
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (activeSuggestion >= 0) handleSuggestionSelect(suggestions[activeSuggestion]);
+      else setShowSuggestions(false);
+    } else if (e.key === 'Escape') {
+      setShowSuggestions(false);
+      setActiveSuggestion(-1);
+    }
+  }, [showSuggestions, suggestions, activeSuggestion, handleSuggestionSelect]);
 
   // ── Fetch inicial — trae todos, filtra en cliente ──
   useEffect(() => {
@@ -266,8 +307,8 @@ export default function CatalogPage() {
         {/* ── Área de resultados ── */}
         <section className="catalog-results" aria-label="Resultados del catálogo">
 
-          {/* Buscador por texto */}
-          <div className="catalog-search">
+          {/* Buscador por texto con autocompletado */}
+          <div className="catalog-search" ref={searchRef}>
             <svg className="catalog-search__icon" width="16" height="16" viewBox="0 0 24 24"
               fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
               aria-hidden="true">
@@ -278,16 +319,41 @@ export default function CatalogPage() {
               type="search"
               placeholder="Buscar productos..."
               value={search}
-              onChange={e => setSearch(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && e.preventDefault()}
+              onChange={e => { setSearch(e.target.value); setShowSuggestions(true); setActiveSuggestion(-1); }}
+              onKeyDown={handleSearchKeyDown}
+              onFocus={() => setShowSuggestions(true)}
+              onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
               aria-label="Buscar productos"
+              aria-autocomplete="list"
+              aria-expanded={showSuggestions && suggestions.length > 0}
+              autoComplete="off"
             />
             {search && (
               <button
                 className="catalog-search__clear"
-                onClick={() => setSearch('')}
+                onClick={() => { setSearch(''); setShowSuggestions(false); }}
                 aria-label="Limpiar búsqueda"
               >✕</button>
+            )}
+            {showSuggestions && suggestions.length > 0 && (
+              <ul className="catalog-search__suggestions" role="listbox">
+                {suggestions.map((name, i) => (
+                  <li
+                    key={name}
+                    role="option"
+                    aria-selected={i === activeSuggestion}
+                    className={`catalog-search__suggestion${i === activeSuggestion ? ' catalog-search__suggestion--active' : ''}`}
+                    onMouseDown={() => handleSuggestionSelect(name)}
+                  >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                      aria-hidden="true" style={{ flexShrink: 0, opacity: 0.5 }}>
+                      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    </svg>
+                    {name}
+                  </li>
+                ))}
+              </ul>
             )}
           </div>
 
