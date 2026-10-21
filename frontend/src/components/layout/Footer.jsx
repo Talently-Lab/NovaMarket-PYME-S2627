@@ -40,10 +40,10 @@ const FOOTER_LINKS = {
     { label: 'Lanzamientos & Ofertas',   to: '/catalogo'                       },
   ],
   ayuda: [
-    { label: 'Seguimiento de pedidos',   to: '/mis-pedidos'  },
-    { label: 'Centro de ayuda FAQ',      to: '/faq'          },
-    { label: 'Garantías y devoluciones', to: '/devoluciones' },
-    { label: 'Contacto con ventas',      to: '/contacto'     },
+    { label: 'Seguimiento de pedidos',   to: '/'  },
+    { label: 'Centro de ayuda FAQ',      to: '/'  },
+    { label: 'Garantías y devoluciones', to: '/'  },
+    { label: 'Contacto con ventas',      to: '/'  },
   ],
   legal: [
     { label: 'Términos y condiciones',   to: '/terminos'    },

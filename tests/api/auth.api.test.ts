@@ -185,7 +185,7 @@ describe('POST /api/auth/login', () => {
     // Sin DB retorna 500, con DB retorna 401 — ambos son válidos en este entorno
     expect([401, 500]).toContain(res.status);
     if (res.status === 401) {
-      expect(res.body.error).toBe('Credenciales inválidas.');
+      expect(res.body.error).toBe('Datos incorrectos intente de nuevo');
     }
   });
 

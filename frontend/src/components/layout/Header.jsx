@@ -26,8 +26,8 @@ function UserIcon() {
 }
 
 const NAV_LINKS = [
-  { to: '/',                               label: 'Home',        test: (p) => p === '/' },
-  { to: '/catalogo',                       label: 'Catálogo',    test: (p, s) => p === '/catalogo' && !new URLSearchParams(s).get('categoria') },
+  { to: '/',                               label: 'Inicio',      test: (p, s) => p === '/' },
+  { to: '/catalogo',                       label: 'Notebooks',   test: (p, s) => p === '/catalogo' && !new URLSearchParams(s).get('categoria') },
   { to: '/catalogo?categoria=periféricos', label: 'Periféricos', test: (p, s) => p === '/catalogo' && new URLSearchParams(s).get('categoria') === 'periféricos' },
   { to: '/catalogo?categoria=gadgets',     label: 'Gadgets',     test: (p, s) => p === '/catalogo' && new URLSearchParams(s).get('categoria') === 'gadgets' },
   { to: '/catalogo?categoria=audio',       label: 'Audio',       test: (p, s) => p === '/catalogo' && new URLSearchParams(s).get('categoria') === 'audio' },
@@ -48,7 +48,7 @@ export default function Header() {
 
       {/* ── BANNER PROMO — fondo lima #D2EE42 ── */}
       <div className="header__promo-bar">
-        <span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque euismod.</span>
+        <span>Promociones exclusivas en productos seleccionados + envío gratis en compras superiores a $70.000</span>
       </div>
 
       {/* ── HEADER TOP — logo | nav centrado | controles ── */}

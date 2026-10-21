@@ -91,7 +91,7 @@ export default function HomePage() {
             initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, delay: 0.12, ease: [0.22,1,0.36,1] }}
           >
-            Encontra tu próximo setup
+            Todo lo que necesitás, en un solo lugar
           </motion.p>
           <motion.div className="hero-figma__ctas"
             initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
