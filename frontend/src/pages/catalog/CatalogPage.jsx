@@ -197,28 +197,26 @@ export default function CatalogPage() {
             ))}
           </div>
 
-          <div className="catalog-sidebar__divider" />
-
-          {/* Marca */}
-          <div className="catalog-filter-group">
-            <p className="catalog-filter-group__label">Marca</p>
-            {brands.length === 0 ? (
-              <span className="catalog-filter-group__empty">Sin marcas disponibles</span>
-            ) : (
-              brands.map(brand => (
-                <label key={brand} className="catalog-filter-check">
-                  <input
-                    type="checkbox"
-                    className="catalog-filter-check__input"
-                    checked={selectedBrands.includes(brand)}
-                    onChange={() => toggleBrand(brand)}
-                  />
-                  <span className="catalog-filter-check__box" aria-hidden="true" />
-                  <span className="catalog-filter-check__text">{brand}</span>
-                </label>
-              ))
-            )}
-          </div>
+          {brands.length > 0 && (
+            <>
+              <div className="catalog-sidebar__divider" />
+              <div className="catalog-filter-group">
+                <p className="catalog-filter-group__label">Marca</p>
+                {brands.map(brand => (
+                  <label key={brand} className="catalog-filter-check">
+                    <input
+                      type="checkbox"
+                      className="catalog-filter-check__input"
+                      checked={selectedBrands.includes(brand)}
+                      onChange={() => toggleBrand(brand)}
+                    />
+                    <span className="catalog-filter-check__box" aria-hidden="true" />
+                    <span className="catalog-filter-check__text">{brand}</span>
+                  </label>
+                ))}
+              </div>
+            </>
+          )}
 
           <div className="catalog-sidebar__divider" />
 
