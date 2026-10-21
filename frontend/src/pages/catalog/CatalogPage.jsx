@@ -120,7 +120,7 @@ export default function CatalogPage() {
     }
 
     return list;
-  }, [allProducts, selectedCategories, selectedBrands, priceMin, priceMax, onlyStock]);
+  }, [allProducts, selectedCategories, selectedBrands, priceMin, priceMax, onlyStock, search]);
 
   // ── Paginación en cliente ──
   const totalPages   = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
@@ -279,6 +279,7 @@ export default function CatalogPage() {
               placeholder="Buscar productos..."
               value={search}
               onChange={e => setSearch(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && e.preventDefault()}
               aria-label="Buscar productos"
             />
             {search && (
