@@ -1,8 +1,23 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useDebouncedValue } from '../../hooks/useDebouncedValue';
 import { productsAPI } from '../../services/api';
 import ProductFormModal from './ProductFormModal';
 
-const fmt = (n) => Number(n).toLocaleString('es-AR', { minimumFractionDigits: 2 });
+import { formatearPrecio } from '../../utils/formatearPrecio';
+
+const PAGE_SIZE = 10;
+
+// Sin tildes y en minúsculas, para que «camara» encuentre «Cámara»
+const normalizar = (texto) =>
+  String(texto ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+
+// Semáforo de stock: 0 = agotado (rojo), 1 a 3 = bajo (ámbar oscuro para mantener el contraste con el texto blanco)
+function nivelStock(stock) {
+  const n = Number(stock ?? 0);
+  if (n <= 0) return { texto: 'Agotado', color: 'var(--color-error)' };
+  if (n <= 3) return { texto: 'Bajo', color: '#b45309' };
+  return null;
+}
 
 function StockCell({ product, onUpdated }) {
   const [editing, setEditing] = useState(false);
@@ -69,12 +84,17 @@ function StockCell({ product, onUpdated }) {
         className="stock-display__value"
         style={{
           color: product.stock === 0 ? 'var(--color-error)'
-               : product.stock < 5  ? '#f59e0b'
+               : product.stock <= 3 ? '#b45309'
                : 'var(--color-text)',
         }}
       >
         {product.stock}
       </span>
+      {nivelStock(product.stock) && (
+        <span className="admin-badge" style={{ '--badge-color': nivelStock(product.stock).color }}>
+          {nivelStock(product.stock).texto}
+        </span>
+      )}
       <button
         className="btn btn--ghost btn--sm stock-display__edit"
         onClick={() => { setValue(String(product.stock)); setEditing(true); }}
@@ -136,13 +156,54 @@ export default function ProductsAdminPage() {
 
   const categories = [...new Set(products.map(p => p.category).filter(Boolean))].sort();
 
+  // ── Búsqueda, filtros y paginación ──
+  const [busqueda,  setBusqueda]  = useState('');
+  const [categoria, setCategoria] = useState('');
+  const [estado,    setEstado]    = useState('todos');
+  const [page,      setPage]      = useState(1);
+  const busquedaDemorada = useDebouncedValue(busqueda, 300);
+
+  const hayFiltros = busqueda !== '' || categoria !== '' || estado !== 'todos';
+
+  // Al cambiar un filtro se vuelve a la página 1 (en el manejador, sin efectos)
+  const cambiarFiltro = (setter) => (e) => { setter(e.target.value); setPage(1); };
+  const limpiarFiltros = () => { setBusqueda(''); setCategoria(''); setEstado('todos'); setPage(1); };
+
+  const filtrados = useMemo(() => {
+    // Al vaciar el campo no hay nada que esperar: se muestra todo enseguida
+    const q = normalizar((busqueda === '' ? '' : busquedaDemorada).trim()).replace(/^#/, '');
+    return products.filter((p) => {
+      if (q && !(normalizar(p.name).includes(q) || normalizar(p.category).includes(q) || String(p.id) === q)) return false;
+      if (categoria && p.category !== categoria) return false;
+      const stock = Number(p.stock ?? 0);
+      switch (estado) {
+        case 'activos':   return p.is_active !== false;
+        case 'inactivos': return p.is_active === false;
+        case 'agotado':   return stock <= 0;
+        case 'bajo':      return stock >= 1 && stock <= 3;
+        default:          return true;
+      }
+    });
+  }, [products, busqueda, busquedaDemorada, categoria, estado]);
+
+  const totalPages   = Math.max(1, Math.ceil(filtrados.length / PAGE_SIZE));
+  const safePage     = Math.min(page, totalPages);
+  const pageProducts = filtrados.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+
+  // Hasta 5 números de página alrededor de la actual (igual que el catálogo)
+  const pageNumbers = useMemo(() => {
+    const start = Math.max(1, safePage - 2);
+    const end   = Math.min(totalPages, start + 4);
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+  }, [safePage, totalPages]);
+
   return (
     <div className="admin-dashboard">
       <div className="admin-dashboard__header">
         <div>
           <h1 className="admin-dashboard__title">Productos</h1>
           <p className="admin-dashboard__subtitle">
-            {loading ? '…' : `${products.length} productos en total`}
+            {loading ? '…' : hayFiltros ? `${filtrados.length} de ${products.length} productos` : `${products.length} productos en total`}
           </p>
         </div>
         <button
@@ -162,6 +223,41 @@ export default function ProductsAdminPage() {
       </div>
 
       {error && <p className="form-error">{error}</p>}
+
+      <div className="admin-filters" role="search">
+        <div className="admin-filters__field admin-filters__field--grow">
+          <label className="form-label" htmlFor="filtro-busqueda">Buscar</label>
+          <input
+            id="filtro-busqueda"
+            type="search"
+            className="form-input"
+            placeholder="Nombre, categoría o #ID"
+            value={busqueda}
+            onChange={cambiarFiltro(setBusqueda)}
+            autoComplete="off"
+          />
+        </div>
+        <div className="admin-filters__field">
+          <label className="form-label" htmlFor="filtro-categoria">Categoría</label>
+          <select id="filtro-categoria" className="form-input" value={categoria} onChange={cambiarFiltro(setCategoria)}>
+            <option value="">Todas</option>
+            {categories.map((c) => <option key={c} value={c}>{c}</option>)}
+          </select>
+        </div>
+        <div className="admin-filters__field">
+          <label className="form-label" htmlFor="filtro-estado">Estado</label>
+          <select id="filtro-estado" className="form-input" value={estado} onChange={cambiarFiltro(setEstado)}>
+            <option value="todos">Todos</option>
+            <option value="activos">Activos</option>
+            <option value="inactivos">Inactivos</option>
+            <option value="agotado">Agotado</option>
+            <option value="bajo">Stock bajo (1 a 3)</option>
+          </select>
+        </div>
+        <button type="button" className="btn btn--ghost btn--sm" onClick={limpiarFiltros} disabled={!hayFiltros}>
+          Limpiar filtros
+        </button>
+      </div>
 
       <div className="table-wrapper">
         <table className="table">
@@ -183,14 +279,14 @@ export default function ProductsAdminPage() {
                   Cargando productos…
                 </td>
               </tr>
-            ) : products.length === 0 ? (
+            ) : filtrados.length === 0 ? (
               <tr>
                 <td colSpan={7} style={{ textAlign: 'center', padding: 'var(--sp-8)', color: 'var(--color-text-disabled)' }}>
-                  No hay productos aún.
+                  {products.length === 0 ? 'No hay productos aún.' : 'Ningún producto coincide con los filtros.'}
                 </td>
               </tr>
             ) : (
-              products.map((p) => (
+              pageProducts.map((p) => (
                 <tr key={p.id}>
                   <td style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', color: 'var(--color-text-disabled)' }}>
                     #{p.id}
@@ -200,7 +296,7 @@ export default function ProductsAdminPage() {
                     {p.category || '—'}
                   </td>
                   <td style={{ fontWeight: 'var(--weight-semibold)' }}>
-                    ${fmt(p.price)}
+                    {formatearPrecio(p.price)}
                   </td>
                   <td>
                     <StockCell product={p} onUpdated={handleStockUpdated} />
@@ -254,6 +350,38 @@ export default function ProductsAdminPage() {
           </tbody>
         </table>
       </div>
+
+      {!loading && totalPages > 1 && (
+        <nav className="catalog-pagination" aria-label="Paginación de productos">
+          <button
+            className="catalog-pagination__prev"
+            onClick={() => setPage(Math.max(1, safePage - 1))}
+            disabled={safePage === 1}
+            aria-label="Página anterior"
+          >
+            Anterior
+          </button>
+          {pageNumbers.map((n) => (
+            <button
+              key={n}
+              className={`catalog-pagination__page${safePage === n ? ' catalog-pagination__page--active' : ''}`}
+              onClick={() => setPage(n)}
+              aria-current={safePage === n ? 'page' : undefined}
+              aria-label={`Página ${n}`}
+            >
+              {n}
+            </button>
+          ))}
+          <button
+            className="catalog-pagination__next"
+            onClick={() => setPage(Math.min(totalPages, safePage + 1))}
+            disabled={safePage === totalPages}
+            aria-label="Página siguiente"
+          >
+            Siguiente
+          </button>
+        </nav>
+      )}
 
       {modalProduct && (
         <ProductFormModal

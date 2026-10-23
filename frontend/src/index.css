@@ -8317,3 +8317,23 @@ tr:hover .stock-display__edit {
   background: var(--color-surface-2);
   color: var(--color-accent);
 }
+
+/* ── Admin · barra de filtros de productos ── */
+.admin-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-4);
+}
+
+.admin-filters__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  min-width: 160px;
+}
+
+.admin-filters__field--grow {
+  flex: 1 1 240px;
+}
