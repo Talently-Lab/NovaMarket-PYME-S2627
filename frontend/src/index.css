@@ -4273,13 +4273,15 @@ ul, ol { list-style: none; }
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
   padding: 0 2px;
 }
 
 .catalog-card__price {
   font-family: var(--font-ui);
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
   font-weight: var(--weight-bold);
+  white-space: nowrap;
   color: var(--color-text);
 }
 
@@ -8316,4 +8318,24 @@ tr:hover .stock-display__edit {
 .catalog-search__suggestion--active {
   background: var(--color-surface-2);
   color: var(--color-accent);
+}
+
+/* ── Admin · barra de filtros de productos ── */
+.admin-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-4);
+}
+
+.admin-filters__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  min-width: 160px;
+}
+
+.admin-filters__field--grow {
+  flex: 1 1 240px;
 }

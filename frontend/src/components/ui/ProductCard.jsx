@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { formatearPrecio } from '../../utils/formatearPrecio';
 import { getProductImage } from '../../utils/productImage';
 
 // ── Icono carrito (inline SVG) ────────────────────────────────
@@ -52,7 +53,7 @@ export function ProductCard({ product, onAdd, added, cartQty = 0 }) {
 
       <div className="catalog-card__footer">
         <span className="catalog-card__price">
-          ${Number(product.price).toLocaleString('es-AR')}
+          {formatearPrecio(product.price)}
         </span>
         {stockAgotado ? (
           <span className="catalog-card__no-stock">Sin stock</span>
