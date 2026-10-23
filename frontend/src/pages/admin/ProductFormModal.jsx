@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { productsAPI } from '../../services/api';
+import ImageUploader from '../../components/ui/ImageUploader';
 
 const EMPTY = { name: '', description: '', price: '', stock: '0', category: '', image_url: '' };
 
@@ -24,6 +25,7 @@ export default function ProductFormModal({ product, categories = [], onSaved, on
   const [form, setForm]     = useState(() => (product ? toForm(product) : EMPTY));
   const [saving, setSaving] = useState(false);
   const [error, setError]   = useState('');
+  const [files, setFiles]   = useState([]);
   const firstField = useRef(null);
 
   useEffect(() => {
@@ -51,14 +53,24 @@ export default function ProductFormModal({ product, categories = [], onSaved, on
       return setError('El stock debe ser un número entero igual o mayor a 0.');
     }
 
-    const payload = {
+    const fields = {
       name,
       description: form.description.trim(),
       price:       Number(form.price),
       stock:       Number(form.stock),
       category,
-      image_url:   form.image_url.trim() || undefined,
     };
+
+    // Con fotos nuevas se envía multipart/form-data (campos + archivos en «images»);
+    // sin fotos nuevas se mantiene el envío JSON de siempre.
+    let payload;
+    if (files.length > 0) {
+      payload = new FormData();
+      Object.entries(fields).forEach(([key, value]) => payload.append(key, value));
+      files.forEach((file) => payload.append('images', file));
+    } else {
+      payload = { ...fields, image_url: form.image_url.trim() || undefined };
+    }
 
     setSaving(true);
     try {
@@ -115,9 +127,13 @@ export default function ProductFormModal({ product, categories = [], onSaved, on
           </div>
 
           <div className="form-group">
-            <label className="form-label" htmlFor="pf-image">URL de la imagen (opcional)</label>
-            <input className="form-input" id="pf-image" name="image_url" type="url" placeholder="https://…"
-              value={form.image_url} onChange={handleChange} />
+            <span className="form-label">Fotos del producto (opcional)</span>
+            <ImageUploader
+              files={files}
+              onChange={(next) => { setFiles(next); setError(''); }}
+              existing={form.image_url ? [form.image_url] : []}
+              disabled={saving}
+            />
           </div>
 
           {error && <p className="form-error" role="alert">⚠ {error}</p>}
@@ -126,8 +142,10 @@ export default function ProductFormModal({ product, categories = [], onSaved, on
             <button type="button" className="btn btn--secondary btn--sm" onClick={onClose} disabled={saving}>
               Cancelar
             </button>
-            <button type="submit" className="btn btn--primary btn--sm" disabled={saving}>
-              {saving ? 'Guardando…' : isEdit ? 'Guardar cambios' : 'Crear producto'}
+            <button type="submit" className="btn btn--primary btn--sm" disabled={saving} aria-busy={saving}>
+              {saving
+                ? <><span className="image-uploader__spinner" aria-hidden="true" /> {files.length > 0 ? 'Subiendo fotos…' : 'Guardando…'}</>
+                : isEdit ? 'Guardar cambios' : 'Crear producto'}
             </button>
           </div>
         </form>
