@@ -1,4 +1,5 @@
 import { Link, useSearchParams } from 'react-router-dom';
+import { formatearPrecio } from '../utils/formatearPrecio';
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { getProducts } from '../services/productService';
@@ -169,7 +170,7 @@ export default function HomePage() {
                       </div>
                       <div className="prod-card__footer">
                         <span className="prod-card__price">
-                          ${Number(product.price).toLocaleString('es-AR')}
+                          {formatearPrecio(product.price)}
                         </span>
                         {stockAgotado ? (
                           <span className="prod-card__no-stock">Sin stock</span>
