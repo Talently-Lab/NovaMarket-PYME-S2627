@@ -29,11 +29,7 @@ export default function LoginPage() {
       login(data.user, data.token);
       navigate(redirectTo, { replace: true });
     } catch (err) {
-      setError(
-        err.response?.status === 401
-          ? 'Datos incorrectos, intentá de nuevo.'
-          : (err.response?.data?.error || 'Error al iniciar sesión. Intentá de nuevo.')
-      );
+      setError(err.response?.data?.error || 'Error al iniciar sesión. Intentá de nuevo.');
     } finally {
       setLoading(false);
     }

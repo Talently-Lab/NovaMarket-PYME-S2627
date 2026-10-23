@@ -233,7 +233,7 @@ describe('POST /api/auth/login', () => {
     const res = await request(app).post('/api/auth/login')
       .send({ email: 'wrong@test.com', password: 'Incorrecta999!' });
     expect(res.status).toBe(401);
-    expect(res.body.error).toBe('Credenciales inválidas.');
+    expect(res.body.error).toBe('Datos incorrectos intente de nuevo');
   });
 
   it('TC-L10 token devuelto es un JWT válido de 3 partes', async () => {
