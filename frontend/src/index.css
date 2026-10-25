@@ -4109,7 +4109,10 @@ ul, ol { list-style: none; }
   color: var(--color-text);
 }
 
-.catalog-quick-filters {  display: flex;
+.catalog-quick-filters {
+  /* OCULTO — duplica los filtros del sidebar. Descomentar display para restaurar. */
+  display: none;
+  /* display: flex; */
   flex-wrap: wrap;
   gap: 8px;
   margin-bottom: 12px;
