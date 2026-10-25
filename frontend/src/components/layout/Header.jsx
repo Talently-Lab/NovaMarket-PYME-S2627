@@ -39,9 +39,18 @@ export default function Header() {
   const { isAuthenticated, isAdmin, user, logout } = useAuth();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [headerSearch, setHeaderSearch] = useState('');
   const location = useLocation();
   const closeMenu = () => setMenuOpen(false);
   const handleLogout = () => { logout(); navigate('/'); closeMenu(); };
+
+  const handleHeaderSearch = (e) => {
+    e.preventDefault();
+    const q = headerSearch.trim();
+    if (!q) return;
+    navigate(`/catalogo?q=${encodeURIComponent(q)}`);
+    setHeaderSearch('');
+  };
 
   return (
     <header className="header">
@@ -70,6 +79,26 @@ export default function Header() {
               </Link>
             ))}
           </nav>
+
+          {/* Buscador global */}
+          <form className="header__search" onSubmit={handleHeaderSearch} role="search">
+            <input
+              className="header__search-input"
+              type="search"
+              placeholder="Buscar productos..."
+              value={headerSearch}
+              onChange={e => setHeaderSearch(e.target.value)}
+              aria-label="Buscar productos"
+              autoComplete="off"
+            />
+            <button type="submit" className="header__search-btn" aria-label="Buscar">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                aria-hidden="true">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+            </button>
+          </form>
 
           {/* Controles */}
           <div className="header__actions">

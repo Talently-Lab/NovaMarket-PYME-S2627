@@ -321,6 +321,48 @@ ul, ol { list-style: none; }
   min-width: 0;
 }
 
+/* Buscador global del header */
+.header__search {
+  display: flex;
+  align-items: center;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 8px;
+  overflow: hidden;
+  flex: 1;
+  max-width: 320px;
+  min-width: 160px;
+}
+.header__search-input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  padding: 7px 12px;
+  font-size: var(--text-sm);
+  color: #FEFEFE;
+  font-family: var(--font-body);
+}
+.header__search-input::placeholder { color: rgba(255,255,255,0.45); }
+.header__search-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 7px 10px;
+  color: rgba(255,255,255,0.6);
+  display: flex;
+  align-items: center;
+  transition: color 0.15s;
+}
+.header__search-btn:hover { color: var(--color-primary, #D2EE42); }
+
+@media (max-width: 1024px) {
+  .header__search { max-width: 200px; }
+}
+@media (max-width: 768px) {
+  .header__search { display: none; }
+}
+
 /* Mi cuenta link */
 .header__account-link {
   display: flex;
@@ -3981,8 +4023,10 @@ ul, ol { list-style: none; }
 
 /* ── Barra de ordenamiento ── */
 .catalog-search {
+  /* OCULTO — buscador movido al header global. Descomentar display si se quiere restaurar. */
+  display: none;
   position: relative;
-  display: flex;
+  /* display: flex; */
   align-items: center;
   margin-bottom: 16px;
 }

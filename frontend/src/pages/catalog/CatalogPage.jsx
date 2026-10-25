@@ -47,7 +47,13 @@ export default function CatalogPage() {
   const [priceMax, setPriceMax]   = useState('');
   const [onlyStock, setOnlyStock] = useState(false);
   const [order, setOrder]         = useState('newest');
-  const [search, setSearch]       = useState('');
+  const [search, setSearch]       = useState(() => searchParams.get('q') || '');
+
+  // Sincronizar search cuando llega ?q= desde el buscador del header
+  useEffect(() => {
+    const q = searchParams.get('q');
+    if (q !== null) setSearch(q);
+  }, [searchParams]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeSuggestion, setActiveSuggestion] = useState(-1);
   const searchRef = useRef(null);
