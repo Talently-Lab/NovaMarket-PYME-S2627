@@ -116,7 +116,7 @@ export default function HomePage() {
         </div>
         <div className="categories-figma__grid">
           <div className={`categories-figma__title-col reveal--left${catHeaderVis ? " is-visible" : ""}`}>
-            <h2 className="categories-figma__title">TODO LO QUE NECESITÁS</h2>
+            <h2 className="categories-figma__title">DESCUBRÍ NUESTROS PRODUCTOS</h2>
           </div>
           <div className={`categories-figma__cards`} ref={catGridRef}>
             {CATEGORIES.map(({ icon, name, slug }) => (
