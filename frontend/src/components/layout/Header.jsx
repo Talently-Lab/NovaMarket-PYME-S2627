@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
+import { getProducts } from '../../services/productService';
 
 function CartIcon() {
   return (
@@ -40,16 +41,55 @@ export default function Header() {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [headerSearch, setHeaderSearch] = useState('');
+  const [showSug, setShowSug] = useState(false);
+  const [activeSug, setActiveSug] = useState(-1);
+  const [productNames, setProductNames] = useState([]);
+  const searchRef = useRef(null);
   const location = useLocation();
   const closeMenu = () => setMenuOpen(false);
   const handleLogout = () => { logout(); navigate('/'); closeMenu(); };
+
+  // Carga los nombres de productos una sola vez al montar
+  useEffect(() => {
+    getProducts(undefined, { limit: 200 })
+      .then(({ products }) => setProductNames(products.map(p => p.name)))
+      .catch(() => {});
+  }, []);
+
+  // Sugerencias filtradas
+  const suggestions = (() => {
+    const term = headerSearch.trim().toLowerCase();
+    if (term.length < 2) return [];
+    return [...new Set(
+      productNames.filter(n => n.toLowerCase().includes(term))
+    )].slice(0, 6);
+  })();
+
+  const selectSuggestion = useCallback((name) => {
+    setHeaderSearch('');
+    setShowSug(false);
+    setActiveSug(-1);
+    navigate(`/catalogo?q=${encodeURIComponent(name)}`);
+  }, [navigate]);
 
   const handleHeaderSearch = (e) => {
     e.preventDefault();
     const q = headerSearch.trim();
     if (!q) return;
+    setShowSug(false);
     navigate(`/catalogo?q=${encodeURIComponent(q)}`);
     setHeaderSearch('');
+  };
+
+  const handleSearchKeyDown = (e) => {
+    if (!showSug || suggestions.length === 0) {
+      if (e.key === 'Enter') handleHeaderSearch(e);
+      return;
+    }
+    if (e.key === 'ArrowDown') { e.preventDefault(); setActiveSug(i => Math.min(i + 1, suggestions.length - 1)); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); setActiveSug(i => Math.max(i - 1, -1)); }
+    else if (e.key === 'Enter') { e.preventDefault(); if (activeSug >= 0) selectSuggestion(suggestions[activeSug]); else handleHeaderSearch(e); }
+    else if (e.key === 'Escape') { setShowSug(false); setActiveSug(-1); }
   };
 
   return (
@@ -81,14 +121,19 @@ export default function Header() {
           </nav>
 
           {/* Buscador global */}
-          <form className="header__search" onSubmit={handleHeaderSearch} role="search">
+          <form className="header__search" onSubmit={handleHeaderSearch} role="search" ref={searchRef}>
             <input
               className="header__search-input"
               type="search"
               placeholder="Buscar productos..."
               value={headerSearch}
-              onChange={e => setHeaderSearch(e.target.value)}
+              onChange={e => { setHeaderSearch(e.target.value); setShowSug(true); setActiveSug(-1); }}
+              onFocus={() => setShowSug(true)}
+              onBlur={() => setTimeout(() => setShowSug(false), 150)}
+              onKeyDown={handleSearchKeyDown}
               aria-label="Buscar productos"
+              aria-autocomplete="list"
+              aria-expanded={showSug && suggestions.length > 0}
               autoComplete="off"
             />
             <button type="submit" className="header__search-btn" aria-label="Buscar">
@@ -98,6 +143,26 @@ export default function Header() {
                 <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
               </svg>
             </button>
+            {showSug && suggestions.length > 0 && (
+              <ul className="header__search-suggestions" role="listbox">
+                {suggestions.map((name, i) => (
+                  <li
+                    key={name}
+                    role="option"
+                    aria-selected={i === activeSug}
+                    className={`header__search-suggestion${i === activeSug ? ' header__search-suggestion--active' : ''}`}
+                    onMouseDown={() => selectSuggestion(name)}
+                  >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                      aria-hidden="true" style={{ flexShrink: 0, opacity: 0.5 }}>
+                      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    </svg>
+                    {name}
+                  </li>
+                ))}
+              </ul>
+            )}
           </form>
 
           {/* Controles */}
