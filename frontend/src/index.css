@@ -7838,6 +7838,10 @@ tr:hover .stock-display__edit {
   .admin-shell { grid-template-columns: 200px 1fr; }
   .admin-stats-grid { grid-template-columns: repeat(2, 1fr); }
 
+  /* Featured grid tablet — gap reducido para evitar desfase de tarjetas */
+  .featured-figma__grid { gap: 8px; }
+  .prod-card { width: calc(50% - 4px); }
+
   /* Footer */
   .footer { padding: 40px 32px 24px; }
   .footer__grid { grid-template-columns: 1fr 1fr; gap: 32px; }
