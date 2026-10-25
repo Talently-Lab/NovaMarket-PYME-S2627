@@ -6779,7 +6779,7 @@ tr:hover .stock-display__edit {
   .categories-figma__grid { gap: 24px; }
   .featured-figma { padding: 30px 32px; }
   .footer { padding: 40px 32px 24px; }
-  .footer__grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+  .footer__grid { grid-template-columns: 1fr; gap: 24px; }
 }
 @media (max-width: 768px) {
   .hero-figma { height: auto; min-height: 360px; }
@@ -7844,7 +7844,7 @@ tr:hover .stock-display__edit {
 
   /* Footer */
   .footer { padding: 40px 32px 24px; }
-  .footer__grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+  .footer__grid { grid-template-columns: 1fr; gap: 24px; }
 }
 
 /* ─────────────────────────────────────────────────────────────
