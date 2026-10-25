@@ -4170,7 +4170,7 @@ ul, ol { list-style: none; }
 .catalog-card {
   background: white;
   border-radius: 20px;
-  border: 1px solid var(--color-border);
+  border: 1px solid #B0B8CC;
   padding: 16px;
   display: flex;
   flex-direction: column;
