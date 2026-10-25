@@ -6763,7 +6763,11 @@ tr:hover .stock-display__edit {
   font-weight: 700;          /* Figma: Bold */
   line-height: 1;            /* Figma: 100% */
   color: #000000;            /* Figma exacto */
-  width: 52px;
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .prod-card__add {
   width: 32px;
@@ -8153,7 +8157,7 @@ tr:hover .stock-display__edit {
   }
   .prod-card__name { font-size: 13px; font-weight: 700; white-space: normal; }
   .prod-card__desc { display: none; } /* ocultar descripcion en mobile */
-  .prod-card__price { font-size: 14px; }
+  .prod-card__price { font-size: 14px; flex: 1; min-width: 0; }
   .prod-card__add { width: 36px; height: 36px; }
 
   /* ── 4. FOOTER — compacto ── */
