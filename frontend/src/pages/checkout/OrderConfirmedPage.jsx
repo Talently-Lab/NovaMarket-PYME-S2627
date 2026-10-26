@@ -283,12 +283,12 @@ export default function OrderConfirmedPage() {
         <Link to="/catalogo" className="btn btn--primary btn--lg">
           Seguir comprando
         </Link>
-        <Link to="/mis-pedidos" className="btn btn--secondary btn--lg">
+        <Link to="/mis-pedidos" className="btn btn--primary btn--lg">
           Ver mis pedidos
         </Link>
         {order && (
           <button
-            className="btn btn--secondary btn--lg order-confirmed__download"
+            className="btn btn--primary btn--lg order-confirmed__download"
             onClick={() => generateReceiptPDF(order)}
           >
             <DownloadIcon />
