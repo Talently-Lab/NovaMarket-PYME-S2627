@@ -2,19 +2,19 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getProductImage } from '../../utils/productImage';
 
-// ── Rating mockeado por seed (consistente por producto) ───────
+// ── Rating mockeado por seed ──────────────────────────────────
 function seededRating(id) {
   const x = Math.sin(Number(id) * 9301 + 49297) * 233280;
   const r = x - Math.floor(x);
-  return (3.5 + r * 1.5).toFixed(1); // entre 3.5 y 5.0
+  return (3.5 + r * 1.5).toFixed(1);
 }
 function seededReviews(id) {
   const x = Math.sin(Number(id) * 6271 + 28411) * 134456;
   const r = x - Math.floor(x);
-  return Math.floor(5 + r * 120); // entre 5 y 125
+  return Math.floor(5 + r * 120);
 }
 
-// ── Badge por categoría (colores exactos del Kit UI Figma) ───
+// ── Colores de badge por categoría (Kit UI Figma) ─────────────
 const CATEGORY_BADGE_COLORS = {
   'Teclados':    { bg: '#F37E1D', text: '#000000' },
   'Accesorios':  { bg: '#1DF357', text: '#000000' },
@@ -28,46 +28,34 @@ const CATEGORY_BADGE_COLORS = {
   'Gaming':      { bg: '#D2EE42', text: '#000000' },
 };
 
-// ── Badge por producto ────────────────────────────────────────
 function getBadge(product) {
   if (product.stock === 0) return null;
   const id = Number(product.id);
-  if (product.original_price && product.original_price > product.price) {
-    const pct = Math.round((1 - product.price / product.original_price) * 100);
-    return { label: `${pct}% OFF`, type: 'discount', bg: '#E247FD', text: '#FFFFFF' };
-  }
-  if (id % 7 === 0) return { label: 'Más vendido', type: 'bestseller', bg: '#050506', text: '#D2EE42' };
-  if (id > 25)      return { label: 'Nuevo', type: 'new', bg: '#7D1CE2', text: '#FFFFFF' };
-  // Badge de categoría
+  // Primero: badge de categoría del Kit UI Figma
   const cat = product.category;
   if (cat && CATEGORY_BADGE_COLORS[cat]) {
-    return { label: cat, type: 'category', ...CATEGORY_BADGE_COLORS[cat] };
+    return { label: cat, ...CATEGORY_BADGE_COLORS[cat] };
   }
+  // Segundo: descuento si tiene precio anterior
+  if (product.original_price && product.original_price > product.price) {
+    const pct = Math.round((1 - product.price / product.original_price) * 100);
+    return { label: `${pct}% OFF`, bg: '#E247FD', text: '#FFFFFF' };
+  }
+  // Tercero: más vendido
+  if (id % 7 === 0) return { label: 'Más vendido', bg: '#050506', text: '#D2EE42' };
   return null;
 }
 
-// ── Íconos ────────────────────────────────────────────────────
-function CartIcon() {
+// ── Estrellas ─────────────────────────────────────────────────
+function Stars({ rating }) {
+  const full  = Math.floor(rating);
+  const half  = rating - full >= 0.5;
   return (
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-      aria-hidden="true">
-      <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
-      <line x1="3" y1="6" x2="21" y2="6"/>
-      <path d="M16 10a4 4 0 0 1-8 0"/>
-    </svg>
-  );
-}
-
-function HeartIcon({ filled }) {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24"
-      fill={filled ? '#E247FD' : 'none'}
-      stroke={filled ? '#E247FD' : 'currentColor'}
-      strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-      aria-hidden="true">
-      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-    </svg>
+    <span className="pc-stars" aria-hidden="true">
+      {[1,2,3,4,5].map(i => (
+        <span key={i} className={`pc-star${i <= full ? ' pc-star--full' : i === full + 1 && half ? ' pc-star--half' : ''}`}>★</span>
+      ))}
+    </span>
   );
 }
 
@@ -84,19 +72,17 @@ function toggleWishlist(id) {
 }
 
 /**
- * Tarjeta de producto del catálogo.
- * Props: product, onAdd, added, cartQty
+ * Tarjeta de producto unificada.
+ * variant: 'catalog' (default) | 'home'
  */
-export function ProductCard({ product, onAdd, added, cartQty = 0 }) {
-  const inStock     = product.stock > 0;
+export function ProductCard({ product, onAdd, added, cartQty = 0, variant = 'catalog' }) {
+  const inStock      = product.stock > 0;
   const stockAgotado = !inStock || cartQty >= product.stock;
-  const rating      = seededRating(product.id);
-  const reviews     = seededReviews(product.id);
-  const badge       = getBadge(product);
-  const hasDiscount = product.original_price && product.original_price > product.price;
-  const discountPct = hasDiscount
-    ? Math.round((1 - product.price / product.original_price) * 100)
-    : null;
+  const rating       = parseFloat(seededRating(product.id));
+  const reviews      = seededReviews(product.id);
+  const badge        = getBadge(product);
+  const hasDiscount  = product.original_price && product.original_price > product.price;
+  const discountPct  = hasDiscount ? Math.round((1 - product.price / product.original_price) * 100) : null;
 
   const [wishlisted, setWishlisted] = useState(() => getWishlist().includes(product.id));
   useEffect(() => { setWishlisted(getWishlist().includes(product.id)); }, [product.id]);
@@ -107,94 +93,97 @@ export function ProductCard({ product, onAdd, added, cartQty = 0 }) {
     setWishlisted(toggleWishlist(product.id));
   };
 
+  const rootClass = variant === 'home' ? 'prod-card' : 'catalog-card';
+
   return (
-    <article className="catalog-card">
+    <article className={rootClass}>
 
       {/* ── Imagen + badge + wishlist ── */}
-      <div className="catalog-card__image-wrapper">
-        <Link to={`/catalogo/${product.id}`} className="catalog-card__image-link" tabIndex={-1}>
-          <div className="catalog-card__image">
+      <div className="pc-image-wrapper">
+        <Link to={`/catalogo/${product.id}`} className="pc-image-link" tabIndex={-1}>
+          <div className="pc-image">
             <img
               src={getProductImage(product)}
               alt={product.name}
               loading="lazy"
-              className="catalog-card__img"
+              className="pc-img"
             />
           </div>
         </Link>
 
         {badge && (
-          <span
-            className="catalog-card__badge"
-            style={{ background: badge.bg, color: badge.text }}
-          >
+          <span className="pc-badge" style={{ background: badge.bg, color: badge.text }}>
             {badge.label}
           </span>
         )}
 
         <button
-          className={`catalog-card__wishlist${wishlisted ? ' catalog-card__wishlist--active' : ''}`}
+          className={`pc-wishlist${wishlisted ? ' pc-wishlist--active' : ''}`}
           onClick={handleWishlist}
           aria-label={wishlisted ? `Quitar ${product.name} de favoritos` : `Agregar ${product.name} a favoritos`}
           aria-pressed={wishlisted}
         >
-          <HeartIcon filled={wishlisted} />
+          <img
+            src={wishlisted ? '/images/iconos/fav.svg' : '/images/iconos/fav-black.svg'}
+            alt=""
+            width="18"
+            height="17"
+          />
         </button>
       </div>
 
       {/* ── Cuerpo ── */}
-      <div className="catalog-card__body">
-        <Link to={`/catalogo/${product.id}`} className="catalog-card__title-link">
-          <h3 className="catalog-card__title">{product.name}</h3>
+      <div className="pc-body">
+        <Link to={`/catalogo/${product.id}`} className="pc-title-link">
+          <h3 className="pc-title">{product.name}</h3>
         </Link>
-        {product.category && <span className="catalog-card__category">{product.category}</span>}
 
-        {/* Rating */}
-        <div className="catalog-card__rating" aria-label={`${rating} de 5 estrellas, ${reviews} opiniones`}>
-          <span className="catalog-card__stars" aria-hidden="true">★</span>
-          <span className="catalog-card__rating-num">{rating}</span>
-          <span className="catalog-card__rating-count">({reviews})</span>
+        <p className="pc-desc">{product.description}</p>
+
+        {/* Rating — después del texto, 5 estrellas */}
+        <div className="pc-rating" aria-label={`${rating} de 5 estrellas, ${reviews} opiniones`}>
+          <Stars rating={rating} />
+          <span className="pc-rating-num">{rating}</span>
+          <span className="pc-rating-count">({reviews})</span>
         </div>
-
-        <p className="catalog-card__desc">{product.description}</p>
-        <Link to={`/catalogo/${product.id}`} className="catalog-card__detail-link">
-          Ver detalle
-        </Link>
       </div>
 
       {/* ── Footer: precio + carrito ── */}
-      <div className="catalog-card__footer">
-        <div className="catalog-card__price-block">
-          <span className="catalog-card__price">
+      <div className="pc-footer">
+        <div className="pc-price-block">
+          <span className="pc-price">
             ${Number(product.price).toLocaleString('es-AR')}
           </span>
           {hasDiscount && (
-            <span className="catalog-card__price-original">
+            <span className="pc-price-original">
               ${Number(product.original_price).toLocaleString('es-AR')}
             </span>
           )}
           {discountPct && (
-            <span className="catalog-card__discount-pct">-{discountPct}%</span>
+            <span className="pc-discount-pct">-{discountPct}%</span>
           )}
         </div>
 
         {stockAgotado ? (
-          <span className="catalog-card__no-stock">Sin stock</span>
+          <span className="pc-no-stock">Sin stock</span>
         ) : (
           <button
-            className={`catalog-card__add-btn${added ? ' catalog-card__add-btn--added' : ''}`}
+            className={`pc-add-btn${added ? ' pc-add-btn--added' : ''}`}
             onClick={(e) => { e.stopPropagation(); e.preventDefault(); onAdd(product); }}
             disabled={added}
             aria-label={`Agregar ${product.name} al carrito`}
           >
             {added ? (
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-                aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="20 6 9 17 4 12"/>
               </svg>
             ) : (
-              <CartIcon />
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+              </svg>
             )}
           </button>
         )}

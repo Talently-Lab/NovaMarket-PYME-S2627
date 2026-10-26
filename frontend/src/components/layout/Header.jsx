@@ -122,6 +122,9 @@ export default function Header() {
 
           {/* Buscador global */}
           <form className="header__search" onSubmit={handleHeaderSearch} role="search" ref={searchRef}>
+            <button type="submit" className="header__search-btn" aria-label="Buscar">
+              <img src="/images/iconos/search-white.svg" alt="" width="16" height="16" />
+            </button>
             <input
               className="header__search-input"
               type="search"
@@ -136,13 +139,6 @@ export default function Header() {
               aria-expanded={showSug && suggestions.length > 0}
               autoComplete="off"
             />
-            <button type="submit" className="header__search-btn" aria-label="Buscar">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                aria-hidden="true">
-                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-              </svg>
-            </button>
             {showSug && suggestions.length > 0 && (
               <ul className="header__search-suggestions" role="listbox">
                 {suggestions.map((name, i) => (
@@ -153,11 +149,7 @@ export default function Header() {
                     className={`header__search-suggestion${i === activeSug ? ' header__search-suggestion--active' : ''}`}
                     onMouseDown={() => selectSuggestion(name)}
                   >
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
-                      stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                      aria-hidden="true" style={{ flexShrink: 0, opacity: 0.5 }}>
-                      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                    </svg>
+                    <img src="/images/iconos/search-white.svg" alt="" width="12" height="12" style={{ flexShrink: 0, opacity: 0.5 }} />
                     {name}
                   </li>
                 ))}
@@ -180,13 +172,17 @@ export default function Header() {
             )}
             {isAuthenticated ? (
               <Link to="/mis-pedidos" className="header__account-link">
-                <UserIcon /><span>{user?.name?.split(' ')[0]}</span>
+                <UserIcon />
               </Link>
             ) : (
               <Link to="/login" className="header__account-link">
-                <UserIcon /><span>Mi Cuenta</span>
+                <UserIcon />
               </Link>
             )}
+            {/* Favoritos */}
+            <Link to="/catalogo" className="header__account-link header__wishlist-link" aria-label="Mis favoritos">
+              <img src="/images/iconos/fav-white.svg" alt="" width="20" height="19" />
+            </Link>
             <Link to="/carrito"
               className="header__account-link header__cart-link"
               aria-label={`Carrito${totalItems > 0 ? `, ${totalItems} productos` : ' vacío'}`}
@@ -199,7 +195,6 @@ export default function Header() {
                   </span>
                 )}
               </div>
-              <span>Carrito</span>
             </Link>
             {isAuthenticated && (
               <button onClick={handleLogout} className="header__logout-btn">Salir</button>

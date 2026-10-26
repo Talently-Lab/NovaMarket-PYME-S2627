@@ -164,6 +164,7 @@ export default function HomePage() {
                   onAdd={handleAdd}
                   added={added === product.id}
                   cartQty={cartQty}
+                  variant="home"
                 />
               );
             })}

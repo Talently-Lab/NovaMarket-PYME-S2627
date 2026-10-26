@@ -1,0 +1,16 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Correr tests al guardar archivos de test",
+      "trigger": "PostFileSave",
+      "description": "Ejecuta la suite de tests automáticamente cada vez que se guarda un archivo de test (.test.ts, .spec.ts, etc.)",
+      "matcher": "\\.(test|spec)\\.(ts|js)$",
+      "action": {
+        "type": "command",
+        "command": "cd /home/christian/Escritorio/NovaMarket-PYME-S2627 && npm test -- --passWithNoTests 2>&1 | tail -20",
+        "timeout": 60
+      }
+    }
+  ]
+}
