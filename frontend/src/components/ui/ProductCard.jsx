@@ -14,17 +14,35 @@ function seededReviews(id) {
   return Math.floor(5 + r * 120); // entre 5 y 125
 }
 
+// ── Badge por categoría (colores exactos del Kit UI Figma) ───
+const CATEGORY_BADGE_COLORS = {
+  'Teclados':    { bg: '#F37E1D', text: '#000000' },
+  'Accesorios':  { bg: '#1DF357', text: '#000000' },
+  'Iluminación': { bg: '#F8F39E', text: '#000000' },
+  'Audio':       { bg: '#10C71C', text: '#FFFFFF' },
+  'Periféricos': { bg: '#10C7B4', text: '#FFFFFF' },
+  'Notebooks':   { bg: '#107EC7', text: '#FFFFFF' },
+  'Monitores':   { bg: '#8A10C7', text: '#FFFFFF' },
+  'Celulares':   { bg: '#DC38F1', text: '#FFFFFF' },
+  'Gadgets':     { bg: '#F13851', text: '#FFFFFF' },
+  'Gaming':      { bg: '#D2EE42', text: '#000000' },
+};
+
 // ── Badge por producto ────────────────────────────────────────
 function getBadge(product) {
   if (product.stock === 0) return null;
   const id = Number(product.id);
-  // Precio anterior simulado: si id es par y > 10, hay descuento
   if (product.original_price && product.original_price > product.price) {
     const pct = Math.round((1 - product.price / product.original_price) * 100);
-    return { label: `${pct}% OFF`, type: 'discount' };
+    return { label: `${pct}% OFF`, type: 'discount', bg: '#E247FD', text: '#FFFFFF' };
   }
-  if (id % 7 === 0) return { label: 'Más vendido', type: 'bestseller' };
-  if (id > 25)      return { label: 'Nuevo',       type: 'new' };
+  if (id % 7 === 0) return { label: 'Más vendido', type: 'bestseller', bg: '#050506', text: '#D2EE42' };
+  if (id > 25)      return { label: 'Nuevo', type: 'new', bg: '#7D1CE2', text: '#FFFFFF' };
+  // Badge de categoría
+  const cat = product.category;
+  if (cat && CATEGORY_BADGE_COLORS[cat]) {
+    return { label: cat, type: 'category', ...CATEGORY_BADGE_COLORS[cat] };
+  }
   return null;
 }
 
@@ -106,7 +124,10 @@ export function ProductCard({ product, onAdd, added, cartQty = 0 }) {
         </Link>
 
         {badge && (
-          <span className={`catalog-card__badge catalog-card__badge--${badge.type}`}>
+          <span
+            className="catalog-card__badge"
+            style={{ background: badge.bg, color: badge.text }}
+          >
             {badge.label}
           </span>
         )}
