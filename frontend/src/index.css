@@ -7125,9 +7125,14 @@ tr:hover .stock-display__edit {
 }
     /* banner triptico mobile — solo primer banner */
   .banner-triptico { grid-template-columns: 1fr; height: auto; }
-  .banner-triptico .banner-card { height: 200px; }
+  .banner-triptico .banner-card { height: 220px; }
   .banner-triptico .banner-card:nth-child(2),
   .banner-triptico .banner-card:nth-child(3) { display: none; }
+  /* Banner 1 en mobile — ocultamos borde derecho para mejor composición */
+  .banner-triptico .banner-card:first-child {
+    background-size: 110% 100% !important;
+    background-position: center left !important;
+  }
   .banner-card__content--b2 { margin-left: 0; }
 }
 
