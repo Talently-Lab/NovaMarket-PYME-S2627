@@ -6459,7 +6459,8 @@ tr:hover .stock-display__edit {
 .hero-figma {
   position: relative;
   width: 100%;
-  height: 467px;
+  aspect-ratio: 1914 / 822; /* proporción exacta de la imagen */
+  max-height: 560px;        /* tope para pantallas muy anchas */
   overflow: hidden;
   background: #050506;
 }
@@ -6855,7 +6856,7 @@ tr:hover .stock-display__edit {
 
 /* ── RESPONSIVE ── */
 @media (max-width: 1024px) {
-  .hero-figma { height: 380px; }
+  .hero-figma { max-height: 420px; }
   .hero-figma__text { left: 48px; width: 420px; }
   .hero-figma__title { font-size: 30px; }
   .hero-figma__subtitle { font-size: 20px; }
