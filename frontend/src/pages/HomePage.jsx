@@ -7,6 +7,8 @@ import { useAuth } from '../context/AuthContext';
 import { getProductImage } from '../utils/productImage';
 import { useReveal } from '../hooks/useReveal';
 import BannerTriptico from '../components/ui/BannerTriptico';
+import TrustBar from '../components/ui/TrustBar';
+import Newsletter from '../components/ui/Newsletter';
 
 // Categorias exactas del Figma — Notebooks featured (violeta), Celulares sin duplicar
 const CATEGORIES = [
@@ -103,6 +105,9 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ── BARRA DE CONFIANZA — entre Hero y Categorías ── */}
+      <TrustBar />
+
       {/* ── CATEGORÍAS — fondo blanco, exacto del Figma ── */}
       <section className="categories-figma">
         <div className={`categories-figma__header reveal${catHeaderVis ? " is-visible" : ""}`} ref={catHeaderRef}>
@@ -198,6 +203,9 @@ export default function HomePage() {
           </div>
         )}
       </section>
+
+      {/* ── NEWSLETTER — antes del banner ── */}
+      <Newsletter />
 
       {/* ── BANNER TRIPTICO ── */}
       <BannerTriptico className={`reveal${bannerVis ? " is-visible" : ""}`} innerRef={bannerRef} />
