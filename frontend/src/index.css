@@ -6976,10 +6976,13 @@ tr:hover .stock-display__edit {
   text-decoration: none;
   width: fit-content;
   margin-top: 4px;
-  transition: background 0.2s;
+  transition: background 0.2s, color 0.2s;
   letter-spacing: 0.03em;
 }
-.banner-card__btn--lime:hover { background: #c0d63a; }
+.banner-card__btn--lime:hover {
+  background: #A5C210;
+  color: #FFFFFF;
+}
 
 /* ── Contenido Banner 2 — Smartphones (derecha) ── */
 .banner-card__content--b2 {
