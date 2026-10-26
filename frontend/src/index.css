@@ -6468,9 +6468,8 @@ tr:hover .stock-display__edit {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   object-position: center center;
-  background: #050506; /* fondo negro para los bordes de contain */
 }
 .hero-figma__text {
   position: absolute;
