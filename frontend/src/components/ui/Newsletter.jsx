@@ -14,6 +14,7 @@ export default function Newsletter() {
     // Simulado — en producción conectar a Brevo / Mailchimp
     setStatus('success');
     setEmail('');
+    setTimeout(() => setStatus('idle'), 4000);
   };
 
   return (
