@@ -435,7 +435,7 @@ export default function CatalogPage() {
             <div className="catalog-state">
               <p>No hay productos que coincidan con los filtros seleccionados.</p>
               <button
-                className="btn btn--secondary"
+                className="btn btn--primary"
                 onClick={() => {
                   setSelectedCategories([]);
                   setSelectedBrands([]);
