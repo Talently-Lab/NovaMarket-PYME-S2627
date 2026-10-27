@@ -211,7 +211,7 @@ export default function ProductDetailPage() {
   if (error || !product) return (
     <div className="pd-state">
       <p style={{ color: '#ef4444' }}>{error || 'Producto no encontrado.'}</p>
-      <button className="btn btn--secondary" onClick={() => navigate('/catalogo')}>← Volver al catálogo</button>
+      <button className="btn btn--primary" onClick={() => navigate('/catalogo')}>← Volver al catálogo</button>
     </div>
   );
 

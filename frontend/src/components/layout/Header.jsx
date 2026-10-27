@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
+import { getProducts } from '../../services/productService';
 
 function CartIcon() {
   return (
@@ -39,9 +40,57 @@ export default function Header() {
   const { isAuthenticated, isAdmin, user, logout } = useAuth();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [headerSearch, setHeaderSearch] = useState('');
+  const [showSug, setShowSug] = useState(false);
+  const [activeSug, setActiveSug] = useState(-1);
+  const [productNames, setProductNames] = useState([]);
+  const searchRef = useRef(null);
   const location = useLocation();
   const closeMenu = () => setMenuOpen(false);
   const handleLogout = () => { logout(); navigate('/'); closeMenu(); };
+
+  // Carga los nombres de productos una sola vez al montar
+  useEffect(() => {
+    getProducts(undefined, { limit: 200 })
+      .then(({ products }) => setProductNames(products.map(p => p.name)))
+      .catch(() => {});
+  }, []);
+
+  // Sugerencias filtradas
+  const suggestions = (() => {
+    const term = headerSearch.trim().toLowerCase();
+    if (term.length < 2) return [];
+    return [...new Set(
+      productNames.filter(n => n.toLowerCase().includes(term))
+    )].slice(0, 6);
+  })();
+
+  const selectSuggestion = useCallback((name) => {
+    setHeaderSearch('');
+    setShowSug(false);
+    setActiveSug(-1);
+    navigate(`/catalogo?q=${encodeURIComponent(name)}`);
+  }, [navigate]);
+
+  const handleHeaderSearch = (e) => {
+    e.preventDefault();
+    const q = headerSearch.trim();
+    if (!q) return;
+    setShowSug(false);
+    navigate(`/catalogo?q=${encodeURIComponent(q)}`);
+    setHeaderSearch('');
+  };
+
+  const handleSearchKeyDown = (e) => {
+    if (!showSug || suggestions.length === 0) {
+      if (e.key === 'Enter') handleHeaderSearch(e);
+      return;
+    }
+    if (e.key === 'ArrowDown') { e.preventDefault(); setActiveSug(i => Math.min(i + 1, suggestions.length - 1)); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); setActiveSug(i => Math.max(i - 1, -1)); }
+    else if (e.key === 'Enter') { e.preventDefault(); if (activeSug >= 0) selectSuggestion(suggestions[activeSug]); else handleHeaderSearch(e); }
+    else if (e.key === 'Escape') { setShowSug(false); setActiveSug(-1); }
+  };
 
   return (
     <header className="header">
@@ -71,6 +120,43 @@ export default function Header() {
             ))}
           </nav>
 
+          {/* Buscador global */}
+          <form className="header__search" onSubmit={handleHeaderSearch} role="search" ref={searchRef}>
+            <button type="submit" className="header__search-btn" aria-label="Buscar">
+              <img src="/images/iconos/search-white.svg" alt="" width="16" height="16" />
+            </button>
+            <input
+              className="header__search-input"
+              type="search"
+              placeholder="Buscar productos..."
+              value={headerSearch}
+              onChange={e => { setHeaderSearch(e.target.value); setShowSug(true); setActiveSug(-1); }}
+              onFocus={() => setShowSug(true)}
+              onBlur={() => setTimeout(() => setShowSug(false), 150)}
+              onKeyDown={handleSearchKeyDown}
+              aria-label="Buscar productos"
+              aria-autocomplete="list"
+              aria-expanded={showSug && suggestions.length > 0}
+              autoComplete="off"
+            />
+            {showSug && suggestions.length > 0 && (
+              <ul className="header__search-suggestions" role="listbox">
+                {suggestions.map((name, i) => (
+                  <li
+                    key={name}
+                    role="option"
+                    aria-selected={i === activeSug}
+                    className={`header__search-suggestion${i === activeSug ? ' header__search-suggestion--active' : ''}`}
+                    onMouseDown={() => selectSuggestion(name)}
+                  >
+                    <img src="/images/iconos/search-white.svg" alt="" width="12" height="12" style={{ flexShrink: 0, opacity: 0.5 }} />
+                    {name}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </form>
+
           {/* Controles */}
           <div className="header__actions">
             {isAdmin && (
@@ -86,13 +172,17 @@ export default function Header() {
             )}
             {isAuthenticated ? (
               <Link to="/mis-pedidos" className="header__account-link">
-                <UserIcon /><span>{user?.name?.split(' ')[0]}</span>
+                <UserIcon />
               </Link>
             ) : (
               <Link to="/login" className="header__account-link">
-                <UserIcon /><span>Mi Cuenta</span>
+                <UserIcon />
               </Link>
             )}
+            {/* Favoritos */}
+            <Link to="/catalogo" className="header__account-link header__wishlist-link" aria-label="Mis favoritos">
+              <img src="/images/iconos/fav-white.svg" alt="" width="20" height="19" />
+            </Link>
             <Link to="/carrito"
               className="header__account-link header__cart-link"
               aria-label={`Carrito${totalItems > 0 ? `, ${totalItems} productos` : ' vacío'}`}
@@ -105,7 +195,6 @@ export default function Header() {
                   </span>
                 )}
               </div>
-              <span>Carrito</span>
             </Link>
             {isAuthenticated && (
               <button onClick={handleLogout} className="header__logout-btn">Salir</button>
