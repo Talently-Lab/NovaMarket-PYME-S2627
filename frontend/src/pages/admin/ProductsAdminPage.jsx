@@ -19,6 +19,28 @@ function nivelStock(stock) {
   return null;
 }
 
+// Fotos del producto: usa el array `images` cuando el backend lo devuelva y, mientras tanto, la imagen única.
+function fotosDe(product) {
+  if (Array.isArray(product.images) && product.images.length > 0) return product.images;
+  return product.image_url ? [product.image_url] : [];
+}
+
+// Miniatura de la foto principal + «+N» si hay más fotos; sin fotos, un recuadro «Sin foto».
+function ProductPhotos({ product }) {
+  const fotos = fotosDe(product);
+  if (fotos.length === 0) {
+    return <span className="admin-photo admin-photo--empty">Sin foto</span>;
+  }
+  return (
+    <span className="admin-photo">
+      <img src={fotos[0]} alt={`Foto de ${product.name}`} className="admin-photo__img" loading="lazy" />
+      {fotos.length > 1 && (
+        <span className="admin-photo__count" title={`${fotos.length} fotos`}>+{fotos.length - 1}</span>
+      )}
+    </span>
+  );
+}
+
 function StockCell({ product, onUpdated }) {
   const [editing, setEditing] = useState(false);
   const [value,   setValue]   = useState(String(product.stock ?? 0));
@@ -264,6 +286,7 @@ export default function ProductsAdminPage() {
           <thead>
             <tr>
               <th>ID</th>
+              <th>Fotos</th>
               <th>Nombre</th>
               <th>Categoría</th>
               <th>Precio</th>
@@ -275,13 +298,13 @@ export default function ProductsAdminPage() {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={7} style={{ textAlign: 'center', padding: 'var(--sp-8)', color: 'var(--color-text-disabled)' }}>
+                <td colSpan={8} style={{ textAlign: 'center', padding: 'var(--sp-8)', color: 'var(--color-text-disabled)' }}>
                   Cargando productos…
                 </td>
               </tr>
             ) : filtrados.length === 0 ? (
               <tr>
-                <td colSpan={7} style={{ textAlign: 'center', padding: 'var(--sp-8)', color: 'var(--color-text-disabled)' }}>
+                <td colSpan={8} style={{ textAlign: 'center', padding: 'var(--sp-8)', color: 'var(--color-text-disabled)' }}>
                   {products.length === 0 ? 'No hay productos aún.' : 'Ningún producto coincide con los filtros.'}
                 </td>
               </tr>
@@ -291,6 +314,7 @@ export default function ProductsAdminPage() {
                   <td style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', color: 'var(--color-text-disabled)' }}>
                     #{p.id}
                   </td>
+                  <td><ProductPhotos product={p} /></td>
                   <td style={{ fontWeight: 'var(--weight-medium)' }}>{p.name}</td>
                   <td style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--text-sm)' }}>
                     {p.category || '—'}
