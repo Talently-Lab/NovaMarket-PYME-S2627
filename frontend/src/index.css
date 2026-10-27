@@ -9011,7 +9011,7 @@ tr:hover .stock-display__edit {
 .admin-photo--empty { align-items: center; justify-content: center; text-align: center; padding: 2px; font-size: 10px; line-height: 1.1; color: var(--color-text-secondary); border-style: dashed; }
 
 /* ── Fix: tabs de producto no se cortan en tablet/mobile ── */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .pd-tabs-header {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
@@ -9024,6 +9024,7 @@ tr:hover .stock-display__edit {
     padding: 10px 16px;
     font-size: 13px;
     text-align: center;
+    white-space: nowrap;
   }
 }
 @media (max-width: 480px) {
@@ -9040,6 +9041,10 @@ tr:hover .stock-display__edit {
   .pd-reviews__bars {
     min-width: 0;
     width: 100%;
+    max-width: 100%;
+  }
+  .pd-reviews__bar-row {
+    gap: 6px;
   }
 }
 
