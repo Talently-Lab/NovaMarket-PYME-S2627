@@ -8944,3 +8944,13 @@ tr:hover .stock-display__edit {
   border-color: #7D1CE2;
   color: #7D1CE2;
 }
+
+/* iPhone (Safari) hace zoom al enfocar un campo de menos de 16 px y el formulario se corre.
+   En pantallas chicas todos los campos van a 16 px (SCRUM-103, prueba en celular). */
+@media (max-width: 768px) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
