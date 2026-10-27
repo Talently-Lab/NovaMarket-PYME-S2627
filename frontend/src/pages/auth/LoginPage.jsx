@@ -27,7 +27,11 @@ export default function LoginPage() {
       const { data } = await authAPI.login(form);
       localStorage.setItem('nm-token', data.token);
       login(data.user, data.token);
-      navigate(redirectTo, { replace: true });
+      // Admin va directo al panel salvo que venga de una ruta específica
+      const dest = data.user?.role === 'admin' && redirectTo === '/'
+        ? '/admin'
+        : redirectTo;
+      navigate(dest, { replace: true });
     } catch (err) {
       setError(err.response?.data?.error || 'Error al iniciar sesión. Intentá de nuevo.');
     } finally {

@@ -1,0 +1,15 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Bloquear .env en git",
+      "trigger": "PostFileCreate",
+      "description": "Bloquea cualquier operación de escritura/staging sobre archivos .env para evitar que se suban credenciales al repo",
+      "matcher": "\\.env",
+      "action": {
+        "type": "command",
+        "command": "echo \"$1\" | grep -qE '(^|/)\\.env(\\.|$)' && echo \"⛔ Archivo .env detectado — no debe subirse al repo. Verificá el .gitignore.\" >&2 && exit 2 || exit 0"
+      }
+    }
+  ]
+}

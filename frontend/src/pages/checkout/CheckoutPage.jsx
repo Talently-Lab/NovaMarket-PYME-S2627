@@ -497,7 +497,7 @@ export default function CheckoutPage() {
                   maxLength={20}
                 />
                 <button
-                  className="btn btn--secondary coupon-btn"
+                  className="btn btn--primary coupon-btn"
                   onClick={handleApplyCoupon}
                   disabled={couponLoading}
                 >

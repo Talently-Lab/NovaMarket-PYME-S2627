@@ -15,7 +15,7 @@ test.describe('HomePage', () => {
   // Hero
   test('Hero — título principal visible', async () => {
     await expect(home.heroTitle).toBeVisible();
-    await expect(home.heroTitle).toContainText(/todo lo que necesitás/i);
+    await expect(home.heroTitle).toContainText(/descubrí nuestros productos/i);
   });
 
   test('Hero — CTA "Explorar catálogo" navega a /catalogo', async ({ page }) => {
