@@ -133,6 +133,17 @@ export default function CatalogPage() {
     fetchProducts();
   }, [order]);
 
+  // Re-fetch cuando el usuario vuelve a esta pestaña — garantiza ver cambios del admin
+  useEffect(() => {
+    const onFocus = () => {
+      getProducts(undefined, { order })
+        .then(({ products }) => setAllProducts(products))
+        .catch(() => {});
+    };
+    window.addEventListener('focus', onFocus);
+    return () => window.removeEventListener('focus', onFocus);
+  }, [order]);
+
   // ── Filtrado en cliente ──
   const filtered = useMemo(() => {
     let list = [...allProducts];

@@ -117,8 +117,15 @@ export default function ProductFormModal({ product, categories = [], onSaved, on
         }
       }
 
-      // La primera imagen es la principal
-      const image_url = uploadedImages[0]?.url || uploadedImages[0]?.preview || form.image_url || '';
+      // La primera imagen recién subida tiene prioridad sobre la pre-existente.
+      // Si el admin subió una imagen nueva (tiene .file), esa es la principal.
+      // Si no subió ninguna, mantiene la imagen que ya tenía el producto.
+      const freshUploaded = uploadedImages.find(img => img.file && img.url);
+      const image_url = freshUploaded?.url
+        || uploadedImages[0]?.url
+        || uploadedImages[0]?.preview
+        || form.image_url
+        || '';
 
       const payload = {
         name,

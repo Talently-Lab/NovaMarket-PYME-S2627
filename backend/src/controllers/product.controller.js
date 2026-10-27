@@ -48,6 +48,8 @@ async function getProductById(req, res) {
     return res.status(404).json({ error: 'Producto no encontrado.' });
   }
 
+  // Evitar que el browser o un proxy sirvan datos obsoletos al admin
+  res.set('Cache-Control', 'no-store');
   return res.status(200).json({ product });
 }
 

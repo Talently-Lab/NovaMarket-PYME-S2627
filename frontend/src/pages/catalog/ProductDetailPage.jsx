@@ -177,6 +177,17 @@ export default function ProductDetailPage() {
       .finally(() => setLoading(false));
   }, [id]);
 
+  // Re-fetch cuando el usuario vuelve a esta pestaña — muestra precio/imagen actualizado
+  useEffect(() => {
+    const onFocus = () => {
+      getProductById(id)
+        .then(p => { if (p) setProduct(p); })
+        .catch(() => {});
+    };
+    window.addEventListener('focus', onFocus);
+    return () => window.removeEventListener('focus', onFocus);
+  }, [id]);
+
   const cartQty    = cartItems.find(i => i.id === product?.id)?.quantity ?? 0;
   const stock      = product?.stock ?? 0;
   const stockAgotado = stock === 0 || cartQty >= stock;
