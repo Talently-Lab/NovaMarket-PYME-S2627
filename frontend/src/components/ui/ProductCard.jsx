@@ -15,36 +15,23 @@ function seededReviews(id) {
   return Math.floor(5 + r * 120);
 }
 
-// ── Colores de badge por categoría (Kit UI Figma) ─────────────
-const CATEGORY_BADGE_COLORS = {
-  'Teclados':    { bg: '#F37E1D', text: '#000000' },
-  'Accesorios':  { bg: '#1DF357', text: '#000000' },
-  'Iluminación': { bg: '#F8F39E', text: '#000000' },
-  'Audio':       { bg: '#10C71C', text: '#FFFFFF' },
-  'Periféricos': { bg: '#10C7B4', text: '#FFFFFF' },
-  'Notebooks':   { bg: '#107EC7', text: '#FFFFFF' },
-  'Monitores':   { bg: '#8A10C7', text: '#FFFFFF' },
-  'Celulares':   { bg: '#DC38F1', text: '#FFFFFF' },
-  'Gadgets':     { bg: '#F13851', text: '#FFFFFF' },
-  'Gaming':      { bg: '#D2EE42', text: '#000000' },
-};
+// ── Badges editoriales (propuesta UX de Nicko — SPR07) ────────
+// 5 badges fijos con identidad visual clara. Asignados por seed
+// determinista: mismo producto → mismo badge siempre.
+const BADGES = [
+  { label: 'PRO',    bg: '#7D1CE2', text: '#FFFFFF' },
+  { label: 'NUEVO',  bg: '#D2EE42', text: '#000000' },
+  { label: 'OFERTA', bg: '#E247FD', text: '#FFFFFF' },
+  { label: 'GAMING', bg: '#050506', text: '#D2EE42' },
+  { label: 'TOP',    bg: '#F37E1D', text: '#000000' },
+];
 
 function getBadge(product) {
   if (product.stock === 0) return null;
   const id = Number(product.id);
-  // Primero: badge de categoría del Kit UI Figma
-  const cat = product.category;
-  if (cat && CATEGORY_BADGE_COLORS[cat]) {
-    return { label: cat, ...CATEGORY_BADGE_COLORS[cat] };
-  }
-  // Segundo: descuento si tiene precio anterior
-  if (product.original_price && product.original_price > product.price) {
-    const pct = Math.round((1 - product.price / product.original_price) * 100);
-    return { label: `${pct}% OFF`, bg: '#E247FD', text: '#FFFFFF' };
-  }
-  // Tercero: más vendido
-  if (id % 7 === 0) return { label: 'Más vendido', bg: '#050506', text: '#D2EE42' };
-  return null;
+  const x = Math.sin(id * 7919 + 1013) * 99991;
+  const r = x - Math.floor(x);
+  return BADGES[Math.floor(r * BADGES.length)];
 }
 
 // ── Estrellas ─────────────────────────────────────────────────

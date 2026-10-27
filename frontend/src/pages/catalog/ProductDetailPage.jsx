@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { formatearPrecio } from '../../utils/formatearPrecio';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { getProductById, getProducts } from '../../services/productService';
 import { useCart } from '../../context/CartContext';
 import { getProductImage } from '../../utils/productImage';
@@ -150,6 +150,7 @@ export default function ProductDetailPage() {
   const [addedRelated, setAddedRelated] = useState({});
 
   const { active: zoomActive, setActive: setZoomActive, pos: lensPos, pct: lensPct, containerRef, handleMouseMove } = useLens();
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -157,6 +158,7 @@ export default function ProductDetailPage() {
     setQty(1);
     setActiveImg(0);
     setZoomActive(false);
+    setLightboxOpen(false);
     getProductById(id)
       .then(p => {
         setProduct(p);
@@ -220,6 +222,7 @@ export default function ProductDetailPage() {
   const specs  = buildSpecs(product);
 
   return (
+    <>
     <div className="pd-page">
 
       {/* ── Breadcrumb ── */}
@@ -256,6 +259,8 @@ export default function ProductDetailPage() {
                 onMouseEnter={() => setZoomActive(true)}
                 onMouseLeave={() => setZoomActive(false)}
                 onMouseMove={handleMouseMove}
+                onClick={() => setLightboxOpen(true)}
+                style={{ cursor: 'zoom-in' }}
                 ref={containerRef}
               >
                 <img
@@ -493,5 +498,44 @@ export default function ProductDetailPage() {
         </div>
       )}
     </div>
+
+      {/* ── Lightbox táctil: tap abre imagen ampliada, pinch-to-zoom nativo en iOS/Android ── */}
+      <AnimatePresence>
+        {lightboxOpen && (
+          <motion.div
+            className="pd-lightbox"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => setLightboxOpen(false)}
+            role="dialog"
+            aria-modal="true"
+            aria-label={`Imagen ampliada de ${product?.name}`}
+          >
+            <motion.img
+              src={thumbs[activeImg]}
+              alt={product?.name}
+              className="pd-lightbox__img"
+              initial={{ scale: 0.92 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.92 }}
+              transition={{ duration: 0.2 }}
+              onClick={(e) => e.stopPropagation()}
+            />
+            <button
+              className="pd-lightbox__close"
+              onClick={() => setLightboxOpen(false)}
+              aria-label="Cerrar imagen"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

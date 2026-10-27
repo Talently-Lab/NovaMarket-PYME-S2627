@@ -352,11 +352,12 @@ ul, ol { list-style: none; }
   border: none;
   outline: none;
   padding: 4px 12px 4px 4px;
-  font-size: var(--text-sm);
-  color: #FEFEFE;
+  font-size: 14px;
+  color: #FFFFFF;
+  caret-color: #D2EE42;
   font-family: var(--font-body);
 }
-.header__search-input::placeholder { color: rgba(255,255,255,0.45); }
+.header__search-input::placeholder { color: rgba(255,255,255,0.5); }
 .header__search-input:focus { outline: none; }
 /* Quitar el resaltado amarillo nativo del browser en inputs type=search */
 .header__search-input::-webkit-search-decoration,
@@ -8985,3 +8986,63 @@ tr:hover .stock-display__edit {
   background: var(--color-text); color: var(--color-text-inverse); font-size: 11px; font-weight: 600; line-height: 18px;
 }
 .admin-photo--empty { align-items: center; justify-content: center; text-align: center; padding: 2px; font-size: 10px; line-height: 1.1; color: var(--color-text-secondary); border-style: dashed; }
+
+/* ── Fix: opiniones responsive — resumen en columna en tablet y mobile ── */
+@media (max-width: 1024px) {
+  .pd-reviews__summary {
+    flex-direction: column;
+    gap: 20px;
+  }
+  .pd-reviews__bars {
+    min-width: 0;
+    width: 100%;
+  }
+}
+
+/* ── Lightbox táctil — zoom en mobile/tablet (tap → imagen ampliada, pinch nativo) ── */
+.pd-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  touch-action: manipulation;
+}
+.pd-lightbox__img {
+  max-width: 100%;
+  max-height: 90dvh;
+  object-fit: contain;
+  border-radius: 8px;
+  touch-action: pinch-zoom;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.pd-lightbox__close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  transition: background 0.15s;
+}
+.pd-lightbox__close:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+/* En dispositivos touch el hint dice "Toca para ampliar" en vez de "Zoom" */
+@media (hover: none) and (pointer: coarse) {
+  .pd-zoom-hint span:not(.pd-zoom-hint-icon) { display: none; }
+  .pd-zoom-hint::after { content: 'Toca para ampliar'; }
+}
