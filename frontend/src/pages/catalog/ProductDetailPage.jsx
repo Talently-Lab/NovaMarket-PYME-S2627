@@ -380,7 +380,11 @@ export default function ProductDetailPage() {
               className={`pd-tab${activeTab===tab?' pd-tab--active':''}`}
               onClick={() => setActiveTab(tab)}
             >
-              {tab === 'descripcion' ? 'Descripción completa' : tab === 'especificaciones' ? 'Especificaciones' : `Opiniones (${reviews.length})`}
+              {tab === 'descripcion'
+                ? <><span className="pd-tab-label--full">Descripción completa</span><span className="pd-tab-label--short">Descripción</span></>
+                : tab === 'especificaciones'
+                ? <><span className="pd-tab-label--full">Especificaciones</span><span className="pd-tab-label--short">Specs</span></>
+                : `Opiniones (${reviews.length})`}
             </button>
           ))}
         </div>

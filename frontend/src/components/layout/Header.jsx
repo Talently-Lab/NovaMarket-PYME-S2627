@@ -40,12 +40,21 @@ export default function Header() {
   const { isAuthenticated, isAdmin, user, logout } = useAuth();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const mobileSearchInputRef = useRef(null);
   const [headerSearch, setHeaderSearch] = useState('');
   const [showSug, setShowSug] = useState(false);
   const [activeSug, setActiveSug] = useState(-1);
   const [productNames, setProductNames] = useState([]);
   const searchRef = useRef(null);
   const location = useLocation();
+  // Foco automático al abrir buscador mobile
+  useEffect(() => {
+    if (mobileSearchOpen) {
+      setTimeout(() => mobileSearchInputRef.current?.focus(), 50);
+    }
+  }, [mobileSearchOpen]);
+
   const closeMenu = () => setMenuOpen(false);
   const handleLogout = () => { logout(); navigate('/'); closeMenu(); };
 
@@ -183,6 +192,18 @@ export default function Header() {
             <Link to="/catalogo" className="header__account-link header__wishlist-link" aria-label="Mis favoritos">
               <img src="/images/iconos/fav-white.svg" alt="" width="20" height="19" />
             </Link>
+            {/* Lupa mobile — solo visible en ≤768px */}
+            <button
+              className="header__mobile-search-toggle"
+              onClick={() => setMobileSearchOpen(o => !o)}
+              aria-label={mobileSearchOpen ? 'Cerrar buscador' : 'Abrir buscador'}
+              aria-expanded={mobileSearchOpen}
+            >
+              {mobileSearchOpen
+                ? <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                : <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              }
+            </button>
             <Link to="/carrito"
               className="header__account-link header__cart-link"
               aria-label={`Carrito${totalItems > 0 ? `, ${totalItems} productos` : ' vacío'}`}
@@ -211,6 +232,43 @@ export default function Header() {
           </div>
         </div>
       </div>
+
+      {/* ── BUSCADOR MOBILE EXPANDIBLE — aparece debajo del header al tocar la lupa ── */}
+      {mobileSearchOpen && (
+        <form
+          className="header__mobile-search-bar"
+          onSubmit={(e) => {
+            e.preventDefault();
+            const q = headerSearch.trim();
+            if (!q) return;
+            setShowSug(false);
+            navigate(`/catalogo?q=${encodeURIComponent(q)}`);
+            setHeaderSearch('');
+            setMobileSearchOpen(false);
+          }}
+          role="search"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+            aria-hidden="true" className="header__mobile-search-bar-icon">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input
+            ref={mobileSearchInputRef}
+            className="header__mobile-search-bar-input"
+            type="search"
+            placeholder="Buscar productos..."
+            value={headerSearch}
+            onChange={e => setHeaderSearch(e.target.value)}
+            onKeyDown={e => e.key === 'Escape' && setMobileSearchOpen(false)}
+            aria-label="Buscar productos"
+            autoComplete="off"
+          />
+          <button type="submit" className="header__mobile-search-bar-btn" aria-label="Buscar">
+            Ir
+          </button>
+        </form>
+      )}
 
       {/* ── DRAWER MOBILE ── */}
       <nav id="mobile-nav"

@@ -415,6 +415,59 @@ ul, ol { list-style: none; }
   .header__search { display: none; }
 }
 
+/* ── Buscador mobile: lupa en el header + barra expandible ── */
+/* El botón lupa solo existe en mobile */
+.header__mobile-search-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #FFFFFF;
+  padding: 4px;
+  align-items: center;
+  justify-content: center;
+}
+@media (max-width: 768px) {
+  .header__mobile-search-toggle { display: flex; }
+}
+
+/* Barra expandible debajo del header top */
+.header__mobile-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #050506;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding: 10px var(--container-pad, 20px);
+}
+.header__mobile-search-bar-icon {
+  color: rgba(255,255,255,0.5);
+  flex-shrink: 0;
+}
+.header__mobile-search-bar-input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  font-size: 15px;
+  color: #FFFFFF;
+  caret-color: #D2EE42;
+  font-family: var(--font-body);
+}
+.header__mobile-search-bar-input::placeholder { color: rgba(255,255,255,0.4); }
+.header__mobile-search-bar-btn {
+  background: #D2EE42;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #050506;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
 /* Mi cuenta link */
 .header__account-link {
   display: flex;
@@ -619,6 +672,7 @@ ul, ol { list-style: none; }
 }
 
 .header__mobile-nav.open { display: flex; }
+
 
 .header__mobile-nav a {
   padding: var(--sp-3) var(--sp-4);
@@ -9011,25 +9065,29 @@ tr:hover .stock-display__edit {
 .admin-photo--empty { align-items: center; justify-content: center; text-align: center; padding: 2px; font-size: 10px; line-height: 1.1; color: var(--color-text-secondary); border-style: dashed; }
 
 /* ── Fix: tabs de producto no se cortan en tablet/mobile ── */
+
+/* Label corto oculto en desktop, visible en mobile */
+.pd-tab-label--short { display: none; }
+.pd-tab-label--full  { display: inline; }
+
 @media (max-width: 1024px) {
   .pd-tabs-header {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
   }
-  .pd-tabs-header::-webkit-scrollbar { display: none; }
   .pd-tab {
-    flex: 1 0 auto;
-    min-width: max-content;
-    padding: 10px 16px;
+    padding: 10px 8px;
     font-size: 13px;
     text-align: center;
-    white-space: nowrap;
+    white-space: normal;
+    line-height: 1.3;
   }
 }
-@media (max-width: 480px) {
+@media (max-width: 600px) {
+  .pd-tab-label--short { display: inline; }
+  .pd-tab-label--full  { display: none; }
   .pd-tab {
-    padding: 10px 12px;
+    padding: 10px 6px;
     font-size: 12px;
   }
 }
@@ -9045,6 +9103,16 @@ tr:hover .stock-display__edit {
   }
   .pd-reviews__bar-row {
     gap: 6px;
+  }
+  /* Fecha de la review en su propia línea — no empuja el contenido */
+  .pd-review__date {
+    margin-left: 0;
+    width: 100%;
+    margin-top: 2px;
+  }
+  /* Texto de review sin indentación extra */
+  .pd-review__text {
+    padding-left: 0;
   }
 }
 
