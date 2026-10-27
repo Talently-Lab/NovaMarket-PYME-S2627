@@ -8643,9 +8643,32 @@ tr:hover .stock-display__edit {
   font-weight: 500;
 }
 
+@media (max-width: 1024px) {
+  .newsletter__inner { gap: 40px; }
+  .newsletter__title { font-size: 1.5rem; }
+}
 @media (max-width: 768px) {
-  .newsletter__inner { grid-template-columns: 1fr; gap: 32px; }
+  .newsletter__inner { grid-template-columns: 1fr; gap: 28px; }
   .newsletter { padding: 48px 0; }
+  .newsletter__input-row {
+    flex-direction: column;
+    border-radius: 8px;
+    overflow: visible;
+    border: none;
+    gap: 10px;
+  }
+  .newsletter__input {
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.2);
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .newsletter__btn {
+    border-radius: 8px;
+    width: 100%;
+    padding: 14px;
+    text-align: center;
+  }
 }
 
 /* ── ProductCard en Home (variant=home) — imagen compacta ── */
