@@ -91,13 +91,13 @@ async function login(req, res) {
   // (evita enumerar usuarios — OWASP A01)
   const user = await UserModel.findByEmail(email);
   if (!user) {
-    return res.status(401).json({ error: 'Credenciales inválidas.' });
+    return res.status(401).json({ error: 'Datos incorrectos intente de nuevo' });
   }
 
   // Verificar contraseña
   const passwordMatch = await bcrypt.compare(password, user.password);
   if (!passwordMatch) {
-    return res.status(401).json({ error: 'Credenciales inválidas.' });
+    return res.status(401).json({ error: 'Datos incorrectos intente de nuevo' });
   }
 
   // Generar token
