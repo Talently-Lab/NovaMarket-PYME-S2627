@@ -1,11 +1,11 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
+import { formatearPrecio } from '../../utils/formatearPrecio';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { getProductById, getProducts } from '../../services/productService';
 import { useCart } from '../../context/CartContext';
 import { getProductImage } from '../../utils/productImage';
 
-const fmt = (n) => Number(n ?? 0).toLocaleString('es-AR', { minimumFractionDigits: 0 });
 
 // ── Reviews mockeadas ────────────────────────────────────────
 const R_NAMES = ['Martín G.','Sofía R.','Lucas P.','Valentina M.','Diego F.','Camila T.','Nicolás B.','Laura S.','Andrés H.','Florencia V.'];
@@ -314,9 +314,9 @@ export default function ProductDetailPage() {
               )}
               <h1 className="pd-name">{product.name}</h1>
               <div className="pd-price-row">
-                <span className="pd-price">${fmt(product.price)}</span>
+                <span className="pd-price">{formatearPrecio(product.price)}</span>
                 {product.original_price && (
-                  <span className="pd-price-original">${fmt(product.original_price)}</span>
+                  <span className="pd-price-original">{formatearPrecio(product.original_price)}</span>
                 )}
               </div>
             </div>
@@ -466,7 +466,7 @@ export default function ProductDetailPage() {
                   <div className="pd-related-card__body">
                     <p className="pd-related-card__name">{p.name}</p>
                     <div className="pd-related-card__footer">
-                      <p className="pd-related-card__price">${fmt(p.price)}</p>
+                      <p className="pd-related-card__price">{formatearPrecio(p.price)}</p>
                       {rAgotado ? (
                         <span className="pd-related-card__no-stock">Sin stock</span>
                       ) : (

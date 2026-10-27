@@ -1,4 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
+import { formatearPrecio } from '../../utils/formatearPrecio';
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../../context/CartContext';
@@ -135,7 +136,7 @@ export default function CartPage() {
                 <div className="cart-item__info">
                   <p className="cart-item__name">{item.name}</p>
                   <p className="cart-item__price">
-                    ${Number(item.price).toLocaleString('es-AR')} c/u
+                    {formatearPrecio(item.price)} c/u
                   </p>
                 </div>
 
@@ -178,7 +179,7 @@ export default function CartPage() {
 
                 {/* Subtotal */}
                 <p className="cart-item__subtotal">
-                  ${Number(item.price * item.quantity).toLocaleString('es-AR')}
+                  {formatearPrecio(item.price * item.quantity)}
                 </p>
 
                 {/* Eliminar */}
@@ -208,7 +209,7 @@ export default function CartPage() {
                   {item.name} <span className="cart-summary__qty">x{item.quantity}</span>
                 </span>
                 <span className="cart-summary__row-value">
-                  ${Number(item.price * item.quantity).toLocaleString('es-AR')}
+                  {formatearPrecio(item.price * item.quantity)}
                 </span>
               </div>
             ))}
@@ -218,7 +219,7 @@ export default function CartPage() {
 
           <div className="cart-summary__total">
             <span>Total</span>
-            <span>${Number(totalAmount).toLocaleString('es-AR')}</span>
+            <span>{formatearPrecio(totalAmount)}</span>
           </div>
 
           {itemsSinStock && (

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { formatearPrecio } from '../../utils/formatearPrecio';
 import { getProductImage } from '../../utils/productImage';
 
 // ── Rating mockeado por seed ──────────────────────────────────
@@ -152,11 +153,11 @@ export function ProductCard({ product, onAdd, added, cartQty = 0, variant = 'cat
       <div className="pc-footer">
         <div className="pc-price-block">
           <span className="pc-price">
-            ${Number(product.price).toLocaleString('es-AR')}
+            {formatearPrecio(product.price)}
           </span>
           {hasDiscount && (
             <span className="pc-price-original">
-              ${Number(product.original_price).toLocaleString('es-AR')}
+              {formatearPrecio(product.original_price)}
             </span>
           )}
           {discountPct && (
