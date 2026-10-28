@@ -4,7 +4,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getProductById, getProducts } from '../../services/productService';
 import { useCart } from '../../context/CartContext';
-import { getProductImage } from '../../utils/productImage';
+import { getProductImage, getProductImages } from '../../utils/productImage';
 
 
 // ── Reviews mockeadas ────────────────────────────────────────
@@ -111,13 +111,13 @@ function buildSpecs(product) {
   return [...base, ...extra].filter(Boolean);
 }
 
-// ── Hook lupa separada ───────────────────────────────────────
+// ── Hook lupa separada (mouse) ───────────────────────────────
 const ZOOM_FACTOR = 3;
 
 function useLens() {
   const [active, setActive] = useState(false);
-  const [pos,    setPos]    = useState({ x: 0, y: 0 });   // px dentro del contenedor
-  const [pct,    setPct]    = useState({ x: 50, y: 50 }); // % para background-position
+  const [pos,    setPos]    = useState({ x: 0, y: 0 });
+  const [pct,    setPct]    = useState({ x: 50, y: 50 });
   const containerRef        = useRef(null);
 
   const handleMouseMove = useCallback((e) => {
@@ -130,6 +130,43 @@ function useLens() {
   }, []);
 
   return { active, setActive, pos, pct, containerRef, handleMouseMove };
+}
+
+// ── Hook zoom touch (mobile/tablet) ─────────────────────────
+// Zoom inline: el usuario toca → la imagen escala ×2.5 con origin en el punto tocado.
+// Si arrastra, el origin se mueve siguiendo el dedo (misma sensación que la lupa desktop).
+const TOUCH_ZOOM = 2.5;
+
+function useTouchZoom() {
+  const [touchActive, setTouchActive] = useState(false);
+  const [origin,      setOrigin]      = useState({ x: 50, y: 50 }); // % para transform-origin
+  const touchRef = useRef(null);
+
+  const getPct = (e) => {
+    const rect = touchRef.current?.getBoundingClientRect();
+    if (!rect) return { x: 50, y: 50 };
+    const touch = e.touches[0] ?? e.changedTouches[0];
+    return {
+      x: Math.max(0, Math.min(((touch.clientX - rect.left) / rect.width)  * 100, 100)),
+      y: Math.max(0, Math.min(((touch.clientY - rect.top)  / rect.height) * 100, 100)),
+    };
+  };
+
+  const handleTouchStart = useCallback((e) => {
+    setTouchActive(true);
+    setOrigin(getPct(e));
+  }, []);
+
+  const handleTouchMove = useCallback((e) => {
+    if (!touchActive) return;
+    setOrigin(getPct(e));
+  }, [touchActive]);
+
+  const handleTouchEnd = useCallback(() => {
+    setTouchActive(false);
+  }, []);
+
+  return { touchActive, origin, touchRef, handleTouchStart, handleTouchMove, handleTouchEnd };
 }
 
 // ── Componente principal ──────────────────────────────────────
@@ -150,6 +187,7 @@ export default function ProductDetailPage() {
   const [addedRelated, setAddedRelated] = useState({});
 
   const { active: zoomActive, setActive: setZoomActive, pos: lensPos, pct: lensPct, containerRef, handleMouseMove } = useLens();
+  const { touchActive, origin: touchOrigin, touchRef, handleTouchStart, handleTouchMove, handleTouchEnd } = useTouchZoom();
   const [lightboxOpen, setLightboxOpen] = useState(false);
 
   useEffect(() => {
@@ -229,7 +267,7 @@ export default function ProductDetailPage() {
   );
 
   const imgSrc = getProductImage(product);
-  const thumbs = [imgSrc, imgSrc, imgSrc, imgSrc];
+  const thumbs = getProductImages(product); // array real de URLs; [0] = principal
   const specs  = buildSpecs(product);
 
   return (
@@ -270,14 +308,26 @@ export default function ProductDetailPage() {
                 onMouseEnter={() => setZoomActive(true)}
                 onMouseLeave={() => setZoomActive(false)}
                 onMouseMove={handleMouseMove}
-                onClick={() => setLightboxOpen(true)}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+                onTouchCancel={handleTouchEnd}
+                onClick={() => {
+                  // En touch el zoom es inline; el lightbox solo se abre con mouse
+                  if (window.matchMedia('(hover: none) and (pointer: coarse)').matches) return;
+                  setLightboxOpen(true);
+                }}
                 style={{ cursor: 'zoom-in' }}
-                ref={containerRef}
+                ref={(el) => { containerRef.current = el; touchRef.current = el; }}
               >
                 <img
                   src={thumbs[activeImg]}
                   alt={product.name}
                   className="pd-image-main__img"
+                  style={touchActive ? {
+                    transform: `scale(${TOUCH_ZOOM})`,
+                    transformOrigin: `${touchOrigin.x}% ${touchOrigin.y}%`,
+                  } : undefined}
                 />
                 {zoomActive && (
                   <div className="pd-lens-square" style={{ left: lensPos.x - 60, top: lensPos.y - 60 }} />
@@ -306,17 +356,19 @@ export default function ProductDetailPage() {
               )}
             </div>
 
-            <div className="pd-thumbnails">
-              {thumbs.map((src, i) => (
-                <button key={i}
-                  className={`pd-thumb${activeImg === i ? ' pd-thumb--active' : ''}`}
-                  onClick={() => setActiveImg(i)}
-                  aria-label={`Ver imagen ${i + 1}`}
-                >
-                  <img src={src} alt={`${product.name} ${i + 1}`} />
-                </button>
-              ))}
-            </div>
+            {thumbs.length > 1 && (
+              <div className="pd-thumbnails">
+                {thumbs.map((src, i) => (
+                  <button key={i}
+                    className={`pd-thumb${activeImg === i ? ' pd-thumb--active' : ''}`}
+                    onClick={() => setActiveImg(i)}
+                    aria-label={`Ver imagen ${i + 1}`}
+                  >
+                    <img src={src} alt={`${product.name} ${i + 1}`} />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Purchase block */}

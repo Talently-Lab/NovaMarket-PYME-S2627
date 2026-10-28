@@ -72,3 +72,32 @@ export function getProductImage(product) {
   }
   return PRODUCT_IMAGES[product?.name] || CATEGORY_IMAGES[product?.category] || DEFAULT_IMAGE;
 }
+
+/**
+ * Devuelve un array de hasta 5 URLs de imágenes del producto.
+ * El campo image_url puede contener múltiples URLs separadas por '|||'.
+ * La primera siempre es la imagen principal.
+ * Si no hay imágenes extras, devuelve solo la principal.
+ */
+export function getProductImages(product) {
+  const url = product?.image_url ?? '';
+  const SEPARATOR = '|||';
+
+  // Extraer todas las URLs del campo image_url
+  let urls = url.split(SEPARATOR).map(u => u.trim()).filter(Boolean);
+
+  // Filtrar URLs externas bloqueadas una a una
+  urls = urls.map(u =>
+    BLOCKED_HOSTS.some(h => u.includes(h))
+      ? (PRODUCT_IMAGES[product?.name] || CATEGORY_IMAGES[product?.category] || DEFAULT_IMAGE)
+      : u
+  );
+
+  // Si no hay ninguna URL válida, usar la imagen por nombre/categoría
+  if (urls.length === 0) {
+    const fallback = PRODUCT_IMAGES[product?.name] || CATEGORY_IMAGES[product?.category] || DEFAULT_IMAGE;
+    urls = [fallback];
+  }
+
+  return urls;
+}

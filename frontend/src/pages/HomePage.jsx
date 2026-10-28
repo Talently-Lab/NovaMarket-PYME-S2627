@@ -16,6 +16,7 @@ const CATEGORIES = [
   { icon: '/images/iconos/ico_gaming.svg',    name: 'Gaming',    slug: 'gaming',    featured: false },
   { icon: '/images/iconos/ico_notebooks.svg', name: 'Notebooks', slug: 'notebooks', featured: false },
   { icon: '/images/iconos/ico_celulares.svg', name: 'Celulares', slug: 'celulares', featured: false },
+  { icon: '/images/iconos/ico_monitores.svg', name: 'Monitores', slug: 'monitores', featured: false },
   { icon: '/images/iconos/ico_audio.svg',     name: 'Audio',     slug: 'audio',     featured: false },
   { icon: '/images/iconos/ico_gadgets.svg',   name: 'Gadgets',   slug: 'gadgets',   featured: false },
 ];

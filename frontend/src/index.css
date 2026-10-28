@@ -3032,6 +3032,7 @@ ul, ol { list-style: none; }
   flex: 1;
   padding: 32px 48px 48px;
   overflow-x: hidden;
+  min-width: 0;       /* evita que el hijo flex expanda admin-body más allá del viewport */
 }
 
 /* Dashboard */
@@ -3114,7 +3115,7 @@ ul, ol { list-style: none; }
   gap: 16px;
 }
 
-.admin-panel--grow { flex: 1 1 0; }
+.admin-panel--grow { flex: 1 1 0; min-width: 0; }
 
 .admin-panel--fixed { width: 340px; flex-shrink: 0; }
 
@@ -3136,6 +3137,7 @@ ul, ol { list-style: none; }
 
 .admin-orders-table {
   width: 100%;
+  min-width: 480px;   /* activa scroll horizontal en .admin-orders-table-wrapper en mobile */
   border-collapse: collapse;
   font-family: 'Inter', sans-serif;
   font-size: 13px;
@@ -3146,7 +3148,7 @@ ul, ol { list-style: none; }
 }
 
 .admin-orders-table th {
-  padding: 8px 0;
+  padding: 8px 6px;   /* padding horizontal mínimo — antes era 0 */
   text-align: left;
   font-size: 11px;
   font-weight: 700;
@@ -3163,14 +3165,14 @@ ul, ol { list-style: none; }
 }
 
 .admin-orders-table td {
-  padding: 10px 0;
+  padding: 10px 6px;  /* padding horizontal mínimo — antes era 0 */
   color: #FEFEFE;
   vertical-align: middle;
 }
 
 .admin-orders-table__id    { color: #FEFEFE; font-weight: 400; width: 80px; }
-.admin-orders-table__date  { color: #D2EE42; width: 100px; }
-.admin-orders-table__total { font-weight: 600; width: 100px; }
+.admin-orders-table__date  { color: #D2EE42; width: 100px; white-space: nowrap; }
+.admin-orders-table__total { font-weight: 600; width: 100px; white-space: nowrap; }
 
 .admin-orders-table__action {
   color: #E247FD;
@@ -3488,11 +3490,22 @@ ul, ol { list-style: none; }
 
   .admin-topbar {
     padding: 12px 32px;
+    gap: 12px;
+  }
+  /* En tablet el texto del rol puede ser largo; lo acotamos y evitamos wrap */
+  .admin-topbar__role {
+    max-width: 180px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
-  /* Admin tablas row — column en tablet */
+  /* Admin tablas row — column en tablet.
+     align-items: stretch fuerza width: 100% en cada hijo; sin esto
+     flex-start deja que la tarjeta tome el ancho de su contenido. */
   .admin-tables-row {
     flex-direction: column;
+    align-items: stretch;
   }
 
   .admin-panel--fixed {
@@ -3651,7 +3664,14 @@ ul, ol { list-style: none; }
   /* Admin */
   .admin-shell { flex-direction: column; }
 
-  .admin-topbar { padding: 12px 16px; }
+  .admin-topbar {
+    padding: 12px 16px;
+    gap: 8px;
+  }
+  /* En mobile ocultamos el rol (el avatar ya identifica al usuario) y
+     compactamos el grupo derecho para que todo quepa en una línea */
+  .admin-topbar__role { display: none; }
+  .admin-topbar__user { gap: 10px; }
 
   .admin-body { flex-direction: column; }
 
@@ -3674,7 +3694,7 @@ ul, ol { list-style: none; }
 
   .admin-stats-grid { grid-template-columns: repeat(2, 1fr); }
 
-  .admin-tables-row { flex-direction: column; }
+  .admin-tables-row { flex-direction: column; align-items: stretch; }
 
   .admin-panel--fixed { width: 100%; }
 
@@ -6942,16 +6962,30 @@ tr:hover .stock-display__edit {
   .footer__grid { grid-template-columns: 1fr; gap: 24px; }
 }
 @media (max-width: 768px) {
-  .hero-figma { height: auto; min-height: 360px; }
-  .hero-figma__bg { position: relative; inset: auto; width: 100%; height: 240px; display: block; }
+  .hero-figma { height: auto; min-height: auto; }
+  /* La imagen pasa a flujo normal, ocupa su alto natural */
+  .hero-figma__bg {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    height: 220px;
+    display: block;
+    object-fit: cover;
+    object-position: center 30%;
+  }
+  /* El texto sale del absolute y aparece debajo de la imagen */
   .hero-figma__text {
-    position: relative; left: auto; top: auto; width: 100%;
+    position: relative;
+    left: auto;
+    top: auto;
+    bottom: auto;
+    width: 100%;
     padding: 32px 24px 40px;
     background: #050506;
   }
-  .hero-figma__title { font-size: 26px; }
+  .hero-figma__title  { font-size: 26px; line-height: 1.1; width: 100%; }
   .hero-figma__subtitle { font-size: 18px; width: 100%; }
-  .hero-figma__ctas { gap: 12px; }
+  .hero-figma__ctas   { gap: 12px; }
   .categories-figma { padding: 24px 20px 32px; }
   .categories-figma__grid { flex-direction: column; gap: 16px; }
   .categories-figma__title-col { width: 100%; }
@@ -8033,17 +8067,25 @@ tr:hover .stock-display__edit {
 
   /* Hero — apilado vertical */
   .hero-figma { flex-direction: column; height: auto; min-height: auto; }
-  .hero-figma__bg { position: relative; width: 100%; height: 220px; object-fit: cover; }
+  .hero-figma__bg {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    object-position: center 30%;
+    display: block;
+  }
   .hero-figma__text {
-    position: relative; left: auto; top: auto;
-    width: 100%; padding: 28px 20px 36px;
+    position: relative; left: auto; top: auto; bottom: auto;
+    width: 100%; padding: 32px 20px 40px;
     background: #050506;
   }
-  .hero-figma__title { font-size: 24px; width: 100%; }
+  .hero-figma__title    { font-size: 24px; line-height: 1.1; width: 100%; }
   .hero-figma__subtitle { font-size: 16px; width: 100%; }
-  .hero-figma__ctas { flex-direction: column; gap: 12px; }
+  .hero-figma__ctas     { flex-direction: row; gap: 12px; flex-wrap: wrap; }
   .hero-figma__btn-primary,
-  .hero-figma__btn-secondary { text-align: center; width: 100%; box-sizing: border-box; }
+  .hero-figma__btn-secondary { flex: 1 1 0; text-align: center; box-sizing: border-box; }
 
   /* Categorias */
   .categories-figma { padding: 24px 20px 32px; }
@@ -8133,7 +8175,7 @@ tr:hover .stock-display__edit {
   .admin-shell { grid-template-columns: 1fr; }
   .admin-sidebar { display: none; }
   .admin-stats-grid { grid-template-columns: repeat(2, 1fr); }
-  .admin-tables-row { flex-direction: column; }
+  .admin-tables-row { flex-direction: column; align-items: stretch; }
 
   /* Footer */
   .footer { padding: 32px 20px 20px; }
@@ -8151,7 +8193,12 @@ tr:hover .stock-display__edit {
 
   /* Hero */
   .hero-figma__bg { height: 180px; }
-  .hero-figma__title { font-size: 20px; }
+  .hero-figma__title { font-size: 20px; line-height: 1.1; }
+  .hero-figma__subtitle { font-size: 15px; }
+  /* los botones pasan a columna en pantallas muy pequeñas */
+  .hero-figma__ctas { flex-direction: column; }
+  .hero-figma__btn-primary,
+  .hero-figma__btn-secondary { flex: none; width: 100%; }
   .hero-figma__subtitle { font-size: 14px; }
 
   /* Categorias — 3 por fila */
@@ -9162,4 +9209,109 @@ tr:hover .stock-display__edit {
 @media (hover: none) and (pointer: coarse) {
   .pd-zoom-hint span:not(.pd-zoom-hint-icon) { display: none; }
   .pd-zoom-hint::after { content: 'Toca para ampliar'; }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   HERO FIGMA — RESPONSIVE OVERRIDE (al final para ganar cascada)
+   El JSX usa la versión "imagen con texto position:absolute".
+   En mobile/tablet, múltiples bloques dispersos reimponían
+   left:48px / width:420px después de los fixes, dejando el
+   texto fuera del viewport. Este bloque va ÚLTIMO y gana.
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── TABLET ≤1024px ── */
+@media (max-width: 1024px) {
+  /* Reducir ancho del texto pero que siga siendo absoluto */
+  .hero-figma__text { left: 48px; width: min(420px, calc(100% - 64px)); }
+}
+
+/* ── MOBILE ≤768px — apilado vertical ── */
+@media (max-width: 768px) {
+  /* 1. Contenedor: crece con su contenido, imagen arriba + texto abajo */
+  .hero-figma {
+    aspect-ratio: unset;
+    height: auto;
+    min-height: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* 2. Imagen: flujo normal, altura fija */
+  .hero-figma picture { height: auto; flex-shrink: 0; }
+  .hero-figma__bg {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    object-position: center 30%;
+    display: block;
+  }
+
+  /* 3. Texto: sale del absolute, debajo de la imagen */
+  .hero-figma__text {
+    position: relative !important;
+    inset: auto !important;
+    left: auto !important;
+    top: auto !important;
+    bottom: auto !important;
+    width: 100% !important;
+    padding: 20px 20px 28px;
+    background: #050506;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .hero-figma__title {
+    font-size: 20px;       /* compacto — 26px era demasiado para 390px */
+    line-height: 1.15;
+    width: 100%;
+  }
+  .hero-figma__subtitle {
+    font-size: 14px;
+    line-height: 1.5;
+    width: 100%;
+  }
+  /* Botones en fila, proporcionales */
+  .hero-figma__ctas {
+    flex-direction: row;
+    gap: 10px;
+    flex-wrap: nowrap;
+  }
+  .hero-figma__btn-primary,
+  .hero-figma__btn-secondary {
+    flex: 1 1 0;
+    text-align: center;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+}
+
+/* ── SMALL MOBILE ≤480px ── */
+@media (max-width: 480px) {
+  .hero-figma__bg   { height: 170px; }
+  .hero-figma__text { padding: 18px 16px 24px; gap: 10px; }
+  .hero-figma__title    { font-size: 18px; }
+  .hero-figma__subtitle { font-size: 13px; }
+  /* En 320px los botones en fila se comprimen; pasan a columna */
+  .hero-figma__ctas     { flex-direction: column; gap: 8px; }
+  .hero-figma__btn-primary,
+  .hero-figma__btn-secondary { flex: none; width: 100%; font-size: 13px; padding: 10px 16px; }
+}
+
+/* ── Zoom táctil inline (producto) ── */
+@media (hover: none) and (pointer: coarse) {
+  .pd-image-main { overflow: hidden; touch-action: none; }
+  .pd-image-main__img {
+    transition: transform 0.15s ease-out;
+    will-change: transform;
+    -webkit-touch-callout: none;
+    user-select: none;
+  }
+  /* los mouse events emulados por el tap no deben mostrar la lupa de desktop */
+  .pd-lens-square,
+  .pd-lens-panel { display: none !important; }
 }

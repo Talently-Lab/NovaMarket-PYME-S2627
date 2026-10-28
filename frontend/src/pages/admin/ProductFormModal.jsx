@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { productsAPI } from '../../services/api';
 import { uploadImage, validateImageFile, ACCEPTED_TYPES, MAX_IMAGES } from '../../services/supabaseStorage';
 
+const SEPARATOR = '|||';
 const EMPTY = { name: '', description: '', price: '', stock: '0', category: '', image_url: '' };
 
 const toForm = (p) => ({
@@ -22,8 +23,13 @@ export default function ProductFormModal({ product, categories = [], onSaved, on
 
   // Imágenes: array de { file?, preview, url, uploading, error }
   const [images, setImages]   = useState(() => {
-    if (product?.image_url) return [{ url: product.image_url, preview: product.image_url }];
-    return [];
+    if (!product?.image_url) return [];
+    // Soportar tanto URL simple como múltiples separadas por '|||'
+    return product.image_url
+      .split(SEPARATOR)
+      .map(u => u.trim())
+      .filter(Boolean)
+      .map(url => ({ url, preview: url }));
   });
   const [uploadError, setUploadError] = useState('');
   const fileInputRef = useRef(null);
@@ -117,15 +123,14 @@ export default function ProductFormModal({ product, categories = [], onSaved, on
         }
       }
 
-      // La primera imagen recién subida tiene prioridad sobre la pre-existente.
-      // Si el admin subió una imagen nueva (tiene .file), esa es la principal.
-      // Si no subió ninguna, mantiene la imagen que ya tenía el producto.
-      const freshUploaded = uploadedImages.find(img => img.file && img.url);
-      const image_url = freshUploaded?.url
-        || uploadedImages[0]?.url
-        || uploadedImages[0]?.preview
-        || form.image_url
-        || '';
+      // Serializar todas las URLs en image_url separadas por '|||'.
+      // La posición 0 siempre es la imagen principal.
+      // Compatibilidad: código que solo lee image_url recibe la primera URL.
+      const allUrls = uploadedImages
+        .map(img => img.url || img.preview)
+        .filter(Boolean);
+
+      const image_url = allUrls.join('|||') || form.image_url || '';
 
       const payload = {
         name,
@@ -165,6 +170,21 @@ export default function ProductFormModal({ product, categories = [], onSaved, on
             <label className="form-label" htmlFor="pf-description">Descripción</label>
             <textarea className="form-input" id="pf-description" name="description" rows={3}
               value={form.description} onChange={handleChange} />
+            {/* Advertencia si la descripción parece texto copiado de un marketplace */}
+            {(() => {
+              const d = form.description || '';
+              const hasPriceInText = /\$\s*[\d.,]+/.test(d);
+              const isTooLong = d.length > 600;
+              if (!hasPriceInText && !isTooLong) return null;
+              return (
+                <p className="form-hint" style={{ color: '#d97706', marginTop: '4px' }}>
+                  ⚠{' '}
+                  {hasPriceInText
+                    ? 'La descripción contiene precios ($). Revisá que no sea texto copiado de un marketplace.'
+                    : `Descripción muy larga (${d.length} caracteres). Considerá acortarla.`}
+                </p>
+              );
+            })()}
           </div>
 
           <div className="admin-modal__row">
