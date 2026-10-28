@@ -78,11 +78,34 @@ export default function HomePage() {
 
       {/* ── HERO — imagen + texto superpuesto (Figma: GROUP position absolute) ── */}
       <section className={`hero-figma reveal${heroVis ? " is-visible" : ""}`} ref={heroRef}>
-        <img
-          src="/images/Estación gamer futurista en neón.png"
-          alt="Setup tecnológico NovaMarket"
-          className="hero-figma__bg"
-        />
+        {/*
+          RESP-031 fix: imagen hero convertida a WebP con srcset responsivo.
+          PNG original: 1766 KB → WebP 1440w: 57 KB (−97%).
+          fetchpriority="high": el browser prioriza esta imagen como LCP element.
+          width/height: evitan CLS durante la carga (aspect-ratio definido en CSS).
+        */}
+        <picture>
+          <source
+            type="image/webp"
+            srcSet="
+              /images/hero-480w.webp   480w,
+              /images/hero-960w.webp   960w,
+              /images/hero-1440w.webp 1440w,
+              /images/hero-1914w.webp 1914w
+            "
+            sizes="100vw"
+          />
+          {/* Fallback PNG para browsers sin soporte WebP (muy poco probable en 2026) */}
+          <img
+            src="/images/Estación gamer futurista en neón.png"
+            alt="Setup tecnológico NovaMarket"
+            className="hero-figma__bg"
+            width="1914"
+            height="822"
+            fetchPriority="high"
+            decoding="async"
+          />
+        </picture>
         <div className="hero-figma__text">
           <motion.h1 className="hero-figma__title"
             initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
