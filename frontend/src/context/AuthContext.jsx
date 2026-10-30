@@ -24,6 +24,13 @@ export function AuthProvider({ children }) {
       .finally(() => setLoading(false));
   }, []);
 
+  // Si la API responde 401 (token vencido), el interceptor avisa y se cierra la sesión en pantalla
+  useEffect(() => {
+    const onUnauthorized = () => setUser(null);
+    window.addEventListener('nm:unauthorized', onUnauthorized);
+    return () => window.removeEventListener('nm:unauthorized', onUnauthorized);
+  }, []);
+
   const login = (userData, token) => {
     localStorage.setItem('nm-token', token);
     setUser(userData);

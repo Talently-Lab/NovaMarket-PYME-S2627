@@ -1,11 +1,14 @@
 const { Router } = require('express');
 const {
   createOrder,
+  validateCoupon,
   getMyOrders,
   getOrderById,
   getAllOrders,
-  getAdminOrderById,
   updateOrderStatus,
+  getCoupons,
+  createCoupon,
+  deleteCoupon,
 } = require('../controllers/order.controller');
 const { authenticate, requireAdmin } = require('../middlewares/auth.middleware');
 
@@ -19,21 +22,29 @@ router.use(authenticate);
 // POST /api/orders — crear pedido (checkout)
 router.post('/', createOrder);
 
+// POST /api/orders/validate-coupon — validar cupón
+router.post('/validate-coupon', validateCoupon);
+
 // GET /api/orders — mis pedidos
 router.get('/', getMyOrders);
 
-// GET /api/orders/:id — detalle de un pedido propio
-router.get('/:id', getOrderById);
-
-// ── Rutas de administración ───────────────────────────────────────────────────
+// ── Rutas de administración (deben ir ANTES de /:id para no ser interceptadas) ──
 
 // GET /api/orders/admin/all — todos los pedidos
 router.get('/admin/all', requireAdmin, getAllOrders);
 
-// GET /api/orders/admin/:id — detalle de cualquier pedido para admin
-router.get('/admin/:id', requireAdmin, getAdminOrderById);
-
 // PATCH /api/orders/admin/:id/status — cambiar estado
 router.patch('/admin/:id/status', requireAdmin, updateOrderStatus);
+
+// ── Cupones (admin) ───────────────────────────────────────────────────────────
+// GET    /api/orders/admin/coupons         — listar cupones
+router.get('/admin/coupons', requireAdmin, getCoupons);
+// POST   /api/orders/admin/coupons         — crear cupón
+router.post('/admin/coupons', requireAdmin, createCoupon);
+// DELETE /api/orders/admin/coupons/:code   — eliminar cupón
+router.delete('/admin/coupons/:code', requireAdmin, deleteCoupon);
+
+// GET /api/orders/:id — detalle de un pedido propio (al final para no interceptar /admin/*)
+router.get('/:id', getOrderById);
 
 module.exports = router;

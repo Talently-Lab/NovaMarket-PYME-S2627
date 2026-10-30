@@ -1,35 +1,117 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useRef, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 
 const CartContext = createContext(null);
-const STORAGE_KEY = 'nm-cart';
 
-export function CartProvider({ children }) {
+// Clave de storage por usuario — carrito aislado por cuenta
+const storageKey = (userId) =>
+  userId ? `nm-cart-${userId}` : 'nm-cart-guest';
+
+export function CartProvider({ children, userId }) {
+  const [lastAdded, setLastAdded] = useState(null); // { name, id } del último producto agregado
+
+  const isFirstMount = useRef(true);
+
   const [items, setItems] = useState(() => {
-    // Leer carrito del localStorage al iniciar
     try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      return saved ? JSON.parse(saved) : [];
+      const newKey   = storageKey(userId);
+      const userCart = localStorage.getItem(newKey);
+
+      // Si hay un carrito guest con items, fusionarlo inmediatamente al montar
+      if (userId) {
+        const guestKey  = storageKey(null);
+        const guestCart = localStorage.getItem(guestKey);
+        if (guestCart) {
+          const guestItems = JSON.parse(guestCart);
+          if (guestItems.length > 0) {
+            const userItems = userCart ? JSON.parse(userCart) : [];
+            const merged = [...userItems];
+            for (const guestItem of guestItems) {
+              if (!merged.find(i => i.id === guestItem.id)) {
+                merged.push(guestItem);
+              }
+            }
+            localStorage.setItem(newKey, JSON.stringify(merged));
+            localStorage.removeItem(guestKey);
+            return merged;
+          }
+        }
+      }
+
+      return userCart ? JSON.parse(userCart) : [];
     } catch {
       return [];
     }
   });
 
-  // Persistir carrito en localStorage cada vez que cambia
+  // Cuando cambia el usuario (login / logout) — carga el carrito del nuevo usuario
+  // Skip primer render — el useState lazy initializer ya cargó el carrito correcto
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-  }, [items]);
+    if (isFirstMount.current) { isFirstMount.current = false; return; }
+    try {
+      const newKey   = storageKey(userId);
+      const userCart = localStorage.getItem(newKey);
 
-  const addItem = (product, quantity = 1) => {
+      if (userId) {
+        // Acaba de hacer login — verificar si había carrito guest
+        const guestKey  = storageKey(null);
+        const guestCart = localStorage.getItem(guestKey);
+
+        if (guestCart) {
+          const guestItems = JSON.parse(guestCart);
+          if (guestItems.length > 0) {
+            // Fusionar: prioriza items del usuario, agrega los del guest que no estén
+            const userItems = userCart ? JSON.parse(userCart) : [];
+            const merged = [...userItems];
+            for (const guestItem of guestItems) {
+              const existing = merged.find(i => i.id === guestItem.id);
+              if (!existing) {
+                merged.push(guestItem);
+              }
+            }
+            // Guardar fusión en el carrito del usuario y limpiar guest
+            localStorage.setItem(newKey, JSON.stringify(merged));
+            localStorage.removeItem(guestKey);
+            setItems(merged);
+            return;
+          }
+        }
+      }
+
+      // Sin carrito guest o logout — carga el carrito del nuevo usuario/guest
+      setItems(userCart ? JSON.parse(userCart) : []);
+    } catch {
+      setItems([]);
+    }
+  }, [userId]);
+
+  // Persistir carrito en localStorage con la clave del usuario actual
+  useEffect(() => {
+    localStorage.setItem(storageKey(userId), JSON.stringify(items));
+  }, [items, userId]);
+
+  // Auto-limpiar el lastAdded después de 2.5s
+  useEffect(() => {
+    if (!lastAdded) return;
+    const t = setTimeout(() => setLastAdded(null), 2500);
+    return () => clearTimeout(t);
+  }, [lastAdded]);
+
+  const addItem = useCallback((product, quantity = 1) => {
     setItems((prev) => {
       const existing = prev.find((i) => i.id === product.id);
+      const maxStock = product.stock ?? Infinity;
       if (existing) {
+        const newQty = Math.min(existing.quantity + quantity, maxStock);
         return prev.map((i) =>
-          i.id === product.id ? { ...i, quantity: i.quantity + quantity } : i
+          i.id === product.id ? { ...i, quantity: newQty } : i
         );
       }
-      return [...prev, { ...product, quantity }];
+      if (maxStock === 0) return prev;
+      return [...prev, { ...product, quantity: Math.min(quantity, maxStock) }];
     });
-  };
+    // Dispara el toast de feedback
+    setLastAdded({ id: product.id, name: product.name });
+  }, []);
 
   const removeItem = (productId) => {
     setItems((prev) => prev.filter((i) => i.id !== productId));
@@ -38,20 +120,38 @@ export function CartProvider({ children }) {
   const updateQuantity = (productId, quantity) => {
     if (quantity <= 0) return removeItem(productId);
     setItems((prev) =>
-      prev.map((i) => (i.id === productId ? { ...i, quantity } : i))
+      prev.map((i) => {
+        if (i.id !== productId) return i;
+        const maxStock = i.stock ?? Infinity;
+        return { ...i, quantity: Math.min(quantity, maxStock) };
+      })
     );
   };
 
   const clearCart = () => {
     setItems([]);
-    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(storageKey(userId));
   };
 
-  const total = items.reduce((acc, i) => acc + Number(i.price) * i.quantity, 0);
-  const itemCount = items.reduce((acc, i) => acc + i.quantity, 0);
+  // Actualiza el stock de un item sin cambiar la cantidad
+  const updateItemStock = useCallback((productId, stock) => {
+    setItems(prev =>
+      prev.map(i => i.id === productId ? { ...i, stock } : i)
+    );
+  }, []);
+
+  // useMemo: la suma solo se recalcula cuando cambia el array de items
+  const totalItems = useMemo(
+    () => items.reduce((acc, i) => acc + i.quantity, 0),
+    [items]
+  );
+  const totalAmount = useMemo(
+    () => items.reduce((acc, i) => acc + Number(i.price) * i.quantity, 0),
+    [items]
+  );
 
   return (
-    <CartContext.Provider value={{ items, addItem, removeItem, updateQuantity, clearCart, total, itemCount }}>
+    <CartContext.Provider value={{ items, addItem, removeItem, updateQuantity, clearCart, updateItemStock, totalAmount, totalItems, lastAdded }}>
       {children}
     </CartContext.Provider>
   );

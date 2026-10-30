@@ -1,29 +1,54 @@
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { productsAPI } from '../services/api';
+import { motion } from 'framer-motion';
+import { getProducts } from '../services/productService';
 import { useCart } from '../context/CartContext';
+import ProductCard from '../components/ui/ProductCard';
 import { useAuth } from '../context/AuthContext';
 import { getProductImage } from '../utils/productImage';
+import { useReveal } from '../hooks/useReveal';
+import BannerTriptico from '../components/ui/BannerTriptico';
+import TrustBar from '../components/ui/TrustBar';
+import Newsletter from '../components/ui/Newsletter';
 
+// Categorias exactas del Figma — Notebooks featured (violeta), Celulares sin duplicar
 const CATEGORIES = [
-  { icon: '🖱️', name: 'Periféricos' },
-  { icon: '🎧', name: 'Audio' },
-  { icon: '⌨️', name: 'Teclados' },
-  { icon: '🖥️', name: 'Monitores' },
-  { icon: '📱', name: 'Gadgets' },
-  { icon: '🔌', name: 'Accesorios' },
-  { icon: '🎮', name: 'Gaming' },
-  { icon: '💡', name: 'Iluminación' },
+  { icon: '/images/iconos/ico_gaming.svg',    name: 'Gaming',    slug: 'gaming',    featured: false },
+  { icon: '/images/iconos/ico_notebooks.svg', name: 'Notebooks', slug: 'notebooks', featured: false },
+  { icon: '/images/iconos/ico_celulares.svg', name: 'Celulares', slug: 'celulares', featured: false },
+  { icon: '/images/iconos/ico_monitores.svg', name: 'Monitores', slug: 'monitores', featured: false },
+  { icon: '/images/iconos/ico_audio.svg',     name: 'Audio',     slug: 'audio',     featured: false },
+  { icon: '/images/iconos/ico_gadgets.svg',   name: 'Gadgets',   slug: 'gadgets',   featured: false },
 ];
 
-export default function HomePage() {
-  const { addItem } = useCart();
-  const { flashMessage, clearFlash } = useAuth();
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [added, setAdded] = useState(null);
+// SVG carrito para producto destacado
+function CartSVG() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"
+      stroke="#000000" strokeWidth="1.43" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+    </svg>
+  );
+}
 
-  // Auto-cierra el flash a los 4 segundos
+export default function HomePage() {
+  const { addItem, items: cartItems } = useCart();
+  const [searchParams] = useSearchParams();
+  const activeSlug = searchParams.get('categoria') ?? '';
+  const { flashMessage, clearFlash }  = useAuth();
+  const [products, setProducts]       = useState([]);
+  const [loading, setLoading]         = useState(true);
+  const [added, setAdded]             = useState(null);
+
+  // Reveal refs
+  const [heroRef,       heroVis]       = useReveal({ threshold: 0.1 });
+  const [catHeaderRef,  catHeaderVis]  = useReveal({ threshold: 0.2 });
+  const [catGridRef] = useReveal({ threshold: 0.15 });
+  const [featHeaderRef, featHeaderVis] = useReveal({ threshold: 0.2 });
+  const [featGridRef] = useReveal({ threshold: 0.1 });
+  const [bannerRef,     bannerVis]     = useReveal({ threshold: 0.15 });
+
   useEffect(() => {
     if (!flashMessage) return;
     const t = setTimeout(clearFlash, 4000);
@@ -31,8 +56,8 @@ export default function HomePage() {
   }, [flashMessage]);
 
   useEffect(() => {
-    productsAPI.getAll({ order: 'newest' })
-      .then(({ data }) => setProducts(data.products.slice(0, 4)))
+    getProducts(undefined, { order: 'newest' })
+      .then(({ products }) => setProducts(products.slice(0, 5)))
       .catch(() => setProducts([]))
       .finally(() => setLoading(false));
   }, []);
@@ -42,111 +67,140 @@ export default function HomePage() {
     setAdded(product.id);
     setTimeout(() => setAdded(null), 1500);
   };
+
   return (
     <div>
-      {/* Toast de bienvenida post-registro */}
       {flashMessage && (
-        <div className="toast toast--success" role="alert">
-          <span>🎉 {flashMessage}</span>
+        <div className="toast toast--success" role="alert" aria-live="polite">
+          <span>{flashMessage}</span>
           <button className="toast__close" onClick={clearFlash} aria-label="Cerrar">✕</button>
         </div>
       )}
 
-      {/* Hero */}
-      <section className="hero">
-        <div className="hero__eyebrow">
-          ✦ Tech para vos
-        </div>
-        <h1 className="hero__title">
-          Todo lo que necesitás,<br />
-          <span className="gradient">al alcance de un clic</span>
-        </h1>
-        <p className="hero__subtitle">
-          Accesorios, periféricos y gadgets tech seleccionados para que tu setup sea lo que siempre quisiste.
-        </p>
-        <div className="hero__actions">
-          <Link to="/catalogo" className="btn btn--gradient btn--lg">
-            Explorar catálogo
-          </Link>
-          <Link to="/registro" className="btn btn--secondary btn--lg">
-            Crear cuenta
-          </Link>
+      {/* ── HERO — imagen + texto superpuesto (Figma: GROUP position absolute) ── */}
+      <section className={`hero-figma reveal${heroVis ? " is-visible" : ""}`} ref={heroRef}>
+        {/*
+          RESP-031 fix: imagen hero convertida a WebP con srcset responsivo.
+          PNG original: 1766 KB → WebP 1440w: 57 KB (−97%).
+          fetchpriority="high": el browser prioriza esta imagen como LCP element.
+          width/height: evitan CLS durante la carga (aspect-ratio definido en CSS).
+        */}
+        <picture>
+          <source
+            type="image/webp"
+            srcSet="
+              /images/hero-480w.webp   480w,
+              /images/hero-960w.webp   960w,
+              /images/hero-1440w.webp 1440w,
+              /images/hero-1914w.webp 1914w
+            "
+            sizes="100vw"
+          />
+          {/* Fallback PNG para browsers sin soporte WebP (muy poco probable en 2026) */}
+          <img
+            src="/images/Estación gamer futurista en neón.png"
+            alt="Setup tecnológico NovaMarket"
+            className="hero-figma__bg"
+            width="1914"
+            height="822"
+            fetchPriority="high"
+            decoding="async"
+          />
+        </picture>
+        <div className="hero-figma__text">
+          <motion.h1 className="hero-figma__title"
+            initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, ease: [0.22,1,0.36,1] }}
+          >
+            TECNOLOGÍA QUE SIMPLIFICA TU VIDA
+          </motion.h1>
+          <motion.p className="hero-figma__subtitle"
+            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, delay: 0.12, ease: [0.22,1,0.36,1] }}
+          >
+            Todo lo que necesitás, en un solo lugar
+          </motion.p>
+          <motion.div className="hero-figma__ctas"
+            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, delay: 0.22, ease: [0.22,1,0.36,1] }}
+          >
+            <Link to="/catalogo" className="hero-figma__btn-primary">Explorar Catálogo</Link>
+            <Link to="/login" className="hero-figma__btn-secondary">Login</Link>
+          </motion.div>
         </div>
       </section>
 
-      {/* Categorías */}
-      <section className="section">
-        <div className="container">
-          <div className="section__header">
-            <h2 className="section__title">Categorías</h2>
-            <Link to="/catalogo" className="section__link">
-              Ver todo →
-            </Link>
+      {/* ── BARRA DE CONFIANZA — entre Hero y Categorías ── */}
+      <TrustBar />
+
+      {/* ── CATEGORÍAS — fondo blanco, exacto del Figma ── */}
+      <section className="categories-figma">
+        <div className={`categories-figma__header reveal${catHeaderVis ? " is-visible" : ""}`} ref={catHeaderRef}>
+          <div className="categories-figma__label-row">
+            <span className="categories-figma__label-bar" aria-hidden="true" />
+            <span className="categories-figma__label">CATEGORÍAS PRINCIPALES</span>
           </div>
-          <div className="categories-grid">
-            {CATEGORIES.map(({ icon, name }) => (
-              <Link to={`/catalogo?categoria=${name.toLowerCase()}`} key={name}>
-                <div className="category-card">
-                  <span className="category-card__icon">{icon}</span>
-                  <span className="category-card__name">{name}</span>
-                </div>
-              </Link>
+          <Link to="/catalogo" className="categories-figma__link">
+            Ver todas las categorías →
+          </Link>
+        </div>
+        <div className="categories-figma__grid">
+          <div className={`categories-figma__title-col reveal--left${catHeaderVis ? " is-visible" : ""}`}>
+            <h2 className="categories-figma__title">DESCUBRÍ NUESTROS PRODUCTOS</h2>
+          </div>
+          <div className={`categories-figma__cards`} ref={catGridRef}>
+            {CATEGORIES.map(({ icon, name, slug }) => (
+              <motion.div key={name}
+                whileHover={{ y: -4, boxShadow: '0 8px 24px rgba(125,28,226,0.15)' }}
+                whileTap={{ scale: 0.97 }}
+                style={{ borderRadius: 24, flex: '1 1 0', minWidth: 0 }}
+              >
+                <Link to={`/catalogo?categoria=${slug}`}
+                  className={`cat-card${activeSlug === slug ? ' cat-card--featured' : ''}`}
+                >
+                  <img src={icon} alt={name} className="cat-card__icon" width="48" height="40" />
+                  <span className="cat-card__name">{name}</span>
+                </Link>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="section" style={{ paddingTop: 0 }}>
-        <div className="container">
-          <div className="section__header">
-            <h2 className="section__title">Destacados</h2>
-            <Link to="/catalogo" className="section__link">Ver todo →</Link>
-          </div>
-
-          {loading && (
-            <p style={{ color: 'var(--color-text-secondary)' }}>Cargando productos...</p>
-          )}
-
-          {!loading && products.length === 0 && (
-            <p style={{ color: 'var(--color-text-secondary)' }}>No hay productos disponibles aún.</p>
-          )}
-
-          {!loading && products.length > 0 && (
-            <div className="products-grid">
-              {products.map((product) => (
-                <div className="card" key={product.id}>
-                  <div className="card__image">
-                    <img
-                      src={getProductImage(product)}
-                      alt={product.name}
-                      loading="lazy"
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    />
-                  </div>
-                  <div className="card__body">
-                    <p className="card__title">{product.name}</p>
-                    <p className="card__desc">{product.description}</p>
-                    <p className="card__price">
-                      ${Number(product.price).toLocaleString('es-AR')}
-                    </p>
-                  </div>
-                  <div className="card__footer">
-                    <span className="badge badge--success">En stock</span>
-                    <button
-                      className="btn btn--primary btn--sm"
-                      onClick={() => handleAdd(product)}
-                      disabled={added === product.id}
-                      style={{ minWidth: 110 }}
-                    >
-                      {added === product.id ? '✓ Agregado' : 'Agregar'}
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+      {/* ── PRODUCTOS DESTACADOS — fondo #050506 ── */}
+      <section className="featured-figma">
+        <div className={`featured-figma__header reveal${featHeaderVis ? " is-visible" : ""}`} ref={featHeaderRef}>
+          <h2 className="featured-figma__title">Productos Destacados</h2>
+          <Link to="/catalogo" className="featured-figma__link">Ver todos los productos →</Link>
         </div>
+        {loading && <p className="featured-figma__state">Cargando productos...</p>}
+        {!loading && products.length === 0 && (
+          <p className="featured-figma__state">No hay productos disponibles aún.</p>
+        )}
+        {!loading && products.length > 0 && (
+          <div className={`featured-figma__grid`} ref={featGridRef}>
+            {products.map((product) => {
+              const cartQty = cartItems.find(i => i.id === product.id)?.quantity ?? 0;
+              return (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onAdd={handleAdd}
+                  added={added === product.id}
+                  cartQty={cartQty}
+                  variant="home"
+                />
+              );
+            })}
+          </div>
+        )}
       </section>
+
+      {/* ── NEWSLETTER — antes del banner ── */}
+      <Newsletter />
+
+      {/* ── BANNER TRIPTICO ── */}
+      <BannerTriptico className={`reveal${bannerVis ? " is-visible" : ""}`} innerRef={bannerRef} />
     </div>
   );
 }

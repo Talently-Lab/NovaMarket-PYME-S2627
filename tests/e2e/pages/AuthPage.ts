@@ -55,7 +55,12 @@ export class RegisterPage extends BasePage {
   }
 
   get passwordInput(): Locator {
-    return this.page.getByLabel(/contraseña/i);
+    // exact: evita que coincida también «Repetir contraseña»
+    return this.page.getByLabel('Contraseña', { exact: true });
+  }
+
+  get confirmPasswordInput(): Locator {
+    return this.page.getByLabel(/repetir contraseña/i);
   }
 
   get submitButton(): Locator {

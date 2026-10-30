@@ -7,14 +7,20 @@ const { query } = require('../config/db');
 
 const ProductModel = {
   /**
-   * Lista todos los productos activos con filtros opcionales
-   * @param {Object} filters - { category, minPrice, maxPrice, order }
-   * @returns {Array} lista de productos
+   * Lista todos los productos activos con filtros y paginación opcionales
+   * @param {Object} filters - { category, minPrice, maxPrice, order, page, limit }
+   * @returns {{ rows: Array, total: number }}
    */
-  async findAll({ category, minPrice, maxPrice, order } = {}) {
+  async findAll({ category, minPrice, maxPrice, order, page, limit, search } = {}) {
     const conditions = ['is_active = true'];
     const values = [];
     let idx = 1;
+
+    if (search) {
+      conditions.push(`(name ILIKE $${idx} OR description ILIKE $${idx})`);
+      values.push(`%${search.trim()}%`);
+      idx++;
+    }
 
     if (category) {
       conditions.push(`category ILIKE $${idx++}`);
@@ -35,17 +41,37 @@ const ProductModel = {
       order === 'price_asc'  ? 'price ASC' :
       order === 'price_desc' ? 'price DESC' :
       order === 'newest'     ? 'created_at DESC' :
-      'created_at DESC'; // default
+      'created_at DESC';
+
+    const whereClause = conditions.join(' AND ');
+
+    // Total sin paginación (para que el frontend pueda calcular páginas)
+    const countResult = await query(
+      `SELECT COUNT(*)::int AS total FROM products WHERE ${whereClause}`,
+      values
+    );
+    const total = countResult.rows[0].total;
+
+    // Paginación — si no se pasa page/limit, trae todo
+    const pageNum  = parseInt(page)  || null;
+    const limitNum = parseInt(limit) || null;
+
+    let paginationClause = '';
+    if (pageNum && limitNum) {
+      const offset = (pageNum - 1) * limitNum;
+      paginationClause = ` LIMIT $${idx++} OFFSET $${idx++}`;
+      values.push(limitNum, offset);
+    }
 
     const sql = `
       SELECT id, name, description, price, stock, category, image_url, created_at
       FROM products
-      WHERE ${conditions.join(' AND ')}
-      ORDER BY ${orderClause}
+      WHERE ${whereClause}
+      ORDER BY ${orderClause}${paginationClause}
     `;
 
     const result = await query(sql, values);
-    return result.rows;
+    return { rows: result.rows, total };
   },
 
   /**
@@ -115,6 +141,33 @@ const ProductModel = {
     );
     return result.rows;
   },
+  /**
+   * Lista categorías únicas con conteo de productos (admin)
+   */
+  async getCategories() {
+    const result = await query(
+      `SELECT category,
+              COUNT(*)::int        AS product_count,
+              COUNT(*) FILTER (WHERE is_active = true AND stock > 0)::int AS active_count
+       FROM products
+       WHERE category IS NOT NULL
+       GROUP BY category
+       ORDER BY category ASC`
+    );
+    return result.rows;
+  },
+
+  /**
+   * Renombra una categoría en todos los productos que la tienen
+   */
+  async renameCategory(oldName, newName) {
+    const result = await query(
+      `UPDATE products SET category = $1 WHERE category ILIKE $2 RETURNING id`,
+      [newName, oldName]
+    );
+    return result.rowCount;
+  },
+
 };
 
 module.exports = ProductModel;

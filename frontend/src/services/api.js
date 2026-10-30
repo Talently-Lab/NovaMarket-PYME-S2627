@@ -20,6 +20,8 @@ api.interceptors.response.use(
   (err) => {
     if (err.response?.status === 401) {
       localStorage.removeItem('nm-token');
+      // Avisa al AuthContext para que limpie también el usuario del estado
+      window.dispatchEvent(new Event('nm:unauthorized'));
     }
     return Promise.reject(err);
   }
@@ -27,17 +29,21 @@ api.interceptors.response.use(
 
 // ── Auth ──────────────────────────────────────────────────────
 export const authAPI = {
-  register: (data) => api.post('/auth/register', data),
-  login:    (data) => api.post('/auth/login', data),
-  me:       ()     => api.get('/auth/me'),
+  register:       (data) => api.post('/auth/register', data),
+  login:          (data) => api.post('/auth/login', data),
+  me:             ()     => api.get('/auth/me'),
+  forgotPassword: (data) => api.post('/auth/forgot-password', data),
+  resetPassword:  (data) => api.post('/auth/reset-password', data),
 };
 
 // ── Productos ─────────────────────────────────────────────────
 export const productsAPI = {
   getAll:   (params) => api.get('/products', { params }),
-  getById:  (id)     => api.get(`/products/${id}`),
+  getById:  (id, _t) => api.get(`/products/${id}`, { params: _t ? { _t } : undefined }),
   // Admin
-  getAllAdmin: ()              => api.get('/products/admin/all'),
+  getAllAdmin:       ()              => api.get('/products/admin/all'),
+  getCategories:    ()              => api.get('/products/admin/categories'),
+  renameCategory:   (oldName, newName) => api.patch('/products/admin/categories/rename', { oldName, newName }),
   create:      (data)         => api.post('/products/admin', data),
   update:      (id, data)     => api.put(`/products/admin/${id}`, data),
   remove:      (id)           => api.delete(`/products/admin/${id}`),
@@ -45,12 +51,23 @@ export const productsAPI = {
 
 // ── Pedidos ───────────────────────────────────────────────────
 export const ordersAPI = {
-  create:   (data) => api.post('/orders', data),
-  getAll:   ()     => api.get('/orders'),
-  getById:  (id)   => api.get(`/orders/${id}`),
+  create:         (data)          => api.post('/orders', data),
+  validateCoupon: (code)          => api.post('/orders/validate-coupon', { code }),
+  getAll:         ()              => api.get('/orders'),
+  getById:        (id)            => api.get(`/orders/${id}`),
   // Admin
   getAllAdmin:    ()             => api.get('/orders/admin/all'),
   updateStatus:  (id, status)   => api.patch(`/orders/admin/${id}/status`, { status }),
+  // Cupones admin
+  getCoupons:    ()              => api.get('/orders/admin/coupons'),
+  createCoupon:  (data)         => api.post('/orders/admin/coupons', data),
+  deleteCoupon:  (code)         => api.delete(`/orders/admin/coupons/${code}`),
+};
+
+// ── Usuarios (admin) ─────────────────────────────────────────
+export const usersAPI = {
+  getAllAdmin:      ()     => api.get('/auth/admin/users'),
+  changePassword:  (data) => api.patch('/auth/admin/change-password', data),
 };
 
 // ── Health ────────────────────────────────────────────────────

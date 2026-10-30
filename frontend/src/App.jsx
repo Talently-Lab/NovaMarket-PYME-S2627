@@ -1,7 +1,8 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { useAuth } from './context/AuthContext';
 
 import Layout from './components/layout/Layout';
 import AdminLayout from './pages/admin/AdminLayout';
@@ -16,32 +17,58 @@ import OrderConfirmedPage from './pages/checkout/OrderConfirmedPage';
 import MyOrdersPage from './pages/orders/MyOrdersPage';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
+import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
+import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 import TermsPage from './pages/legal/TermsPage';
 import PrivacyPage from './pages/legal/PrivacyPage';
+import SeguimientoPedidosPage from './pages/ayuda/SeguimientoPedidosPage';
+import FaqPage from './pages/ayuda/FaqPage';
+import GarantiasPage from './pages/ayuda/GarantiasPage';
+import ContactoPage from './pages/ayuda/ContactoPage';
 import DashboardPage from './pages/admin/DashboardPage';
 import ProductsAdminPage from './pages/admin/ProductsAdminPage';
-import NewProductAdminPage from './pages/admin/NewProductAdminPage';
-import EditProductAdminPage from './pages/admin/EditProductAdminPage';
 import OrdersAdminPage from './pages/admin/OrdersAdminPage';
+import CustomersAdminPage from './pages/admin/CustomersAdminPage';
+import CategoriesAdminPage from './pages/admin/CategoriesAdminPage';
+import ConfigAdminPage from './pages/admin/ConfigAdminPage';
 import NotFoundPage from './pages/NotFoundPage';
+
+// Puente entre AuthContext y CartContext — pasa el userId al carrito
+// useMemo estabiliza userId para evitar re-montajes del CartProvider
+function CartWrapper({ children }) {
+  const { user } = useAuth();
+  const userId = user?.id ?? null;
+  return (
+    <CartProvider userId={userId}>
+      {children}
+    </CartProvider>
+  );
+}
 
 export default function App() {
   return (
     <BrowserRouter>
       <ThemeProvider>
         <AuthProvider>
-          <CartProvider>
+          <CartWrapper>
           <Routes>
             {/* Rutas públicas */}
             <Route element={<Layout />}>
               <Route path="/" element={<HomePage />} />
               <Route path="/catalogo" element={<CatalogPage />} />
+              <Route path="/ofertas" element={<Navigate to="/catalogo" replace />} />
               <Route path="/catalogo/:id" element={<ProductDetailPage />} />
               <Route path="/carrito" element={<CartPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/registro" element={<RegisterPage />} />
+              <Route path="/olvide-contrasena" element={<ForgotPasswordPage />} />
+              <Route path="/restablecer-contrasena" element={<ResetPasswordPage />} />
               <Route path="/terminos" element={<TermsPage />} />
               <Route path="/privacidad" element={<PrivacyPage />} />
+              <Route path="/ayuda/seguimiento" element={<SeguimientoPedidosPage />} />
+              <Route path="/ayuda/faq" element={<FaqPage />} />
+              <Route path="/ayuda/garantias" element={<GarantiasPage />} />
+              <Route path="/ayuda/contacto" element={<ContactoPage />} />
 
               {/* Checkout y pedidos — requiere estar autenticado */}
               <Route element={<ProtectedRoute />}>
@@ -54,18 +81,19 @@ export default function App() {
             {/* Rutas de administración */}
             <Route element={<AdminRoute />}>
               <Route element={<AdminLayout />}>
-                <Route path="/admin" element={<DashboardPage />} />
-                <Route path="/admin/productos" element={<ProductsAdminPage />} />
-                <Route path="/admin/productos/nuevo" element={<NewProductAdminPage />}/>
-                <Route path="/admin/productos/:id/editar" element={<EditProductAdminPage/>}/>
-                <Route path="/admin/pedidos" element={<OrdersAdminPage />} />
+                <Route path="/admin"              element={<DashboardPage />} />
+                <Route path="/admin/productos"    element={<ProductsAdminPage />} />
+                <Route path="/admin/pedidos"      element={<OrdersAdminPage />} />
+                <Route path="/admin/clientes"     element={<CustomersAdminPage />} />
+                <Route path="/admin/categorias"   element={<CategoriesAdminPage />} />
+                <Route path="/admin/config"       element={<ConfigAdminPage />} />
               </Route>
             </Route>
 
             {/* 404 */}
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
-        </CartProvider>
+        </CartWrapper>
         </AuthProvider>
       </ThemeProvider>
     </BrowserRouter>

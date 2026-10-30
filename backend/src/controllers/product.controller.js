@@ -6,16 +6,28 @@ const ProductModel = require('../models/product.model');
  * Público — no requiere autenticación
  */
 async function getProducts(req, res) {
-  const { category, minPrice, maxPrice, order } = req.query;
+  const { category, minPrice, maxPrice, order, page, limit, search } = req.query;
 
-  const products = await ProductModel.findAll({
+  const { rows: products, total } = await ProductModel.findAll({
     category,
     minPrice: minPrice ? parseFloat(minPrice) : undefined,
     maxPrice: maxPrice ? parseFloat(maxPrice) : undefined,
     order,
+    page,
+    limit,
+    search,
   });
 
-  return res.status(200).json({ products, total: products.length });
+  const limitNum = parseInt(limit) || null;
+  const pageNum  = parseInt(page)  || null;
+
+  return res.status(200).json({
+    products,
+    total,
+    page:       pageNum || 1,
+    limit:      limitNum || total,
+    totalPages: limitNum ? Math.ceil(total / limitNum) : 1,
+  });
 }
 
 /**
@@ -36,6 +48,8 @@ async function getProductById(req, res) {
     return res.status(404).json({ error: 'Producto no encontrado.' });
   }
 
+  // Evitar que el browser o un proxy sirvan datos obsoletos al admin
+  res.set('Cache-Control', 'no-store');
   return res.status(200).json({ product });
 }
 
@@ -56,16 +70,16 @@ async function createProduct(req, res) {
   const { name, description, price, stock, category, image_url } = req.body;
 
   // Validaciones
-  if (!name || !price || !category) {
+  if (!name || price === undefined || price === null || price === '' || !category) {
     return res.status(400).json({ error: 'Nombre, precio y categoría son requeridos.' });
   }
 
-  if (isNaN(price) || price < 0) {
-    return res.status(400).json({ error: 'El precio debe ser un número positivo.' });
+  if (isNaN(price) || Number(price) < 0) {
+    return res.status(400).json({ error: 'El precio debe ser un número igual o mayor a 0.' });
   }
 
   if (stock !== undefined && (isNaN(stock) || stock < 0)) {
-    return res.status(400).json({ error: 'El stock debe ser un número positivo.' });
+    return res.status(400).json({ error: 'El stock debe ser un número igual o mayor a 0.' });
   }
 
   const product = await ProductModel.create({
@@ -101,8 +115,8 @@ async function updateProduct(req, res) {
 
   const { name, description, price, stock, category, image_url, is_active } = req.body;
 
-  if (price !== undefined && (isNaN(price) || price < 0)) {
-    return res.status(400).json({ error: 'El precio debe ser un número positivo.' });
+  if (price !== undefined && (isNaN(price) || Number(price) < 0)) {
+    return res.status(400).json({ error: 'El precio debe ser un número igual o mayor a 0.' });
   }
 
   const updated = await ProductModel.update(Number(id), {
@@ -141,6 +155,38 @@ async function deleteProduct(req, res) {
   return res.status(200).json({ message: 'Producto eliminado correctamente.' });
 }
 
+/**
+ * GET /api/products/admin/categories
+ * Lista categorías únicas con conteo de productos — solo admin
+ */
+async function getCategories(req, res) {
+  const categories = await ProductModel.getCategories();
+  return res.status(200).json({ categories, total: categories.length });
+}
+
+/**
+ * PATCH /api/products/admin/categories/rename
+ * Renombra una categoría en todos los productos — solo admin
+ */
+async function renameCategory(req, res) {
+  const { oldName, newName } = req.body;
+
+  if (!oldName || !newName) {
+    return res.status(400).json({ error: 'oldName y newName son requeridos.' });
+  }
+
+  if (oldName.trim() === newName.trim()) {
+    return res.status(400).json({ error: 'El nombre nuevo debe ser diferente al actual.' });
+  }
+
+  const updated = await ProductModel.renameCategory(oldName.trim(), newName.trim());
+
+  return res.status(200).json({
+    message: `Categoría renombrada. ${updated} productos actualizados.`,
+    updated,
+  });
+}
+
 module.exports = {
   getProducts,
   getProductById,
@@ -148,4 +194,6 @@ module.exports = {
   createProduct,
   updateProduct,
   deleteProduct,
+  getCategories,
+  renameCategory,
 };

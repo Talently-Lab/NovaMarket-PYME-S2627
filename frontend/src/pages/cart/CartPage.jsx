@@ -1,28 +1,88 @@
 import { Link, useNavigate } from 'react-router-dom';
+import { formatearPrecio } from '../../utils/formatearPrecio';
+import { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
+import { productsAPI } from '../../services/api';
+import { getProductImage } from '../../utils/productImage';
+
+const itemVariants = {
+  hidden:  { opacity: 0, height: 0, marginBottom: 0 },
+  visible: { opacity: 1, height: 'auto', transition: { duration: 0.3, ease: [0.22, 1, 0.36, 1] } },
+  exit:    { opacity: 0, x: -40, height: 0, marginBottom: 0, transition: { duration: 0.25, ease: 'easeIn' } },
+};
+
+function TrashIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+      aria-hidden="true">
+      <polyline points="3 6 5 6 21 6"/>
+      <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+      <path d="M10 11v6M14 11v6"/>
+      <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+    </svg>
+  );
+}
 
 export default function CartPage() {
-  const { items, removeItem, updateQuantity, clearCart, total, itemCount } = useCart();
+  const { items, removeItem, updateQuantity, clearCart, totalAmount, totalItems, updateItemStock } = useCart();
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const [stockLoading, setStockLoading] = useState(true);
+
+  // Refrescar stock desde la API al montar el carrito
+  useEffect(() => {
+    if (items.length === 0) { setStockLoading(false); return; }
+    setStockLoading(true);
+    Promise.all(
+      items.map(item =>
+        // _t fuerza bypass de caché del browser (evita 304 Not Modified)
+        productsAPI.getById(item.id, Date.now())
+          .then(({ data }) => ({ id: item.id, stock: data.product.stock }))
+          .catch(() => null)
+      )
+    ).then(results => {
+      results.forEach(r => { if (r) updateItemStock(r.id, r.stock); });
+    }).finally(() => setStockLoading(false));
+  }, []); // solo al montar
 
   const handleCheckout = () => {
     if (!isAuthenticated) {
-      navigate('/login');
-    } else {
-      navigate('/checkout');
+      navigate('/login', { state: { from: '/carrito' } });
+      return;
     }
+    // Verificar que ningún producto supere el stock disponible
+    const sinStock = items.filter(i => i.stock != null && i.stock === 0);
+    const sobreStock = items.filter(i => i.stock != null && i.quantity > i.stock);
+    const problemas = [...sinStock, ...sobreStock];
+    if (problemas.length > 0) {
+      const nombres = problemas.map(i => `"${i.name}"`).join(', ');
+      alert(`${problemas.length === 1 ? 'El producto' : 'Los productos'} ${nombres} ${problemas.length === 1 ? 'no tiene stock suficiente' : 'no tienen stock suficiente'}. Revisá las cantidades para continuar.`);
+      return;
+    }
+    navigate('/checkout');
   };
 
+  // Bloquear checkout si algún item supera el stock conocido (local o desde API)
+  // Se evalúa siempre, no solo después del refresh, para bloquear inmediatamente
+  const itemsSinStock = items.some(i => i.stock != null && (i.stock === 0 || i.quantity > i.stock));
+
+  // Carrito vacío
   if (items.length === 0) {
     return (
-      <div style={{ textAlign: 'center', padding: 'var(--sp-16) var(--sp-4)' }}>
-        <p style={{ fontSize: '4rem', marginBottom: 'var(--sp-4)' }}>🛒</p>
-        <h1 style={{ fontSize: 'var(--text-2xl)', fontWeight: 'var(--weight-bold)', marginBottom: 'var(--sp-2)' }}>
-          Tu carrito está vacío
-        </h1>
-        <p style={{ color: 'var(--color-text-secondary)', marginBottom: 'var(--sp-8)' }}>
+      <div className="cart-empty">
+        <div className="cart-empty__icon">
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
+            style={{ color: 'var(--color-text-disabled)' }}>
+            <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+          </svg>
+        </div>
+        <h1 className="cart-empty__title">Tu carrito está vacío</h1>
+        <p className="cart-empty__desc">
           Agregá productos desde el catálogo para empezar.
         </p>
         <Link to="/catalogo" className="btn btn--primary btn--lg">
@@ -33,111 +93,160 @@ export default function CartPage() {
   }
 
   return (
-    <div>
-      <h1 className="cart-page-title" style={{
-        fontWeight: 'var(--weight-extrabold)',
-        letterSpacing: '-0.03em',
-        marginBottom: 'var(--sp-8)'
-      }}>
-        Tu carrito ({itemCount} {itemCount === 1 ? 'producto' : 'productos'})
-      </h1>
+    <div className="cart-page-wrapper container">
 
-      <div className="cart-page">
-        {/* Items */}
-        <div>
-          {items.map((item) => (
-            <div key={item.id} className="cart-item">
-              {/* Imagen */}
-              <div className="cart-item__img">
-                {item.image_url
-                  ? <img src={item.image_url} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  : <div style={{ width: '100%', height: '100%', display: 'grid', placeItems: 'center', fontSize: '1.5rem' }}>📦</div>
-                }
-              </div>
+      {/* Título */}
+      <div className="cart-page-header">
+        <h1 className="cart-page-title">
+          Tu carrito
+          <span className="cart-page-title__count">
+            {totalItems} {totalItems === 1 ? 'producto' : 'productos'}
+          </span>
+        </h1>
+        <button
+          onClick={clearCart}
+          className="btn btn--ghost btn--sm cart-clear-btn"
+        >
+          Vaciar carrito
+        </button>
+      </div>
 
-              {/* Info */}
-              <div className="cart-item__info">
-                <p style={{ fontWeight: 'var(--weight-semibold)', marginBottom: 'var(--sp-1)' }} className="truncate">
-                  {item.name}
+      <div className="cart-layout">
+
+        {/* ── Lista de items ── */}
+        <div className="cart-items-list">
+          <AnimatePresence initial={false}>
+            {items.map((item) => (
+              <motion.div
+                key={item.id}
+                className="cart-item"
+                variants={itemVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                layout
+              >
+
+                {/* Imagen */}
+                <div className="cart-item__img">
+                  <img src={getProductImage(item)} alt={item.name} />
+                </div>
+
+                {/* Info */}
+                <div className="cart-item__info">
+                  <p className="cart-item__name">{item.name}</p>
+                  <p className="cart-item__price">
+                    {formatearPrecio(item.price)} c/u
+                  </p>
+                </div>
+
+                {/* Cantidad */}
+                <div className="cart-item__qty-wrapper">
+                  <div className="cart-item__qty">
+                    <motion.button
+                      className="cart-qty-btn"
+                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                      aria-label="Restar uno"
+                      disabled={item.quantity <= 1}
+                      whileHover={item.quantity > 1 ? { scale: 1.1 } : {}}
+                      whileTap={item.quantity > 1 ? { scale: 0.9 } : {}}
+                    >−</motion.button>
+                    <motion.span
+                      key={item.quantity}
+                      className="cart-item__qty-num"
+                      initial={{ scale: 1.3, opacity: 0.5 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      {item.quantity}
+                    </motion.span>
+                    <motion.button
+                      className="cart-qty-btn"
+                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                      aria-label="Sumar uno"
+                      disabled={item.stock != null && item.quantity >= item.stock}
+                      whileHover={item.stock == null || item.quantity < item.stock ? { scale: 1.1 } : {}}
+                      whileTap={item.stock == null || item.quantity < item.stock ? { scale: 0.9 } : {}}
+                    >+</motion.button>
+                  </div>
+                  {item.stock != null && item.quantity >= item.stock && (
+                    <span className="cart-item__stock-limit">Máx. disponible</span>
+                  )}
+                  {item.stock != null && item.stock === 0 && (
+                    <span className="cart-item__no-stock">Sin stock</span>
+                  )}
+                </div>
+
+                {/* Subtotal */}
+                <p className="cart-item__subtotal">
+                  {formatearPrecio(item.price * item.quantity)}
                 </p>
-                <p style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--text-sm)' }}>
-                  ${Number(item.price).toLocaleString('es-AR')} c/u
-                </p>
-              </div>
 
-              {/* Cantidad */}
-              <div className="cart-item__qty">
-                <button
-                  className="btn btn--secondary btn--sm btn--icon"
-                  onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                  aria-label="Restar"
-                >−</button>
-                <span style={{ minWidth: 24, textAlign: 'center', fontWeight: 'var(--weight-semibold)' }}>
-                  {item.quantity}
-                </span>
-                <button
-                  className="btn btn--secondary btn--sm btn--icon"
-                  onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                  aria-label="Sumar"
-                >+</button>
-              </div>
-
-              {/* Subtotal + eliminar */}
-              <div className="cart-item__actions">
-                <p style={{ fontWeight: 'var(--weight-bold)', textAlign: 'right' }}>
-                  ${Number(item.price * item.quantity).toLocaleString('es-AR')}
-                </p>
-                <button
-                  className="btn btn--ghost btn--sm btn--icon"
+                {/* Eliminar */}
+                <motion.button
+                  className="cart-item__remove"
                   onClick={() => removeItem(item.id)}
-                  aria-label="Eliminar producto"
-                  style={{ color: 'var(--color-error)' }}
-                >✕</button>
-              </div>
-            </div>
-          ))}
+                  aria-label={`Eliminar ${item.name}`}
+                  whileHover={{ scale: 1.15, rotate: -8 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  <TrashIcon />
+                </motion.button>
 
-          <button
-            onClick={clearCart}
-            className="btn btn--ghost btn--sm"
-            style={{ color: 'var(--color-text-disabled)', marginTop: 'var(--sp-2)' }}
-          >
-            Vaciar carrito
-          </button>
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
 
-        {/* Resumen */}
-        <div className="cart-summary">
+        {/* ── Resumen lateral ── */}
+        <aside className="cart-summary">
           <h2 className="cart-summary__title">Resumen</h2>
 
-          {items.map((item) => (
-            <div key={item.id} className="cart-summary__row">
-              <span className="truncate" style={{ maxWidth: 160 }}>{item.name} x{item.quantity}</span>
-              <span>${Number(item.price * item.quantity).toLocaleString('es-AR')}</span>
-            </div>
-          ))}
-
-          <div className="cart-summary__row cart-summary__row--total">
-            <span>Total</span>
-            <span>${Number(total).toLocaleString('es-AR')}</span>
+          <div className="cart-summary__lines">
+            {items.map((item) => (
+              <div key={item.id} className="cart-summary__row">
+                <span className="cart-summary__row-label truncate">
+                  {item.name} <span className="cart-summary__qty">x{item.quantity}</span>
+                </span>
+                <span className="cart-summary__row-value">
+                  {formatearPrecio(item.price * item.quantity)}
+                </span>
+              </div>
+            ))}
           </div>
 
+          <div className="cart-summary__divider" />
+
+          <div className="cart-summary__total">
+            <span>Total</span>
+            <span>{formatearPrecio(totalAmount)}</span>
+          </div>
+
+          {itemsSinStock && (
+            <p className="cart-summary__stock-warning">
+              Hay productos sin stock suficiente. Revisá las cantidades para continuar.
+            </p>
+          )}
+
           <button
-            className="btn btn--gradient btn--full btn--lg"
+            className="btn btn--primary btn--full btn--lg cart-summary__cta"
             onClick={handleCheckout}
-            style={{ marginTop: 'var(--sp-6)' }}
+            disabled={stockLoading || itemsSinStock}
           >
-            {isAuthenticated ? 'Confirmar pedido' : 'Ingresar para comprar'}
+            {stockLoading
+              ? 'Verificando stock...'
+              : isAuthenticated ? 'Ir al Checkout →' : 'Ingresar para comprar'
+            }
           </button>
 
           <Link
             to="/catalogo"
-            className="btn btn--ghost btn--full"
-            style={{ marginTop: 'var(--sp-2)' }}
+            className="btn btn--ghost btn--full cart-summary__back"
           >
-            Seguir comprando
+            ← Seguir comprando
           </Link>
-        </div>
+        </aside>
+
       </div>
     </div>
   );

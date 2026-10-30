@@ -1,0 +1,19 @@
+-- ─────────────────────────────────────────────────────────────────────────
+-- 012_multi_image_convention.sql
+-- Convención de múltiples imágenes por producto (sin cambio de schema).
+--
+-- ESTRATEGIA: el campo image_url (TEXT) almacena hasta 5 URLs separadas
+-- por el delimitador '|||'. La primera URL siempre es la imagen principal.
+-- Compatibilidad total con código existente que solo lee image_url:
+-- simplemente obtiene la primera URL (o la única, en productos legacy).
+--
+-- Ejemplo de valor: 
+--   https://cdn.../img1.webp|||https://cdn.../img2.webp|||https://cdn.../img3.webp
+--
+-- Para actualizar un producto existente con múltiples imágenes:
+-- UPDATE products
+--    SET image_url = 'https://cdn.../principal.webp|||https://cdn.../extra1.webp'
+--  WHERE id = 42;
+--
+-- NOTA: No ejecutar nada en este archivo — es solo documentación.
+-- ─────────────────────────────────────────────────────────────────────────

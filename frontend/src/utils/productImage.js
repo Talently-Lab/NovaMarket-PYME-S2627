@@ -1,47 +1,103 @@
 /**
- * Imágenes de productos — URLs de Unsplash con IDs fijos verificados
- * Formato: /photo-{ID}?w=600&q=80 — estable y sin redirecciones
+ * Imagenes de productos — servidas localmente desde /public/images/Productos/
+ * Estructura: /images/Productos/{categoria}/{n}.webp
+ *
+ * Orden de resolución:
+ * 1. image_url en BD (si no es Unsplash ni MercadoLibre)
+ * 2. Mapeo exacto por nombre
+ * 3. Fallback por categoría
+ * 4. Imagen por defecto
  */
 const PRODUCT_IMAGES = {
-  'Mouse Gamer Logitech G203':            'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=600&q=80',
-  'Teclado Mecánico Redragon K552':       'https://images.unsplash.com/photo-1541140532154-b024d705b90a?w=600&q=80',
-  'Auriculares HyperX Cloud II':          'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&q=80',
-  'Mousepad XL Speed Negra':              'https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=600&q=80',
-  'Webcam Logitech C920 HD Pro':          'https://images.unsplash.com/photo-1587826080692-f439cd0b70da?w=600&q=80',
-  'Hub USB-C 7 en 1':                     'https://images.unsplash.com/photo-1625895197185-efcec01cffe0?w=600&q=80',
-  'Monitor Gaming 24" 144Hz':             'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=600&q=80',
-  'Silla Gamer Pro RGB':                  'https://images.unsplash.com/photo-1598550476439-6847785fcea6?w=600&q=80',
-  'Headset Gamer Logitech G435':          'https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=600&q=80',
-  'Mouse Pad RGB XL Redragon':            'https://images.unsplash.com/photo-1593640408182-31c228e50b00?w=600&q=80',
-  'Teclado Inalámbrico Logitech MX Keys': 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=600&q=80',
-  'Soporte para Monitor Doble':           'https://images.unsplash.com/photo-1547082299-de196ea013d6?w=600&q=80',
-  'Micrófono USB Blue Yeti':              'https://images.unsplash.com/photo-1589903308904-1010c2294adc?w=600&q=80',
-  'Luz LED de Escritorio RGB':            'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=600&q=80',
-  'Control Gamepad Xbox Series':          'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=600&q=80',
-  'Tira LED RGB 5 metros':                'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80',
-  'SSD Externo Samsung T7 1TB':           'https://images.unsplash.com/photo-1597852074816-d933c7d2b988?w=600&q=80',
-  'Soporte para Auriculares RGB':         'https://images.unsplash.com/photo-1558756520-22cfe5d382ca?w=600&q=80',
-  'Cámara Web 4K Logitech Brio':          'https://images.unsplash.com/photo-1622396481328-9b1b78cdd9fd?w=600&q=80',
-  'Switch KVM HDMI 4K 2 Puertos':         'https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&q=80',
+  // Periféricos
+  'Mouse Gamer Logitech G203':            '/images/Productos/perifericos/1.webp',
+  'Teclado Mecánico Redragon K552':       '/images/Productos/perifericos/2.webp',
+  'Mouse Pad RGB XL Redragon':            '/images/Productos/perifericos/3.webp',
+  'Teclado Inalámbrico Logitech MX Keys': '/images/Productos/perifericos/4.webp',
+  'Soporte para Monitor Doble':           '/images/Productos/perifericos/5.webp',
+  // Audio
+  'Auriculares HyperX Cloud II':          '/images/Productos/audio/1.webp',
+  'Headset Gamer Logitech G435':          '/images/Productos/audio/2.webp',
+  'Micrófono USB Blue Yeti':              '/images/Productos/audio/3.webp',
+  'Soporte para Auriculares RGB':         '/images/Productos/audio/4.webp',
+  // Gaming
+  'Mousepad XL Speed Negra':              '/images/Productos/gaming/1.webp',
+  'Monitor Gaming 24" 144Hz':             '/images/Productos/gaming/2.webp',
+  'Silla Gamer Pro RGB':                  '/images/Productos/gaming/3.webp',
+  'Control Gamepad Xbox Series':          '/images/Productos/gaming/4.webp',
+  'Tira LED RGB 5 metros':                '/images/Productos/gaming/5.webp',
+  // Gadgets
+  'Hub USB-C 7 en 1':                     '/images/Productos/Gadgets/1.webp',
+  'SSD Externo Samsung T7 1TB':           '/images/Productos/Gadgets/2.webp',
+  'Switch KVM HDMI 4K 2 Puertos':         '/images/Productos/Gadgets/3.webp',
+  'Webcam Logitech C920 HD Pro':          '/images/Productos/Gadgets/4.webp',
+  'Cámara Web 4K Logitech Brio':          '/images/Productos/Gadgets/5.webp',
+  'Luz LED de Escritorio RGB':            '/images/Productos/Gadgets/6.webp',
+  // Celulares
+  'Samsung Galaxy A55 5G':               '/images/Productos/cel/1.webp',
+  'iPhone 15 128GB':                     '/images/Productos/cel/2.webp',
+  'Motorola Edge 40 Neo':                '/images/Productos/cel/3.webp',
+  'Xiaomi Redmi Note 13 Pro':            '/images/Productos/cel/4.webp',
+  'Samsung Galaxy S24 FE':               '/images/Productos/cel/5.webp',
+  // Notebooks
+  'MacBook Air M3 13"':                  '/images/Productos/notebooks/1.webp',
+  'ASUS VivoBook 15 OLED':               '/images/Productos/notebooks/2.webp',
+  'Lenovo IdeaPad Slim 5':               '/images/Productos/notebooks/3.webp',
+  'HP Pavilion 15 Gaming':               '/images/Productos/notebooks/4.webp',
+  'Dell Inspiron 14 Plus':               '/images/Productos/notebooks/5.webp',
 };
 
-// Fallback por categoría — imágenes tech genéricas confiables
 const CATEGORY_IMAGES = {
-  'Periféricos':  'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=600&q=80',
-  'Teclados':     'https://images.unsplash.com/photo-1541140532154-b024d705b90a?w=600&q=80',
-  'Audio':        'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&q=80',
-  'Accesorios':   'https://images.unsplash.com/photo-1625895197185-efcec01cffe0?w=600&q=80',
-  'Gadgets':      'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=600&q=80',
-  'Monitores':    'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=600&q=80',
-  'Gaming':       'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=600&q=80',
-  'Iluminación':  'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=600&q=80',
+  'Periféricos':  '/images/Productos/perifericos/1.webp',
+  'Teclados':     '/images/Productos/perifericos/2.webp',
+  'Audio':        '/images/Productos/audio/1.webp',
+  'Gaming':       '/images/Productos/gaming/1.webp',
+  'Gadgets':      '/images/Productos/Gadgets/1.webp',
+  'Accesorios':   '/images/Productos/perifericos/3.webp',
+  'Iluminación':  '/images/Productos/gaming/5.webp',
+  'Monitores':    '/images/Productos/gaming/2.webp',
+  'Notebooks':    '/images/Productos/notebooks/1.webp',
+  'Celulares':    '/images/Productos/cel/1.webp',
 };
+
+const DEFAULT_IMAGE = '/images/Productos/Gadgets/1.webp';
+
+// URLs externas que deben ignorarse y reemplazarse por imágenes locales
+const BLOCKED_HOSTS = ['unsplash.com', 'mlstatic.com'];
 
 export function getProductImage(product) {
-  return (
-    PRODUCT_IMAGES[product.name] ||
-    product.image_url || 
-    CATEGORY_IMAGES[product.category] ||
-    'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=600&q=80'
+  const url = product?.image_url;
+  if (url && !BLOCKED_HOSTS.some(h => url.includes(h))) {
+    return url;
+  }
+  return PRODUCT_IMAGES[product?.name] || CATEGORY_IMAGES[product?.category] || DEFAULT_IMAGE;
+}
+
+/**
+ * Devuelve un array de hasta 5 URLs de imágenes del producto.
+ * El campo image_url puede contener múltiples URLs separadas por '|||'.
+ * La primera siempre es la imagen principal.
+ * Si no hay imágenes extras, devuelve solo la principal.
+ */
+export function getProductImages(product) {
+  const url = product?.image_url ?? '';
+  const SEPARATOR = '|||';
+
+  // Extraer todas las URLs del campo image_url
+  let urls = url.split(SEPARATOR).map(u => u.trim()).filter(Boolean);
+
+  // Filtrar URLs externas bloqueadas una a una
+  urls = urls.map(u =>
+    BLOCKED_HOSTS.some(h => u.includes(h))
+      ? (PRODUCT_IMAGES[product?.name] || CATEGORY_IMAGES[product?.category] || DEFAULT_IMAGE)
+      : u
   );
+
+  // Si no hay ninguna URL válida, usar la imagen por nombre/categoría
+  if (urls.length === 0) {
+    const fallback = PRODUCT_IMAGES[product?.name] || CATEGORY_IMAGES[product?.category] || DEFAULT_IMAGE;
+    urls = [fallback];
+  }
+
+  return urls;
 }

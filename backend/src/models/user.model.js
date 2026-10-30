@@ -6,11 +6,6 @@ const { query } = require('../config/db');
  */
 
 const UserModel = {
-  /**
-   * Busca un usuario por email
-   * @param {string} email
-   * @returns {Object|null} usuario o null
-   */
   async findByEmail(email) {
     const result = await query(
       'SELECT * FROM users WHERE email = $1 LIMIT 1',
@@ -19,11 +14,6 @@ const UserModel = {
     return result.rows[0] || null;
   },
 
-  /**
-   * Busca un usuario por ID
-   * @param {number} id
-   * @returns {Object|null} usuario o null
-   */
   async findById(id) {
     const result = await query(
       'SELECT id, name, email, role, created_at FROM users WHERE id = $1 LIMIT 1',
@@ -32,14 +22,6 @@ const UserModel = {
     return result.rows[0] || null;
   },
 
-  /**
-   * Crea un nuevo usuario
-   * @param {string} name
-   * @param {string} email
-   * @param {string} hashedPassword
-   * @param {string} role - 'customer' | 'admin'
-   * @returns {Object} usuario creado (sin password)
-   */
   async create(name, email, hashedPassword, role = 'customer') {
     const result = await query(
       `INSERT INTO users (name, email, password, role)
@@ -48,6 +30,58 @@ const UserModel = {
       [name, email, hashedPassword, role]
     );
     return result.rows[0];
+  },
+
+  /**
+   * Lista todos los usuarios — solo para admin
+   * @returns {Array} lista de usuarios (sin password)
+   */
+  async findAll() {
+    const result = await query(
+      `SELECT u.id, u.name, u.email, u.role, u.created_at,
+              COUNT(o.id)::int AS order_count
+       FROM users u
+       LEFT JOIN orders o ON o.user_id = u.id
+       GROUP BY u.id
+       ORDER BY u.created_at DESC`
+    );
+    return result.rows;
+  },
+
+  async updatePassword(userId, hashedPassword) {
+    const result = await query(
+      `UPDATE users SET password = $1 WHERE id = $2
+       RETURNING id, name, email, role`,
+      [hashedPassword, userId]
+    );
+    return result.rows[0] || null;
+  },
+
+  async setResetToken(email, token, expires) {
+    const result = await query(
+      `UPDATE users SET reset_token = $1, reset_token_expires = $2
+       WHERE email = $3
+       RETURNING id, email`,
+      [token, expires, email]
+    );
+    return result.rows[0] || null;
+  },
+
+  async findByResetToken(token) {
+    const result = await query(
+      `SELECT id, email, name, reset_token_expires
+       FROM users
+       WHERE reset_token = $1 LIMIT 1`,
+      [token]
+    );
+    return result.rows[0] || null;
+  },
+
+  async clearResetToken(userId) {
+    await query(
+      `UPDATE users SET reset_token = NULL, reset_token_expires = NULL WHERE id = $1`,
+      [userId]
+    );
   },
 };
 

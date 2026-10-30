@@ -25,8 +25,14 @@ test.describe('RegisterPage', () => {
     await expect(page.locator('input[type="email"]')).toBeVisible();
   });
 
-  test('Campo contraseña visible con type="password"', async ({ page }) => {
-    await expect(page.locator('input[type="password"]')).toBeVisible();
+  test('Campo contraseña visible con type="password"', async () => {
+    await expect(register.passwordInput).toBeVisible();
+    await expect(register.passwordInput).toHaveAttribute('type', 'password');
+  });
+
+  test('Campo "Repetir contraseña" visible con type="password"', async () => {
+    await expect(register.confirmPasswordInput).toBeVisible();
+    await expect(register.confirmPasswordInput).toHaveAttribute('type', 'password');
   });
 
   test('Botón "Crear cuenta" visible y habilitado', async () => {
@@ -46,7 +52,8 @@ test.describe('RegisterPage', () => {
   test('Formulario tiene atributos de autocompletado', async ({ page }) => {
     await expect(page.locator('input[autocomplete="name"]')).toHaveCount(1);
     await expect(page.locator('input[autocomplete="email"]')).toHaveCount(1);
-    await expect(page.locator('input[autocomplete="new-password"]')).toHaveCount(1);
+    // contraseña + repetir contraseña
+    await expect(page.locator('input[autocomplete="new-password"]')).toHaveCount(2);
   });
 
   test('URL es /registro al cargar la página', async ({ page }) => {
