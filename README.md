@@ -31,6 +31,56 @@ NovaMarket resuelve el problema de dependencia de plataformas externas mediante:
 
 ---
 
+## Capturas de Pantalla
+
+### Desktop (1440×900)
+
+| Home | Catálogo | Producto |
+|------|----------|---------|
+| ![Home Desktop](docs/capturas/home-desktop.png) | ![Catálogo Desktop](docs/capturas/catalogo-desktop.png) | ![Producto Desktop](docs/capturas/producto-desktop.png) |
+
+| Carrito | Login | Registro |
+|--------|-------|----------|
+| ![Carrito Desktop](docs/capturas/carrito-desktop.png) | ![Login Desktop](docs/capturas/login-desktop.png) | ![Registro Desktop](docs/capturas/registro-desktop.png) |
+
+### Mobile (375×812)
+
+| Home | Catálogo | Producto |
+|------|----------|---------|
+| ![Home Mobile](docs/capturas/home-mobile.png) | ![Catálogo Mobile](docs/capturas/catalogo-mobile.png) | ![Producto Mobile](docs/capturas/producto-mobile.png) |
+
+| Carrito | Login | Registro |
+|--------|-------|----------|
+| ![Carrito Mobile](docs/capturas/carrito-mobile.png) | ![Login Mobile](docs/capturas/login-mobile.png) | ![Registro Mobile](docs/capturas/registro-mobile.png) |
+
+---
+
+## Arquitectura
+
+```
+┌─────────────┐
+│   Netlify   │  React + Vite (Frontend)
+│  (Frontend) │
+└──────┬──────┘
+       │ HTTPS
+       ↓
+┌─────────────┐
+│   Render    │  Node.js + Express (Backend API)
+│  (Backend)  │
+└──────┬──────┘
+       │ PostgreSQL
+       ↓
+┌─────────────┐
+│  Supabase   │  Base de datos relacional
+│  (Base de   │
+│   datos)    │
+└─────────────┘
+
+Email Transaccional: Brevo API HTTP
+```
+
+---
+
 ## Stack Tecnológico
 
 ### Backend
@@ -43,8 +93,7 @@ NovaMarket resuelve el problema de dependencia de plataformas externas mediante:
 | jsonwebtoken | 9.x | Autenticación JWT |
 | bcryptjs | 2.x | Hash de contraseñas |
 | express-rate-limit | 7.x | Rate limiting de API |
-| nodemailer / resend | — | Email transaccional |
-| @supabase/supabase-js | 2.x | Cliente Supabase |
+| Brevo API HTTP | — | Email transaccional (recuperación de contraseña) |
 
 ### Frontend
 | Tecnología | Versión | Uso |
@@ -56,6 +105,7 @@ NovaMarket resuelve el problema de dependencia de plataformas externas mediante:
 | Framer Motion | 11.x | Animaciones |
 | Three.js + R3F | 0.169/9.x | Componentes 3D (hero particles) |
 | jsPDF | 2.x | Generación de PDFs |
+| Supabase Storage | — | Upload de imágenes de productos (admin) |
 
 ### Testing y QA
 | Herramienta | Uso |
@@ -64,8 +114,6 @@ NovaMarket resuelve el problema de dependencia de plataformas externas mediante:
 | pg-mem | Base de datos en memoria para tests aislados |
 | Playwright | Tests E2E (multi-browser, mobile) |
 | GitHub Actions | Pipeline CI/CD automatizado |
-| Netlify | Deploy frontend con preview environments |
-| Render | Deploy backend |
 
 ---
 
@@ -103,22 +151,15 @@ NovaMarket-PYME-S2627/
 │   │   ├── utils/          # Utilidades (helpers)
 │   │   ├── App.jsx         # Enrutador principal
 │   │   ├── main.jsx        # Entry point React
-│   │   └── index.css       # Design system (8100+ líneas)
+│   │   └── index.css       # Design system
 │   ├── public/             # Assets estáticos
 │   ├── netlify.toml        # Configuración deploy Netlify
 │   └── package.json        # Dependencias y scripts frontend
 │
 ├── tests/                   # Suite de pruebas automatizadas
 │   ├── api/                # Tests de integración de API (Jest + Supertest)
-│   │   ├── auth.api.test.ts
-│   │   ├── products.api.test.ts
-│   │   ├── orders.api.test.ts
-│   │   └── health.api.test.ts
 │   ├── e2e/                # Tests end-to-end (Playwright)
-│   │   ├── pages/          # Page Object Models
-│   │   └── specs/          # Suites de pruebas E2E
 │   ├── security/           # Tests de seguridad (OWASP Top 10)
-│   │   └── owasp/          # A01, A02, A05, A07, A09
 │   ├── unit/               # Tests unitarios aislados
 │   ├── helpers/            # Helpers para tests (pg-mem)
 │   ├── playwright.config.ts # Configuración Playwright
@@ -130,15 +171,14 @@ NovaMarket-PYME-S2627/
 │   ├── qa-guides/          # Guías de Postman y automatización
 │   ├── qa/                 # Auditorías responsive y reports
 │   ├── sql/                # Migraciones y seeds de base de datos
-│   ├── capturas/           # Capturas de pantalla del producto
-│   └── CONTEXT.md          # Contexto completo del proyecto
+│   └── capturas/           # Capturas de pantalla del producto
 │
 ├── .github/
 │   └── workflows/
 │       └── ci.yml          # Pipeline CI/CD (GitHub Actions)
 │
 ├── .kiro/
-│   └── hooks/              # Git hooks personalizados
+│   └── hooks/              # Hooks de Kiro IDE
 │
 ├── package.json            # Scripts raíz (tests globales)
 ├── jest.config.json        # Configuración Jest
@@ -183,7 +223,7 @@ npm run dev
 PORT=3000
 DATABASE_URL=postgresql://postgres.[PROJECT-REF]:[PASSWORD]@aws-0-us-east-1.pooler.supabase.com:5432/postgres
 NODE_ENV=development
-JWT_SECRET=tu_jwt_secret_super_seguro
+JWT_SECRET=tu_jwt_secret_super_seguro_aqui
 JWT_EXPIRES_IN=7d
 BREVO_API_KEY=xkeysib-xxxxxxxxxxxxxxxxxxxx
 BREVO_SENDER_EMAIL=tu_email@gmail.com
@@ -206,6 +246,8 @@ VITE_API_URL=http://localhost:3000/api
 VITE_SUPABASE_URL=https://[project-ref].supabase.co
 VITE_SUPABASE_ANON_KEY=[anon-key]
 ```
+
+> **Nota:** Las variables `VITE_SUPABASE_*` son requeridas solo para el panel administrativo (upload de imágenes de productos).
 
 ### 4. Ejecutar Migraciones de Base de Datos
 
@@ -254,10 +296,10 @@ npm run test:coverage
 ```
 
 **Resultados actuales:**
-- Test Suites: 11 passed, 1 failed
-- Tests: 320 passed, 1 failed, 23 todo
-- Cobertura: 87% líneas (threshold: 80%)
-- Tiempo de ejecución: ~54s
+- Test Suites: 12 passed, 12 total
+- Tests: 321 passed, 23 todo, 344 total
+- Cobertura: 87.06% líneas (threshold: 80%)
+- Tiempo de ejecución: ~27s
 
 **Ubicación:** `tests/api/`, `tests/unit/`, `tests/security/`
 
@@ -323,8 +365,10 @@ Workflow CI configurado en [`.github/workflows/ci.yml`](.github/workflows/ci.yml
 
 ### Despliegue
 
-- **Frontend:** Netlify (deploy automático desde rama `main`)
-- **Backend:** Render (deploy manual o automático según configuración)
+| Servicio | Plataforma | Estrategia |
+|----------|-----------|------------|
+| Frontend | Netlify | Deploy automático desde rama `main` |
+| Backend | Render | Deploy manual o automático según configuración |
 
 ---
 
@@ -339,6 +383,8 @@ Workflow CI configurado en [`.github/workflows/ci.yml`](.github/workflows/ci.yml
 | GET | `/api/auth/me` | Restaurar sesión actual | JWT |
 | POST | `/api/auth/forgot-password` | Enviar código de recuperación | — |
 | POST | `/api/auth/reset-password` | Restablecer contraseña | — |
+| GET | `/api/auth/admin/users` | Listado de usuarios registrados | Admin |
+| PATCH | `/api/auth/admin/change-password` | Cambiar contraseña de usuario | Admin |
 
 ### Productos
 
@@ -358,21 +404,14 @@ Workflow CI configurado en [`.github/workflows/ci.yml`](.github/workflows/ci.yml
 | Método | Endpoint | Descripción | Auth |
 |--------|----------|-------------|------|
 | POST | `/api/orders` | Crear pedido (checkout) | JWT |
-| GET | `/api/orders/my` | Historial de pedidos del usuario | JWT |
+| GET | `/api/orders` | Historial de pedidos del usuario | JWT |
 | GET | `/api/orders/:id` | Detalle de pedido específico | JWT |
+| POST | `/api/orders/validate-coupon` | Validar cupón de descuento | — |
 | GET | `/api/orders/admin/all` | Listado completo de pedidos | Admin |
 | PATCH | `/api/orders/admin/:id/status` | Cambiar estado de pedido | Admin |
-| POST | `/api/orders/validate-coupon` | Validar cupón de descuento | — |
 | GET | `/api/orders/admin/coupons` | Listado de cupones | Admin |
 | POST | `/api/orders/admin/coupons` | Crear cupón | Admin |
 | DELETE | `/api/orders/admin/coupons/:code` | Eliminar cupón | Admin |
-
-### Usuarios (Admin)
-
-| Método | Endpoint | Descripción | Auth |
-|--------|----------|-------------|------|
-| GET | `/api/auth/admin/users` | Listado de usuarios registrados | Admin |
-| PATCH | `/api/auth/admin/change-password` | Cambiar contraseña de usuario | Admin |
 
 ### Health Check
 
@@ -412,17 +451,17 @@ Cerrar sesión y volver a iniciar para regenerar el token JWT con el rol actuali
 - ✅ Autenticación (registro, login, recuperación de contraseña)
 - ✅ Catálogo de productos con filtros y búsqueda
 - ✅ Carrito de compras persistente (guest + usuario autenticado)
-- ✅ Checkout simulado con múltiples medios de pago
+- ✅ Checkout sin procesamiento de pago real
 - ✅ Panel administrativo completo
 - ✅ Sistema de cupones de descuento
 - ✅ Historial de pedidos por usuario
 - ✅ Responsive design (desktop + mobile)
 
-**Deuda técnica conocida:**
-- Job `lint` en CI sin ESLint configurado en backend
-- Tests E2E deshabilitados en CI (pendiente script `db:seed:test`)
-- 1 test unitario fallando (auth.api.test.ts — timeout)
-- 23 tests marcados como todo (pendientes de implementación)
+**Próximos pasos:**
+- Activar tests E2E en pipeline CI (actualmente deshabilitados)
+- Configurar ESLint en backend para job lint de CI
+- Completar los 23 tests marcados como todo
+- Implementar script `db:seed:test` para tests de integración con DB
 
 ---
 
@@ -430,17 +469,13 @@ Cerrar sesión y volver a iniciar para regenerar el token JWT con el rol actuali
 
 | Nombre | Rol |
 |--------|-----|
-| Christian Santibañez | QA Tester / Frontend / Backend |
+| Christian Santibáñez | QA Tester / Frontend / Backend |
 | Carina Luna | Frontend Developer |
 | Gisele Ortiz | Project Manager |
 | Nicolas Toloza | UX/UI Designer |
-| Ismael Jensen | UX/UI Designer |
 | Lucia Chiarandini | Marketing |
 | Agustina Fernandez Maidana | QA Tester |
-| Gastón Paniagua | Frontend Developer |
 
 ---
 
-## Licencia
-
-Este proyecto es propiedad de NovaMarket. Todos los derechos reservados.
+Desarrollado por el equipo NovaMarket · Talently Lab 2026
