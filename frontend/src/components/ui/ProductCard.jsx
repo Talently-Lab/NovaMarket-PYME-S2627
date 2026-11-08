@@ -112,7 +112,7 @@ export function ProductCard({ product, onAdd, added, cartQty = 0, variant = 'cat
           aria-pressed={wishlisted}
         >
           <img
-            src={wishlisted ? '/images/iconos/fav.svg' : '/images/iconos/fav-black.svg'}
+            src={wishlisted ? '/images/iconos/fav-purple.svg' : '/images/iconos/fav-black.svg'}
             alt=""
             width="18"
             height="17"

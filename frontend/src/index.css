@@ -9315,3 +9315,64 @@ tr:hover .stock-display__edit {
   .pd-lens-square,
   .pd-lens-panel { display: none !important; }
 }
+
+/* ── Feedback Gisele: footer modular 50/50, filtro desplegable en mobile, barra de orden ── */
+.footer__grid {
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+.footer__nav-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+  align-items: start;
+}
+
+.catalog-sidebar__toggle { display: none; }
+
+/* Corrección 12 (Figma): wrap de "Ordenar por" y "Mostrando resultados" */
+.catalog-sort-bar {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.catalog-sort-bar__right {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+@media (max-width: 1024px) {
+  .footer__grid { grid-template-columns: 1fr !important; gap: 24px !important; }
+}
+@media (max-width: 768px) {
+  .footer__nav-grid { grid-template-columns: 1fr; gap: 16px; }
+
+  /* Filtro desplegable */
+  .catalog-sidebar__heading { display: none; }
+  .catalog-sidebar__toggle {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-bold);
+    color: var(--color-text);
+    cursor: pointer;
+  }
+  .catalog-sidebar__toggle-chevron { display: flex; transition: transform .2s; }
+  .catalog-sidebar--open .catalog-sidebar__toggle-chevron { transform: rotate(180deg); }
+  .catalog-sidebar__body { display: none; margin-top: 12px; }
+  .catalog-sidebar--open .catalog-sidebar__body { display: block; }
+
+  /* Barra de orden: el texto del contador y el selector hacen wrap sin desordenarse */
+  .catalog-sort-bar__count { flex: 1 1 140px; }
+  .catalog-sort-bar__right { flex: 1 1 auto; justify-content: flex-end; }
+}

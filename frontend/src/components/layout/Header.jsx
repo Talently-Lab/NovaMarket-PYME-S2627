@@ -189,7 +189,7 @@ export default function Header() {
               </Link>
             )}
             {/* Favoritos */}
-            <Link to="/catalogo" className="header__account-link header__wishlist-link" aria-label="Mis favoritos">
+            <Link to="/catalogo?favoritos=1" className="header__account-link header__wishlist-link" aria-label="Mis favoritos">
               <img src="/images/iconos/fav-white.svg" alt="" width="20" height="19" />
             </Link>
             {/* Lupa mobile — solo visible en ≤768px */}
