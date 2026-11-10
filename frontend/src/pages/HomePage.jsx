@@ -1,5 +1,5 @@
 import { Link, useSearchParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { getProducts } from '../services/productService';
 import { useCart } from '../context/CartContext';
@@ -47,6 +47,11 @@ export default function HomePage() {
   const [catGridRef] = useReveal({ threshold: 0.15 });
   const [featHeaderRef, featHeaderVis] = useReveal({ threshold: 0.2 });
   const [featGridRef] = useReveal({ threshold: 0.1 });
+  const sliderRef = useRef(null);
+  const slide = (dir) => {
+    const track = sliderRef.current?.querySelector('.featured-figma__grid');
+    if (track) track.scrollBy({ left: dir * track.clientWidth * 0.85, behavior: 'smooth' });
+  };
   const [bannerRef,     bannerVis]     = useReveal({ threshold: 0.15 });
 
   useEffect(() => {
@@ -98,7 +103,7 @@ export default function HomePage() {
           />
           {/* Fallback PNG para browsers sin soporte WebP (muy poco probable en 2026) */}
           <img
-            src="/images/Estación gamer futurista en neón.png"
+            src="/images/hero-1440w.webp"
             alt="Setup tecnológico NovaMarket"
             className="hero-figma__bg"
             width="1914"
@@ -158,7 +163,7 @@ export default function HomePage() {
                 <Link to={`/catalogo?categoria=${slug}`}
                   className={`cat-card${activeSlug === slug ? ' cat-card--featured' : ''}`}
                 >
-                  <img src={icon} alt={name} className="cat-card__icon" width="48" height="40" />
+                  <img src={icon} alt="" aria-hidden="true" className="cat-card__icon" width="48" height="40" loading="lazy" />
                   <span className="cat-card__name">{name}</span>
                 </Link>
               </motion.div>
@@ -173,11 +178,13 @@ export default function HomePage() {
           <h2 className="featured-figma__title">Productos Destacados</h2>
           <Link to="/catalogo" className="featured-figma__link">Ver todos los productos →</Link>
         </div>
-        {loading && <p className="featured-figma__state">Cargando productos...</p>}
+        {loading && <p className="featured-figma__state" role="status" aria-live="polite">Cargando productos… si es la primera visita del día, el servidor puede tardar unos segundos en despertar.</p>}
         {!loading && products.length === 0 && (
           <p className="featured-figma__state">No hay productos disponibles aún.</p>
         )}
         {!loading && products.length > 0 && (
+          <div className="featured-figma__slider" ref={sliderRef}>
+            <button type="button" className="featured-figma__arrow featured-figma__arrow--prev" onClick={() => slide(-1)} aria-label="Productos anteriores">‹</button>
           <div className={`featured-figma__grid`} ref={featGridRef}>
             {products.map((product) => {
               const cartQty = cartItems.find(i => i.id === product.id)?.quantity ?? 0;
@@ -192,6 +199,8 @@ export default function HomePage() {
                 />
               );
             })}
+          </div>
+            <button type="button" className="featured-figma__arrow featured-figma__arrow--next" onClick={() => slide(1)} aria-label="Productos siguientes">›</button>
           </div>
         )}
       </section>

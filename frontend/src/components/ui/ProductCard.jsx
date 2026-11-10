@@ -19,11 +19,11 @@ function seededReviews(id) {
 // 5 badges fijos con identidad visual clara. Asignados por seed
 // determinista: mismo producto → mismo badge siempre.
 const BADGES = [
-  { label: 'PRO',    bg: '#7D1CE2', text: '#FFFFFF' },
-  { label: 'NUEVO',  bg: '#D2EE42', text: '#000000' },
-  { label: 'OFERTA', bg: '#E247FD', text: '#FFFFFF' },
-  { label: 'GAMING', bg: '#050506', text: '#D2EE42' },
-  { label: 'TOP',    bg: '#F37E1D', text: '#000000' },
+  { label: 'PRO',    bg: '#DC39F2', text: '#FFFFFF' },
+  { label: 'NUEVO',  bg: '#4C9E6B', text: '#FFFFFF' },
+  { label: 'OFERTA', bg: '#B7DA97', text: '#000000' },
+  { label: 'GAMING', bg: '#CBF33E', text: '#000000' },
+  { label: 'TOP',    bg: '#A11EF3', text: '#FFFFFF' },
 ];
 
 function getBadge(product) {

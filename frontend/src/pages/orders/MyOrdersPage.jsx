@@ -320,7 +320,16 @@ function OrderCard({ order }) {
     <div className="ocard">
 
       {/* ── Cabecera siempre visible ── */}
-      <div className="ocard__header" onClick={() => setOpen(o => !o)}>
+      <div
+        className="ocard__header"
+        role="button"
+        tabIndex={0}
+        aria-expanded={open}
+        onClick={() => setOpen(o => !o)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpen(o => !o); }
+        }}
+      >
         <div className="ocard__header-left">
           <span className="ocard__id">#{String(order.id).padStart(6, '0')}</span>
           <span className="ocard__date">

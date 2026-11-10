@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
@@ -5,7 +6,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import { useAuth } from './context/AuthContext';
 
 import Layout from './components/layout/Layout';
-import AdminLayout from './pages/admin/AdminLayout';
+const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'));
 import { ProtectedRoute, AdminRoute } from './components/ui/ProtectedRoute';
 
 import HomePage from './pages/HomePage';
@@ -25,12 +26,12 @@ import SeguimientoPedidosPage from './pages/ayuda/SeguimientoPedidosPage';
 import FaqPage from './pages/ayuda/FaqPage';
 import GarantiasPage from './pages/ayuda/GarantiasPage';
 import ContactoPage from './pages/ayuda/ContactoPage';
-import DashboardPage from './pages/admin/DashboardPage';
-import ProductsAdminPage from './pages/admin/ProductsAdminPage';
-import OrdersAdminPage from './pages/admin/OrdersAdminPage';
-import CustomersAdminPage from './pages/admin/CustomersAdminPage';
-import CategoriesAdminPage from './pages/admin/CategoriesAdminPage';
-import ConfigAdminPage from './pages/admin/ConfigAdminPage';
+const DashboardPage = lazy(() => import('./pages/admin/DashboardPage'));
+const ProductsAdminPage = lazy(() => import('./pages/admin/ProductsAdminPage'));
+const OrdersAdminPage = lazy(() => import('./pages/admin/OrdersAdminPage'));
+const CustomersAdminPage = lazy(() => import('./pages/admin/CustomersAdminPage'));
+const CategoriesAdminPage = lazy(() => import('./pages/admin/CategoriesAdminPage'));
+const ConfigAdminPage = lazy(() => import('./pages/admin/ConfigAdminPage'));
 import NotFoundPage from './pages/NotFoundPage';
 
 // Puente entre AuthContext y CartContext — pasa el userId al carrito
@@ -51,6 +52,7 @@ export default function App() {
       <ThemeProvider>
         <AuthProvider>
           <CartWrapper>
+          <Suspense fallback={<p role="status" aria-live="polite" style={{ padding: 24 }}>Cargando…</p>}>
           <Routes>
             {/* Rutas públicas */}
             <Route element={<Layout />}>
@@ -93,6 +95,7 @@ export default function App() {
             {/* 404 */}
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
+          </Suspense>
         </CartWrapper>
         </AuthProvider>
       </ThemeProvider>

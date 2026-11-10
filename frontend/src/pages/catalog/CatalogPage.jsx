@@ -337,7 +337,7 @@ export default function CatalogPage() {
           {loading && (
             <div className="catalog-state">
               <div className="catalog-state__spinner" aria-label="Cargando productos" />
-              <p>Cargando productos…</p>
+              <p role="status" aria-live="polite">Cargando productos… si es la primera visita del día, el servidor puede tardar unos segundos en despertar.</p>
             </div>
           )}
 
