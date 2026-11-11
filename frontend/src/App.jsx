@@ -11,6 +11,7 @@ import { ProtectedRoute, AdminRoute } from './components/ui/ProtectedRoute';
 import HomePage from './pages/HomePage';
 import CatalogPage from './pages/catalog/CatalogPage';
 import ProductDetailPage from './pages/catalog/ProductDetailPage';
+import FavoritesPage from './pages/catalog/FavoritesPage';
 import CartPage from './pages/cart/CartPage';
 import CheckoutPage from './pages/checkout/CheckoutPage';
 import OrderConfirmedPage from './pages/checkout/OrderConfirmedPage';
@@ -61,6 +62,7 @@ export default function App() {
               <Route path="/catalogo" element={<CatalogPage />} />
               <Route path="/ofertas" element={<Navigate to="/catalogo" replace />} />
               <Route path="/catalogo/:id" element={<ProductDetailPage />} />
+              <Route path="/favoritos" element={<FavoritesPage />} />
               <Route path="/carrito" element={<CartPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/registro" element={<RegisterPage />} />
