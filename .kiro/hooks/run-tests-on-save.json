@@ -1,0 +1,16 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Correr tests al guardar archivos de test",
+      "trigger": "PostFileSave",
+      "description": "DESACTIVADO durante auditoría responsiva (qa/responsive-audit). Reactivar al terminar.",
+      "matcher": "DISABLED_\\.(test|spec)\\.(ts|js)$",
+      "action": {
+        "type": "command",
+        "command": "echo 'hook desactivado durante auditoria'",
+        "timeout": 5
+      }
+    }
+  ]
+}

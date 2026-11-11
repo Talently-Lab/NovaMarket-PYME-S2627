@@ -1,0 +1,15 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Advertir al guardar .env",
+      "trigger": "PostFileSave",
+      "description": "Avisa cuando se guarda un .env para recordar que no debe subirse al repo",
+      "matcher": "\\.env$",
+      "action": {
+        "type": "agent",
+        "prompt": "Se acaba de guardar un archivo .env. Recordá al usuario que este archivo contiene credenciales y NO debe subirse al repo. Verificá que esté en el .gitignore del proyecto."
+      }
+    }
+  ]
+}

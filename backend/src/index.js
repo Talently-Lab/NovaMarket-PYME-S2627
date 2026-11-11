@@ -1,18 +1,33 @@
 require('dotenv').config();
 const express = require('express');
-const cors = require('cors');
+const cors    = require('cors');
 const { connectDB } = require('./config/db');
+const { authLimiter, apiLimiter, checkoutLimiter } = require('./middlewares/rate-limit.middleware');
 
-const app = express();
+const app  = express();
 const PORT = process.env.PORT || 3000;
 
 // Seguridad: no exponer la versión de Express en los headers
 app.disable('x-powered-by');
 
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'http://localhost:4173',
+    'https://novamarket-pyme-s2627.netlify.app',
+  ],
+  credentials: true,
+}));
 app.use(express.json());
 
-// Health check — QA smoke test
+// Rate limiting — solo en producción/staging (no en tests)
+if (process.env.NODE_ENV !== 'test') {
+  app.use('/api/', apiLimiter);                         // General: 200 req / 15min
+  app.use('/api/auth', authLimiter);                    // Auth estricto: 10 req / 15min
+  app.use('/api/orders', checkoutLimiter);              // Checkout: 20 req / hora
+}
+
+// Health check — QA smoke test (fuera del rate limit de auth)
 app.get('/api/health', (req, res) => {
   res.status(200).json({
     status: 'ok',
@@ -20,6 +35,18 @@ app.get('/api/health', (req, res) => {
     timestamp: new Date().toISOString()
   });
 });
+
+// Rutas de autenticación
+const authRoutes = require('./routes/auth.routes');
+app.use('/api/auth', authRoutes);
+
+// Rutas de productos
+const productRoutes = require('./routes/product.routes');
+app.use('/api/products', productRoutes);
+
+// Rutas de pedidos
+const orderRoutes = require('./routes/order.routes');
+app.use('/api/orders', orderRoutes);
 
 // Manejador de errores global — evita exponer stack traces al cliente
 app.use((err, req, res, next) => {

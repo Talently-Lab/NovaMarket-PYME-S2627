@@ -1,0 +1,138 @@
+import { useState } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import { authAPI } from '../../services/api';
+import Button from '../../components/ui/Button';
+
+export default function LoginPage() {
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const redirectTo = location.state?.from || '/';
+  const [form, setForm] = useState({ email: '', password: '' });
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+    setError('');
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    try {
+      const { data } = await authAPI.login(form);
+      localStorage.setItem('nm-token', data.token);
+      login(data.user, data.token);
+      // Admin va directo al panel salvo que venga de una ruta específica
+      const dest = data.user?.role === 'admin' && redirectTo === '/'
+        ? '/admin'
+        : redirectTo;
+      navigate(dest, { replace: true });
+    } catch (err) {
+      setError(err.response?.data?.error || 'Error al iniciar sesión. Intentá de nuevo.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="auth-page">
+      <div className="auth-card">
+
+        {/* Tabs Login / Registro */}
+        <div className="auth-card__tabs">
+          <div className="auth-card__tab auth-card__tab--active">
+            Iniciar sesión
+          </div>
+          <Link to="/registro" className="auth-card__tab">
+            Registrarse
+          </Link>
+        </div>
+
+        {/* Formulario */}
+        <div className="auth-card__body">
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label className="form-label" htmlFor="email">Correo electrónico</label>
+              <input
+                className={`form-input${error ? ' error' : ''}`}
+                type="email"
+                id="email"
+                name="email"
+                value={form.email}
+                onChange={handleChange}
+                placeholder="ejemplo@correo.com"
+                autoComplete="email"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label" htmlFor="password">Contraseña</label>
+              <div className="form-input-wrapper">
+                <input
+                  className={`form-input${error ? ' error' : ''}`}
+                  type={showPassword ? 'text' : 'password'}
+                  id="password"
+                  name="password"
+                  value={form.password}
+                  onChange={handleChange}
+                  placeholder="••••••••"
+                  autoComplete="current-password"
+                  required
+                />
+                <button
+                  type="button"
+                  className="form-input-eye"
+                  onClick={() => setShowPassword(v => !v)}
+                  aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                >
+                  {showPassword ? (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                      <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                      <line x1="1" y1="1" x2="23" y2="23"/>
+                    </svg>
+                  ) : (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Recordarme + Olvidé contraseña */}
+            <div className="auth-card__extras">
+              <label className="auth-card__remember">
+                <input type="checkbox" className="auth-card__checkbox" />
+                <span>Recordarme</span>
+              </label>
+              <Link to="/olvide-contrasena" className="auth-card__forgot">
+                Olvidé mi contraseña
+              </Link>
+            </div>
+
+            {error && (
+              <p className="form-error" style={{ marginBottom: 'var(--sp-4)' }} role="alert">
+                ⚠ {error}
+              </p>
+            )}
+
+            <Button type="submit" full disabled={loading}>
+              {loading ? 'Ingresando...' : 'Iniciar sesión'}
+            </Button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  );
+}
