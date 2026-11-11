@@ -9385,31 +9385,21 @@ tr:hover .stock-display__edit {
 .prod-card, .catalog-card { border: 1px solid var(--card-border); }
 /* NM-003: un solo sistema de badge */
 .catalog-card__badge { border-radius: 20px; padding: 3px 10px; }
-/* NM-005: banner hero al 50 % */
+/* NM-005: banner gaming — texto a la derecha en mobile */
 .banner-card__content--b1 { left: max(16px, 8%); width: 50%; }
-/* NM-004: slider de destacados con tarjetas */
-.featured-figma__slider { position: relative; }
-.featured-figma__grid {
-  flex-wrap: nowrap;
-  justify-content: flex-start;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;
-  padding: 4px 4px 12px;
-  scrollbar-width: thin;
-  -webkit-overflow-scrolling: touch;
+@media (max-width: 768px) {
+  .banner-card__content--b1 {
+    position: absolute;
+    left: auto;
+    right: 8px;
+    top: 0;
+    bottom: 0;
+    width: 55%;
+    padding: 12px 10px;
+    text-align: left;
+    justify-content: center;
+  }
 }
-.featured-figma__grid > * { scroll-snap-align: start; }
-.featured-figma__arrow {
-  position: absolute; top: 45%; z-index: 2;
-  width: 44px; height: 44px; border-radius: 50%;
-  border: 1px solid #fff; background: rgba(5,5,6,.85); color: #fff;
-  font-size: 24px; line-height: 1; cursor: pointer;
-}
-.featured-figma__arrow--prev { left: 4px; }
-.featured-figma__arrow--next { right: 4px; }
-.featured-figma__arrow:hover { background: #7D1CE2; }
-@media (max-width: 768px) { .featured-figma__arrow { display: none; } }
 /* NM-018: categorías sin desborde */
 .categories-figma__grid { flex-wrap: wrap; }
 .categories-figma__cards { flex-wrap: wrap; min-width: 0; }
