@@ -123,11 +123,23 @@ export default function ProductFormModal({ product, categories = [], onSaved, on
         }
       }
 
+      // Verificar que todos los uploads hayan sido exitosos antes de continuar.
+      // Si img.file existe pero img.url es null, el upload falló y el blob URL
+      // no sirve como URL pública persistible.
+      const failedUploads = uploadedImages.filter(img => img.file && !img.url);
+      if (failedUploads.length > 0) {
+        setUploadError('No se pudieron subir todas las imágenes. Intentá de nuevo.');
+        setSaving(false);
+        return;
+      }
+
       // Serializar todas las URLs en image_url separadas por '|||'.
       // La posición 0 siempre es la imagen principal.
       // Compatibilidad: código que solo lee image_url recibe la primera URL.
+      // IMPORTANTE: solo se usan img.url (URLs reales de Supabase), nunca
+      // img.preview (blob URLs locales que no son accesibles públicamente).
       const allUrls = uploadedImages
-        .map(img => img.url || img.preview)
+        .map(img => img.url)
         .filter(Boolean);
 
       const image_url = allUrls.join('|||') || form.image_url || '';

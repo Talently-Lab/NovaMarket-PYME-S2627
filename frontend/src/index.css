@@ -6761,10 +6761,9 @@ tr:hover .stock-display__edit {
 }
 .featured-figma__link:hover { color: #b06aff; }
 .featured-figma__grid {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
   gap: 12px;
-  justify-content: center;
 }
 .featured-figma__state {
   color: #FEFEFE;
@@ -8016,7 +8015,7 @@ tr:hover .stock-display__edit {
 
   /* Featured */
   .featured-figma { padding: 24px 32px; }
-  .featured-figma__grid { justify-content: flex-start; }
+  .featured-figma__grid { grid-template-columns: repeat(3, 1fr); }
 
   /* Catalogo */
   .catalog-layout-v2 { padding: 16px 32px; gap: 24px; }
@@ -8041,8 +8040,7 @@ tr:hover .stock-display__edit {
   .admin-stats-grid { grid-template-columns: repeat(2, 1fr); }
 
   /* Featured grid tablet — gap reducido para evitar desfase de tarjetas */
-  .featured-figma__grid { gap: 8px; }
-  .prod-card { width: calc(50% - 4px); }
+  .featured-figma__grid { gap: 8px; grid-template-columns: repeat(3, 1fr); }
 
   /* Footer */
   .footer { padding: 40px 32px 24px; }
@@ -8262,9 +8260,8 @@ tr:hover .stock-display__edit {
 
   /* ── 3. PRODUCTOS — 2 columnas en mobile ── */
   .featured-figma__grid {
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: wrap !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
     gap: 12px;
   }
   .prod-card {

@@ -57,7 +57,7 @@ export default function HomePage() {
 
   useEffect(() => {
     getProducts(undefined, { order: 'newest' })
-      .then(({ products }) => setProducts(products.slice(0, 5)))
+      .then(({ products }) => setProducts(products.slice(0, 6)))
       .catch(() => setProducts([]))
       .finally(() => setLoading(false));
   }, []);
