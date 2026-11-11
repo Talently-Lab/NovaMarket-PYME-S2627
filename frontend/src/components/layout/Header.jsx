@@ -294,7 +294,7 @@ export default function Header() {
           Carrito {totalItems > 0 ? `(${totalItems})` : ''}
         </Link>
         <Link to="/favoritos" className="header__mobile-nav-link" onClick={closeMenu}>
-          ♡ Mis favoritos
+          Mis favoritos
         </Link>
         {isAuthenticated ? (
           <>
