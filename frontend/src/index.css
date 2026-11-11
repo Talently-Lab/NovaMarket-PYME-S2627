@@ -6995,8 +6995,8 @@ tr:hover .stock-display__edit {
   .categories-figma__title-col { width: 100%; }
   .categories-figma__cards { flex-wrap: wrap; }
   .featured-figma { padding: 24px 20px; }
-  .featured-figma__grid { gap: 12px; }
-  .prod-card { width: calc(50% - 6px); height: auto; }
+  .featured-figma__grid { gap: 12px; grid-template-columns: 1fr; }
+  .prod-card { width: 100%; height: auto; }
   .prod-card__image-wrap { height: auto; padding-bottom: 100%; }
   .footer { padding: 32px 20px 24px; }
   .footer__grid { grid-template-columns: 1fr; gap: 24px; }
@@ -8020,7 +8020,7 @@ tr:hover .stock-display__edit {
 
   /* Featured */
   .featured-figma { padding: 24px 32px; }
-  .featured-figma__grid { grid-template-columns: repeat(3, 1fr); }
+  .featured-figma__grid { grid-template-columns: repeat(2, 1fr); }
 
   /* Catalogo */
   .catalog-layout-v2 { padding: 16px 32px; gap: 24px; }
@@ -8045,7 +8045,7 @@ tr:hover .stock-display__edit {
   .admin-stats-grid { grid-template-columns: repeat(2, 1fr); }
 
   /* Featured grid tablet — gap reducido para evitar desfase de tarjetas */
-  .featured-figma__grid { gap: 8px; grid-template-columns: repeat(3, 1fr); }
+  .featured-figma__grid { gap: 8px; grid-template-columns: repeat(2, 1fr); }
 
   /* Footer */
   .footer { padding: 40px 32px 24px; }
@@ -8104,8 +8104,8 @@ tr:hover .stock-display__edit {
   /* Featured */
   .featured-figma { padding: 24px 20px; }
   .featured-figma__header { flex-wrap: wrap; gap: 8px; }
-  .featured-figma__grid { gap: 12px; }
-  .prod-card { width: calc(50% - 6px); min-height: auto; }
+  .featured-figma__grid { gap: 12px; grid-template-columns: 1fr; }
+  .prod-card { width: 100%; min-height: auto; }
   .prod-card__image-wrap { height: auto; padding-bottom: 100%; width: 100%; }
 
   /* Banner triptico */
@@ -8263,14 +8263,14 @@ tr:hover .stock-display__edit {
   .cat-card__icon { width: 36px; height: 36px; }
   .cat-card__name { font-size: 12px; text-align: center; }
 
-  /* ── 3. PRODUCTOS — 2 columnas en mobile ── */
+  /* ── 3. PRODUCTOS — 1 columna en mobile ── */
   .featured-figma__grid {
     display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
+    grid-template-columns: 1fr !important;
     gap: 12px;
   }
   .prod-card {
-    width: calc(50% - 6px) !important;
+    width: 100% !important;
     min-height: auto;
     flex-direction: column;
     align-items: stretch;
@@ -8806,9 +8806,8 @@ tr:hover .stock-display__edit {
 .pc-image-wrapper {
   position: relative;
   flex-shrink: 0;
-  width: 100%;
 }
-.pc-image-link { display: block; width: 100%; }
+.pc-image-link { display: block; }
 .pc-image {
   width: 100%;
   aspect-ratio: 1 / 1;
@@ -8820,7 +8819,7 @@ tr:hover .stock-display__edit {
   align-items: center;
   justify-content: center;
 }
-.pc-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pc-img { width: 100%; height: 100%; object-fit: contain; display: block; }
 
 /* Badge */
 .pc-badge {
