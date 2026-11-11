@@ -293,6 +293,9 @@ export default function Header() {
           </div>
           Carrito {totalItems > 0 ? `(${totalItems})` : ''}
         </Link>
+        <Link to="/favoritos" className="header__mobile-nav-link" onClick={closeMenu}>
+          ♡ Mis favoritos
+        </Link>
         {isAuthenticated ? (
           <>
             <Link to="/mis-pedidos" className="header__mobile-nav-link" onClick={closeMenu}>Mis pedidos</Link>
