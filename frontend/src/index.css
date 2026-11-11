@@ -3536,8 +3536,8 @@ ul, ol { list-style: none; }
     gap: var(--sp-3);
   }
 
-  /* Ocultar cuenta/salir en mobile — están en el drawer. El carrito se mantiene visible */
-  .header__account-link:not(.header__cart-link),
+  /* Ocultar cuenta/salir en mobile — están en el drawer. El carrito y favoritos se mantienen visibles */
+  .header__account-link:not(.header__cart-link):not(.header__wishlist-link),
   .header__user,
   .header__logout-btn {
     display: none;
