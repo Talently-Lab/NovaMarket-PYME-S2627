@@ -2377,6 +2377,7 @@ ul, ol { list-style: none; }
   display: flex;
   flex-direction: column;
   gap: var(--sp-3);
+  min-width: 0;
 }
 
 .cart-item {
@@ -2540,7 +2541,7 @@ ul, ol { list-style: none; }
   padding: var(--sp-6);
   position: sticky;
   top: calc(105px + var(--sp-4));
-  overflow: hidden; /* evita que los precios desborden el contenedor */
+  overflow: visible;
   min-width: 0;
 }
 
@@ -7028,7 +7029,8 @@ tr:hover .stock-display__edit {
 /* ── Contenido Banner 1 — Gaming (izquierda) ── */
 .banner-card__content--b1 {
   position: absolute;    /* posicion absoluta dentro del banner */
-  left: 226px;           /* tu valor encontrado con DevTools */
+  right: 24px;           /* texto a la derecha sobre la imagen */
+  left: auto;
   top: 0;
   bottom: 0;
   padding: 20px 16px;
@@ -9385,19 +9387,14 @@ tr:hover .stock-display__edit {
 .prod-card, .catalog-card { border: 1px solid var(--card-border); }
 /* NM-003: un solo sistema de badge */
 .catalog-card__badge { border-radius: 20px; padding: 3px 10px; }
-/* NM-005: banner gaming — texto a la derecha en mobile */
-.banner-card__content--b1 { left: max(16px, 8%); width: 50%; }
+/* NM-005: banner gaming — texto a la derecha */
+.banner-card__content--b1 { right: max(16px, 5%); left: auto; width: 50%; }
 @media (max-width: 768px) {
   .banner-card__content--b1 {
-    position: absolute;
-    left: auto;
     right: 8px;
-    top: 0;
-    bottom: 0;
+    left: auto;
     width: 55%;
     padding: 12px 10px;
-    text-align: left;
-    justify-content: center;
   }
 }
 /* NM-018: categorías sin desborde */
