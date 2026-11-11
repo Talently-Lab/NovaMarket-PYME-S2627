@@ -85,6 +85,8 @@ export default function Footer() {
             </div>
           </div>
 
+          {/* Navegación (50% derecho, un solo contenedor modular) */}
+          <div className="footer__nav-grid">
           {/* Columna Categorías */}
           <div className="footer__nav-col">
             <h4 className="footer__nav-title">Categorías</h4>
@@ -120,7 +122,7 @@ export default function Footer() {
               ))}
             </ul>
           </div>
-
+          </div>
         </div>
 
         {/* Bottom bar */}

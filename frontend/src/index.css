@@ -9318,3 +9318,138 @@ tr:hover .stock-display__edit {
   .pd-lens-square,
   .pd-lens-panel { display: none !important; }
 }
+
+/* ── Feedback Gisele: footer modular 50/50, filtro desplegable en mobile, barra de orden ── */
+.footer__grid {
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+.footer__nav-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+  align-items: start;
+}
+.catalog-sidebar__toggle { display: none; }
+/* Corrección 12 (Figma): wrap de "Ordenar por" y "Mostrando resultados" */
+.catalog-sort-bar {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.catalog-sort-bar__right {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+@media (max-width: 1024px) {
+  .footer__grid { grid-template-columns: 1fr !important; gap: 24px !important; }
+}
+@media (max-width: 768px) {
+  .footer__nav-grid { grid-template-columns: 1fr; gap: 16px; }
+  /* Filtro desplegable */
+  .catalog-sidebar__heading { display: none; }
+  .catalog-sidebar__toggle {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-bold);
+    color: var(--color-text);
+    cursor: pointer;
+  }
+  .catalog-sidebar__toggle-chevron { display: flex; transition: transform .2s; }
+  .catalog-sidebar--open .catalog-sidebar__toggle-chevron { transform: rotate(180deg); }
+  .catalog-sidebar__body { display: none; margin-top: 12px; }
+  .catalog-sidebar--open .catalog-sidebar__body { display: block; }
+  /* Barra de orden: el texto del contador y el selector hacen wrap sin desordenarse */
+  .catalog-sort-bar__count { flex: 1 1 140px; }
+  .catalog-sort-bar__right { flex: 1 1 auto; justify-content: flex-end; }
+}
+/* ═══════════════════════════════════════════════════════════════
+   AUDITORÍA UX/UI · QA · RESPONSIVE (08/11/2026)
+   Bloque único de correcciones; ver NovaMarket_Auditoria_UXUI_QA_Responsive.xlsx
+   ═══════════════════════════════════════════════════════════════ */
+:root { --card-border: #B0B8CC; --focus-ring: #7D1CE2; }
+[data-theme="dark"] { --focus-ring: #D2EE42; }
+/* NM-001/007: imagen blanca y borde de card unificado */
+.pc-image, .catalog-card__image, .prod-card__image-wrap { background: #FFFFFF; }
+.prod-card, .catalog-card { border: 1px solid var(--card-border); }
+/* NM-003: un solo sistema de badge */
+.catalog-card__badge { border-radius: 20px; padding: 3px 10px; }
+/* NM-005: banner hero al 50 % */
+.banner-card__content--b1 { left: max(16px, 8%); width: 50%; }
+/* NM-004: slider de destacados con tarjetas */
+.featured-figma__slider { position: relative; }
+.featured-figma__grid {
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  padding: 4px 4px 12px;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+}
+.featured-figma__grid > * { scroll-snap-align: start; }
+.featured-figma__arrow {
+  position: absolute; top: 45%; z-index: 2;
+  width: 44px; height: 44px; border-radius: 50%;
+  border: 1px solid #fff; background: rgba(5,5,6,.85); color: #fff;
+  font-size: 24px; line-height: 1; cursor: pointer;
+}
+.featured-figma__arrow--prev { left: 4px; }
+.featured-figma__arrow--next { right: 4px; }
+.featured-figma__arrow:hover { background: #7D1CE2; }
+@media (max-width: 768px) { .featured-figma__arrow { display: none; } }
+/* NM-018: categorías sin desborde */
+.categories-figma__grid { flex-wrap: wrap; }
+.categories-figma__cards { flex-wrap: wrap; min-width: 0; }
+.cat-card { min-width: 0; }
+@media (min-width: 769px) { .cat-card { flex: 1 1 96px; } }
+/* NM-016: skip link */
+.skip-link {
+  position: absolute; left: 8px; top: -60px; z-index: 10000;
+  padding: 10px 16px; background: #050506; color: #D2EE42;
+  border-radius: 8px; font-weight: 700; text-decoration: none;
+}
+.skip-link:focus { top: 8px; }
+.main:focus { outline: none; }
+/* NM-025: foco visible global */
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible,
+textarea:focus-visible, summary:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+/* NM-019/020: áreas táctiles de 44 px */
+.header__search-btn, .header__hamburger, .header__account-link, .header__cart-btn,
+.catalog-toggle, .catalog-sort-select, .catalog-price-input, .catalog-quick-filters__btn,
+.featured-figma__link, .footer a {
+  min-height: 44px;
+}
+.header__search-btn, .header__hamburger { min-width: 44px; }
+.header__account-link { min-width: 44px; display: inline-flex; align-items: center; justify-content: center; }
+.catalog-breadcrumb__link { display: inline-flex; align-items: center; min-height: 44px; }
+.pc-wishlist { position: absolute; }
+.pc-wishlist::after { content: ""; position: absolute; inset: -7px; }
+/* NM-022: footer en tablet (2 columnas) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .footer__nav-grid { grid-template-columns: repeat(2, 1fr); }
+}
+/* NM-026: reduced motion global */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

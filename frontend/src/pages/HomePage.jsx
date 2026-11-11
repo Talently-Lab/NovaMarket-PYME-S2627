@@ -98,7 +98,7 @@ export default function HomePage() {
           />
           {/* Fallback PNG para browsers sin soporte WebP (muy poco probable en 2026) */}
           <img
-            src="/images/Estación gamer futurista en neón.png"
+            src="/images/hero-1440w.webp"
             alt="Setup tecnológico NovaMarket"
             className="hero-figma__bg"
             width="1914"
@@ -158,7 +158,7 @@ export default function HomePage() {
                 <Link to={`/catalogo?categoria=${slug}`}
                   className={`cat-card${activeSlug === slug ? ' cat-card--featured' : ''}`}
                 >
-                  <img src={icon} alt={name} className="cat-card__icon" width="48" height="40" />
+                  <img src={icon} alt="" aria-hidden="true" className="cat-card__icon" width="48" height="40" loading="lazy" />
                   <span className="cat-card__name">{name}</span>
                 </Link>
               </motion.div>

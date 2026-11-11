@@ -43,6 +43,9 @@ export default function CatalogPage() {
     const cat = searchParams.get('categoria');
     setSelectedCategories(cat ? [cat] : []);
   }, [searchParams]);
+
+  const onlyFavorites = searchParams.get('favoritos') === '1';
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [priceMin, setPriceMin]   = useState('');
   const [priceMax, setPriceMax]   = useState('');
   const [onlyStock, setOnlyStock] = useState(false);
@@ -177,8 +180,14 @@ export default function CatalogPage() {
       list = list.filter(p => p.stock > 0);
     }
 
+    if (onlyFavorites) {
+      let wl = [];
+      try { wl = JSON.parse(localStorage.getItem('nm-wishlist') || '[]'); } catch { wl = []; }
+      list = list.filter(p => wl.includes(p.id));
+    }
+
     return list;
-  }, [allProducts, selectedCategories, selectedBrands, priceMin, priceMax, onlyStock, search]);
+  }, [allProducts, selectedCategories, selectedBrands, priceMin, priceMax, onlyStock, onlyFavorites, search]);
 
   // ── Paginación en cliente ──
   const totalPages   = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
@@ -234,11 +243,22 @@ export default function CatalogPage() {
       <div className="catalog-layout-v2">
 
         {/* ── Sidebar de filtros ── */}
-        <aside className="catalog-sidebar" aria-label="Filtros">
+        <aside className={`catalog-sidebar${filtersOpen ? ' catalog-sidebar--open' : ''}`} aria-label="Filtros">
+
+          <button
+            type="button"
+            className="catalog-sidebar__toggle"
+            aria-expanded={filtersOpen}
+            aria-controls="catalog-sidebar-body"
+            onClick={() => setFiltersOpen(v => !v)}
+          >
+            <span>Filtros</span>
+            <span className="catalog-sidebar__toggle-chevron" aria-hidden="true"><ChevronIcon /></span>
+          </button>
 
           <p className="catalog-sidebar__heading">Filtros</p>
 
-          {/* Categoría */}
+          <div className="catalog-sidebar__body" id="catalog-sidebar-body">
           <div className="catalog-filter-group">
             <p className="catalog-filter-group__label">Categoría</p>
             {categories.map(cat => (
@@ -319,6 +339,7 @@ export default function CatalogPage() {
             </button>
           </div>
 
+          </div>
         </aside>
 
         {/* ── Área de resultados ── */}
