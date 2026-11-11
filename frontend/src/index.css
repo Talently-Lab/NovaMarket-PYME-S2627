@@ -8806,8 +8806,9 @@ tr:hover .stock-display__edit {
 .pc-image-wrapper {
   position: relative;
   flex-shrink: 0;
+  width: 100%;
 }
-.pc-image-link { display: block; }
+.pc-image-link { display: block; width: 100%; }
 .pc-image {
   width: 100%;
   aspect-ratio: 1 / 1;
@@ -8819,7 +8820,7 @@ tr:hover .stock-display__edit {
   align-items: center;
   justify-content: center;
 }
-.pc-img { width: 100%; height: 100%; object-fit: contain; }
+.pc-img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
 /* Badge */
 .pc-badge {
