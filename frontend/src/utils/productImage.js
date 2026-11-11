@@ -66,7 +66,9 @@ const DEFAULT_IMAGE = '/images/Productos/Gadgets/1.webp';
 const BLOCKED_HOSTS = ['unsplash.com', 'mlstatic.com'];
 
 export function getProductImage(product) {
-  const url = product?.image_url;
+  const raw = product?.image_url;
+  // image_url puede contener múltiples URLs separadas por '|||'; usar solo la primera
+  const url = raw ? raw.split('|||')[0].trim() : '';
   if (url && !BLOCKED_HOSTS.some(h => url.includes(h))) {
     return url;
   }
