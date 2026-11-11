@@ -188,10 +188,6 @@ export default function Header() {
                 <UserIcon />
               </Link>
             )}
-            {/* Favoritos */}
-            <Link to="/favoritos" className="header__account-link header__wishlist-link" aria-label="Mis favoritos">
-              <img src="/images/iconos/fav-white.svg" alt="" width="20" height="19" />
-            </Link>
             {/* Lupa mobile — solo visible en ≤768px */}
             <button
               className="header__mobile-search-toggle"
@@ -204,6 +200,10 @@ export default function Header() {
                 : <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
               }
             </button>
+            {/* Favoritos */}
+            <Link to="/favoritos" className="header__account-link header__wishlist-link" aria-label="Mis favoritos">
+              <img src="/images/iconos/fav-white.svg" alt="" width="20" height="19" />
+            </Link>
             <Link to="/carrito"
               className="header__account-link header__cart-link"
               aria-label={`Carrito${totalItems > 0 ? `, ${totalItems} productos` : ' vacío'}`}
